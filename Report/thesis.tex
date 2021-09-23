@@ -6,6 +6,8 @@
 \usepackage{latexsym}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathpartir}
 \usepackage{epsfig}
 \usepackage[T1]{fontenc}
 \usepackage{mathptmx}
@@ -20,6 +22,75 @@
 \renewcommand*\sfdefault{lmss}
 \renewcommand*\ttdefault{txtt}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BNF Grammar
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\BNFdef}{::=}
+\newcommand{\ALT}{~|~}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Syntax
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Keyword}[1]{{\color{blue} \mathsf{#1}}}
+
+\newcommand{\var}{x}
+\newcommand{\varB}{y}
+\newcommand{\varC}{z}
+\newcommand{\expr}{e}
+\newcommand{\val}{v}
+\newcommand{\valB}{w}
+\newcommand{\TT}{()}
+\newcommand{\Num}[1]{\overline{#1}}
+\newcommand{\True}{\Keyword{true}}
+\newcommand{\False}{\Keyword{false}}
+\newcommand{\IfCmd}{\Keyword{if}}
+\newcommand{\ThenCmd}{\Keyword{then}}
+\newcommand{\ElseCmd}{\Keyword{else}}
+\def\If#1then#2else#3{\IfCmd{}\;#1\;\ThenCmd{}\;#2\;\ElseCmd{}\;#3}
+\newcommand{\Fst}{\Keyword{fst}\;}
+\newcommand{\Snd}{\Keyword{snd}\;}
+\newcommand{\Inj}[1]{\Keyword{inj}_{#1}\;}
+\newcommand{\MatchCmd}{\Keyword{match}}
+\newcommand{\WithCmd}{\Keyword{with}}
+\newcommand{\EndCmd}{\Keyword{end}}
+\def\Match#1with#2=>#3|#4=>#5end{\MatchCmd{}\;#1\;\WithCmd{}\;#2\Rightarrow#3 \;|\;#4\Rightarrow#5\;\EndCmd{}}
+\def\MatchV[#1]#2with#3=>#4|#5=>#6end{\begin{aligned}[#1]&\MatchCmd{}\;#2\;\WithCmd{}\\ & \hspace{0.5em}#3\Rightarrow#4\\ & | \hspace{0.2em}#5\Rightarrow#6\\ &\EndCmd{}\end{aligned}}
+\newcommand{\RecCmd}{\Keyword{rec}}
+\long\def\Rec#1 #2:=#3{\RecCmd\; #1(#2) := #3}
+
+\newcommand{\Tvar}{X}
+\newcommand{\TvarB}{Y}
+\newcommand{\TvarC}{Z}
+
+\newcommand{\Tlam}{\Lambda\;}
+\newcommand{\Tapp}[1]{#1\;\_}
+
+\newcommand{\empelctx}{[]}
+\newcommand{\elctx}{K}
+
+\newcommand{\subst}[3]{#1{\left[#3 \middle/ #2 \right]}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Typing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Tunit}{\mathsf{Unit}}
+\newcommand{\Temp}{\mathsf{Emp}}
+\newcommand{\Tnat}{\mathbb{N}}
+\newcommand{\Tbool}{\mathbb{B}}
+\newcommand{\Tprod}[2]{#1 \times #2}
+\newcommand{\Tsum}[2]{#1 + #2}
+\newcommand{\Tfunc}[2]{#1 \rightarrow #2}
+\newcommand{\Tall}[2]{\forall #1.\; #2}
+
+\newcommand{\typ}{\tau}
+\newcommand{\ctx}{\Gamma}
+\newcommand{\tctx}{\Xi}
+\newcommand{\hctx}{\Sigma} % not needed
+
+% Judgement
+\def\envs#1#2\exp#3\type#4{#1 \; | \; #2 \; \vdash #3 : #4}
+
+% TODO-command
 \newcommand{\todo}[1]{{\color[rgb]{.5,0,0}\textbf{$\blacktriangleright$#1$\blacktriangleleft$}}}
 
 \begin{document}
@@ -73,7 +144,85 @@ Department of Computer Science, Aarhus University\\[1ex]
 \chapter{Definition of Language}
 \label{ch:DoL}
 
-\todo{draft}
+\todo{create draft}\\
+Syntax
+\begin{align*}
+  \expr \BNFdef & \TT \ALT & \text{(unit value)}\\
+                & \var \ALT & \text{(variables)}\\
+                & \Num{n} \ALT \expr + \expr \ALT \expr - \expr \ALT
+                  \expr \le \expr \ALT \expr < \expr \ALT 
+                  \expr = \expr \ALT & \text{(natural??? numbers)}\\
+                & \True \ALT \False \ALT {\If \expr then \expr else \expr} \ALT
+                  & \text{(booleans)}\\
+                & (\expr, \expr) \ALT \Fst \expr \ALT \Snd \expr \ALT
+                  & \text{(products/pairs???)}\\
+                & \Inj{1} \expr \ALT \Inj{2} \expr \ALT 
+                  \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
+                  & \text{(sums)}\\
+                & \Rec f \var := \expr \ALT \expr \; \expr
+                  & \text{(recursive functions)}\\
+                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}\\[8pt]
+  \var \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
+                  (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
+                  \Rec f \var := \expr \ALT \Tlam \expr
+                  & \text{(values)}\\[8pt]
+  \typ \BNFdef  & \Tunit \ALT \Tnat \ALT \Tbool \ALT {\Tprod \typ \typ} \ALT
+                  {\Tsum \typ \typ} \ALT {\Tfunc \typ \typ} \ALT 
+                  {\Tall \Tvar \typ} & \text{(types)}\\[8pt]
+  \elctx \BNFdef& \empelctx \ALT 
+                  \elctx + \expr \ALT \val + \elctx \ALT
+                  \elctx - \expr \ALT \val - \elctx \ALT
+                  \elctx \le \expr \ALT \val \le \elctx \ALT
+                  \elctx < \expr \ALT \val < \elctx \ALT 
+                  & \text{(evaluation context)}\\
+                & \elctx = \expr \ALT \val = \elctx \ALT
+                  {\If \elctx then \expr else \expr} \ALT
+                  (\elctx, \expr) \ALT (\val, \elctx) \ALT
+                  \Fst \elctx \ALT \Snd \elctx \ALT\\
+                & \Inj{1} \elctx \ALT \Inj{2} \elctx \ALT
+                  \Match \elctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
+                  \elctx \; \expr \ALT \val \; \elctx \ALT \Tapp{\elctx}
+\end{align*}
+\newpage
+Typing rules
+\begin{mathpar}
+  \inferrule* [lab=T-VAR]{(\var : \typ) \in \ctx}{\envs \tctx \ctx \exp \var \type \typ}
+  \and
+  \inferrule* [lab=T-UNIT]{ }{\envs \tctx \ctx \exp \TT \type \Tunit}
+  \and
+  \inferrule* [lab=T-NAT]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tnat}
+  \and
+  \inferrule* [lab=T-ADD]
+    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {\envs \tctx \ctx \exp \expr_1 + \expr_2 \type \Tnat}
+  \and
+  \inferrule* [lab=T-SUB]
+    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {\envs \tctx \ctx \exp \expr_1 - \expr_2 \type \Tnat}
+  \and
+  \inferrule* [lab=T-LE]
+    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {\envs \tctx \ctx \exp \expr_1 \le \expr_2 \type \Tbool}
+  \and
+  \inferrule* [lab=T-LT]
+    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {\envs \tctx \ctx \exp \expr_1 < \expr_2 \type \Tbool}
+  \and
+  \inferrule* [lab=T-EQ]
+    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {\envs \tctx \ctx \exp \expr_1 = \expr_2 \type \Tbool}
+  \and
+  \inferrule* [lab=T-TRUE]{ }{\envs \tctx \ctx \exp \True \type \Tbool}
+  \and
+  \inferrule* [lab=T-FALSE]{ }{\envs \tctx \ctx \exp \False \type \Tbool}
+  \and
+  \inferrule* [lab=T-IF]
+    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {\envs \tctx \ctx \exp {\If \expr_1 then \expr_2 else \expr_3} \type \typ}
+\end{mathpar}
+\todo{finish typing rules}
+
+\todo{write in dynamics (step rules)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
