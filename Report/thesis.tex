@@ -90,6 +90,9 @@
 % Judgement
 \def\envs#1#2\exp#3\type#4{#1 \; | \; #2 \; \vdash #3 : #4}
 
+% Head-Step
+\newcommand{\hstep}[2]{#1 \rightarrow_h #2}
+
 % TODO-command
 \newcommand{\todo}[1]{{\color[rgb]{.5,0,0}\textbf{$\blacktriangleright$#1$\blacktriangleleft$}}}
 
@@ -186,43 +189,149 @@ Syntax
 \newpage
 Typing rules
 \begin{mathpar}
-  \inferrule* [lab=T-VAR]{(\var : \typ) \in \ctx}{\envs \tctx \ctx \exp \var \type \typ}
+  \inferrule*[lab=T-var]
+    {(\var : \typ) \in \ctx}
+    {\envs \tctx \ctx \exp \var \type \typ}
   \and
-  \inferrule* [lab=T-UNIT]{ }{\envs \tctx \ctx \exp \TT \type \Tunit}
+  \inferrule*[lab=T-unit]{ }{\envs \tctx \ctx \exp \TT \type \Tunit}
   \and
-  \inferrule* [lab=T-NAT]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tnat}
+  \inferrule*[lab=T-nat]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tnat}
   \and
-  \inferrule* [lab=T-ADD]
+  \inferrule*[lab=T-add]
     {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
     {\envs \tctx \ctx \exp \expr_1 + \expr_2 \type \Tnat}
   \and
-  \inferrule* [lab=T-SUB]
+  \inferrule*[lab=T-sub]
     {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
     {\envs \tctx \ctx \exp \expr_1 - \expr_2 \type \Tnat}
   \and
-  \inferrule* [lab=T-LE]
+  \inferrule*[lab=T-le]
     {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
     {\envs \tctx \ctx \exp \expr_1 \le \expr_2 \type \Tbool}
   \and
-  \inferrule* [lab=T-LT]
+  \inferrule*[lab=T-lt]
     {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
     {\envs \tctx \ctx \exp \expr_1 < \expr_2 \type \Tbool}
   \and
-  \inferrule* [lab=T-EQ]
+  \inferrule*[lab=T-eq]
     {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
     {\envs \tctx \ctx \exp \expr_1 = \expr_2 \type \Tbool}
   \and
-  \inferrule* [lab=T-TRUE]{ }{\envs \tctx \ctx \exp \True \type \Tbool}
+  \inferrule*[lab=T-true]{ }{\envs \tctx \ctx \exp \True \type \Tbool}
   \and
-  \inferrule* [lab=T-FALSE]{ }{\envs \tctx \ctx \exp \False \type \Tbool}
+  \inferrule*[lab=T-false]{ }{\envs \tctx \ctx \exp \False \type \Tbool}
   \and
-  \inferrule* [lab=T-IF]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+  \inferrule*[lab=T-if]
+    {{\envs \tctx \ctx \exp \expr_1 \type \Tbool} \and
+    {\envs \tctx \ctx \exp \expr_2 \type \typ} \and
+    {\envs \tctx \ctx \exp \expr_3 \type \typ}}
     {\envs \tctx \ctx \exp {\If \expr_1 then \expr_2 else \expr_3} \type \typ}
+  \and
+  \inferrule*[lab=T-pair]
+    {{\envs \tctx \ctx \exp \expr_1 \type \typ_1} \and
+    {\envs \tctx \ctx \exp \expr_2 \type \typ_2}}
+    {\envs \tctx \ctx \exp (\expr_1, \expr_2) \type \Tprod{\typ_1}{\typ_1}}
+  \and
+  \inferrule*[lab=T-fst]
+    {\envs \tctx \ctx \exp \expr \type \Tprod{\typ_1}{\typ_2}}
+    {\envs \tctx \ctx \exp \Fst \expr \type \typ_1}
+  \and
+  \inferrule*[lab=T-snd]
+    {\envs \tctx \ctx \exp \expr \type \Tprod{\typ_1}{\typ_2}}
+    {\envs \tctx \ctx \exp \Snd \expr \type \typ_2}
+  \and
+  \inferrule*[lab=T-inj1]{\envs \tctx \ctx \exp \expr \type \typ_1}
+    {\envs \tctx \ctx \exp \Inj{1} \expr \type \Tsum{\typ_1}{\typ_2}}
+  \and
+  \inferrule*[lab=T-inj2]{\envs \tctx \ctx \exp \expr \type \typ_2}
+    {\envs \tctx \ctx \exp \Inj{2} \expr \type \Tsum{\typ_1}{\typ_2}}
+  \and
+  \inferrule*[lab=T-match]
+    {{\envs \tctx \ctx \exp \expr_1 \type \Tsum{\typ_1}{\typ_2}} \and
+    {\envs \tctx \ctx, \var : \typ_1 \exp \expr_2 \type \typ} \and
+    {\envs \tctx \ctx, \var : \typ_2 \exp \expr_3 \type \typ}
+    }
+    {\envs \tctx \ctx \exp {\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end} \type \typ}
+  \and
+  \inferrule*[lab=T-rec]
+    {\envs \tctx \ctx, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1 \exp e \type \typ_2}
+    {\envs \tctx \ctx \exp \Rec f \var := \expr \type \Tfunc{\typ_1}{\typ_2}}
+  \and
+  \inferrule*[lab=T-app]
+    {{\envs \tctx \ctx \exp \expr_1 \type \Tfunc{\typ_1}{\typ_2}} \and
+    {\envs \tctx \ctx \exp \expr_2 \type \typ_1}
+    }
+    {\envs \tctx \ctx \exp \expr_1 \; \expr_2 \type \typ_2}
+  \and
+  \inferrule*[lab=T-Tlam]
+    {\envs {\tctx, \Tvar} \ctx \exp \expr \type \typ}
+    {\envs \tctx \ctx \exp \Tlam \expr \type \Tall{\Tvar}{\typ}}
+  \and
+  \inferrule*[lab=T-Tapp]
+  {\envs \tctx \ctx \exp \expr \type \Tall{\Tvar}{\typ}}
+  {\envs \tctx \ctx \exp \Tapp{\expr} \type \subst{\typ}{\Tvar}{\typ'}}
 \end{mathpar}
-\todo{finish typing rules}
+\newpage
+Dynamics
+\begin{mathpar}
+  \inferrule*[lab=head-step-step]
+    {\hstep{\expr}{\expr'}}
+    {\elctx[\expr] \rightarrow \elctx[\expr']}
+\end{mathpar}
 
-\todo{write in dynamics (step rules)}
+\begin{mathpar}
+  \inferrule*[lab=E-add]{}
+    {\hstep{\Num{n_1} + \Num{n_2}} {\Num{n_1 + n_2}}}
+  \and
+  \inferrule*[lab=E-sub]{}
+    {\hstep{\Num{n_1} - \Num{n_2}} {\Num{n_1 - n_2}}}
+  \and
+  \inferrule*[lab=E-eq]{n_1 = n_2}
+    {\hstep{\Num{n_1} = \Num{n_2}} {\True}}
+  \and
+  \inferrule*[lab=E-not-eq]{n_1 \neq n_2}
+    {\hstep{\Num{n_1} = \Num{n_2}} {\False}}
+  \and
+  \inferrule*[lab=E-le]{n_1 \le n_2}
+    {\hstep{\Num{n_1} \le \Num{n_2}} {\True}}
+  \and
+  \inferrule*[lab=E-not-le]{n_1 \not\le n_2}
+    {\hstep{\Num{n_1} \le \Num{n_2}} {\False}}
+  \and
+  \inferrule*[lab=E-lt]{n_1 < n_2}
+    {\hstep{\Num{n_1} < \Num{n_2}} {\True}}
+  \and
+  \inferrule*[lab=E-not-lt]{n_1 \not< n_2}
+    {\hstep{\Num{n_1} < \Num{n_2}} {\False}}
+  \and
+  \inferrule*[lab=E-if-true]{}
+    {\hstep{\If \True then \expr_2 else \expr_3} {\expr_2}}
+  \and
+  \inferrule*[lab=E-if-false]{}
+    {\hstep{\If \False then \expr_2 else \expr_3} {\expr_3}}
+  \and
+  \inferrule*[lab=E-fst]{}
+    {\hstep{\Fst (\val_1, \val_2)} {\val_1}}
+  \and
+  \inferrule*[lab=E-snd]{}
+    {\hstep{\Snd (\val_1, \val_2)} {\val_2}}
+  \and
+  \inferrule*[lab=E-match-inj1]{}
+    {\hstep{\Match (\Inj{1} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
+     {\subst{\expr_2}{\var}{\val}}}
+  \and
+  \inferrule*[lab=E-match-inj2]{}
+    {\hstep{\Match (\Inj{2} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
+     {\subst{\expr_3}{\var}{\val}}}
+  \and
+  \inferrule*[lab=E-rec-app]{}
+    {\hstep{(\Rec f \var := \expr) \val}
+    {\subst{\subst{\expr}{f}{\Rec f \var := \expr}}{\var}{\val}}
+    }
+  \and
+  \inferrule*[lab=E-tapp-tlam]{}{\hstep{\Tapp{(\Tlam \expr)}}
+  {\expr}}
+\end{mathpar}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
