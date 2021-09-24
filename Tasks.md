@@ -10,8 +10,8 @@
 
 ## System F w/ recursive functions. Initial part
 - [x] Write in language (System F w/rec) in report
-- [ ] Define and prove "Evaluation under Context lemma for System F w/rec
-- [ ] define Contextual Equivalence for System F w/rec
+- [ ] Define and prove "Evaluation under Context" lemma for System F w/rec
+- [ ] Define Contextual Equivalence for System F w/rec
 
 ## Logical Relations
 
