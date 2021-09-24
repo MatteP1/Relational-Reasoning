@@ -166,7 +166,7 @@ Syntax
                 & \Rec f \var := \expr \ALT \expr \; \expr
                   & \text{(recursive functions)}\\
                 & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}\\[8pt]
-  \var \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
+  \val \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
                   \Rec f \var := \expr \ALT \Tlam \expr
                   & \text{(values)}\\[8pt]
@@ -196,7 +196,7 @@ Typing rules
   \and
   \inferrule*[lab=T-unit]{ }{\envs \tctx \ctx \exp \TT \type \Tunit}
   \and
-  \inferrule*[lab=T-nat]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tint}
+  \inferrule*[lab=T-int]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tint}
   \and
   \inferrule*[lab=T-add]
     {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
@@ -357,6 +357,46 @@ Dynamics
 % Non-terminating language and contextual equivalence?
 %   it is non-terminating. define contextual eq as going to closed unit...
 %   see google photo.
+
+
+% We define CE so that two programs are CE iff under all Contexts,
+% one program terminates iff the other does.
+% One may ponder whether this definition is really strong enough.
+% If both terminate, we really want the result of the two programs to have
+% values that are behaviourally the same, otherwise, we can certainly 
+% put them in a context, where they have different behaviour.
+% For integer values, for example, this means that the two values
+% must be the same number.
+% To see why this definition is strong enough, consider two 
+% CE programs e1 and e2, where |- e1 : tau and |- e2 : tau.
+% Note first that if both e1 and e2 doesn't terminate, then they will be
+% behaviourally the same. If we plug them into any context, and the context
+% makes us evaluate the expressions, both will not terminate. And if the
+% context doesn't make us evaluate the expressions, then they have no
+% influence in the run of the programs, so they will behave the same.
+
+% Now consider what happens if e1 terminates with some value v1. 
+% Can we then guarantee that e2 also terminates with some value v2,
+% and v1 and v2 behave the same?
+% Since e1 and e2 are CE, then we can put them into any context, C, and 
+% one will terminate iff the other one does. 
+% Let's first assume that tau = Z. Then consider when 
+% C has the form  if [] = v1 then () else \omega.
+% Here C[e1] \downarrow (). But what about C[e2]? If v2 != v1, then
+% our evaluation rules tell us that we will take the else branch, and
+% hence not terminate. However, since e1 and e2 are CE, and C[e1] terminates
+% then we know that C[e2] must also terminate. Hence it is not the case that
+% v2 != v1, and thus v2 = v1. So if our two programs of type integer are CE,
+% they both don't run forever, then they must both evaluate to the same value.
+
+% Now if tau was bool instead, the context if [] then () else \omega
+% would suffice in showing that v2 = v1. 
+
+% UNSURE
+% And for all the other types, we would also be able to create contexts,
+% that ensured that the two programs terminated with values that have
+% similar behaviour.
+% UNSURE
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
