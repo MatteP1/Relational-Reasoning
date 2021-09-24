@@ -75,7 +75,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\Tunit}{\mathsf{Unit}}
 \newcommand{\Temp}{\mathsf{Emp}}
-\newcommand{\Tnat}{\mathbb{N}}
+\newcommand{\Tnat}{\mathbb{N}} % not needed
+\newcommand{\Tint}{\mathbb{Z}}
 \newcommand{\Tbool}{\mathbb{B}}
 \newcommand{\Tprod}[2]{#1 \times #2}
 \newcommand{\Tsum}[2]{#1 + #2}
@@ -154,11 +155,11 @@ Syntax
                 & \var \ALT & \text{(variables)}\\
                 & \Num{n} \ALT \expr + \expr \ALT \expr - \expr \ALT
                   \expr \le \expr \ALT \expr < \expr \ALT 
-                  \expr = \expr \ALT & \text{(natural??? numbers)}\\
+                  \expr = \expr \ALT & \text{(integers)}\\
                 & \True \ALT \False \ALT {\If \expr then \expr else \expr} \ALT
                   & \text{(booleans)}\\
                 & (\expr, \expr) \ALT \Fst \expr \ALT \Snd \expr \ALT
-                  & \text{(products/pairs???)}\\
+                  & \text{(products)}\\
                 & \Inj{1} \expr \ALT \Inj{2} \expr \ALT 
                   \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
                   & \text{(sums)}\\
@@ -169,7 +170,7 @@ Syntax
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
                   \Rec f \var := \expr \ALT \Tlam \expr
                   & \text{(values)}\\[8pt]
-  \typ \BNFdef  & \Tunit \ALT \Tnat \ALT \Tbool \ALT {\Tprod \typ \typ} \ALT
+  \typ \BNFdef  & \Tunit \ALT \Tint \ALT \Tbool \ALT {\Tprod \typ \typ} \ALT
                   {\Tsum \typ \typ} \ALT {\Tfunc \typ \typ} \ALT 
                   {\Tall \Tvar \typ} & \text{(types)}\\[8pt]
   \elctx \BNFdef& \empelctx \ALT 
@@ -195,26 +196,26 @@ Typing rules
   \and
   \inferrule*[lab=T-unit]{ }{\envs \tctx \ctx \exp \TT \type \Tunit}
   \and
-  \inferrule*[lab=T-nat]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tnat}
+  \inferrule*[lab=T-nat]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tint}
   \and
   \inferrule*[lab=T-add]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
-    {\envs \tctx \ctx \exp \expr_1 + \expr_2 \type \Tnat}
+    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
+    {\envs \tctx \ctx \exp \expr_1 + \expr_2 \type \Tint}
   \and
   \inferrule*[lab=T-sub]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
-    {\envs \tctx \ctx \exp \expr_1 - \expr_2 \type \Tnat}
+    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
+    {\envs \tctx \ctx \exp \expr_1 - \expr_2 \type \Tint}
   \and
   \inferrule*[lab=T-le]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
     {\envs \tctx \ctx \exp \expr_1 \le \expr_2 \type \Tbool}
   \and
   \inferrule*[lab=T-lt]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
     {\envs \tctx \ctx \exp \expr_1 < \expr_2 \type \Tbool}
   \and
   \inferrule*[lab=T-eq]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tnat} \and {\envs \tctx \ctx \exp \expr_2\type \Tnat}}
+    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
     {\envs \tctx \ctx \exp \expr_1 = \expr_2 \type \Tbool}
   \and
   \inferrule*[lab=T-true]{ }{\envs \tctx \ctx \exp \True \type \Tbool}
@@ -333,12 +334,30 @@ Dynamics
   {\expr}}
 \end{mathpar}
 
+
+% NOTES
+
+% language is non-terminating. We can define \omega.
+
+% types are curry-style: types are a property of a program in a language.
+%   We can run the program without ever thinking about types. We can run it
+%   even if we have type errors!
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Contextual Equivalence}
 \label{ch:CE}
 
 \todo{draft}
+
+
+% NOTES
+
+% Non-terminating language and contextual equivalence?
+%   it is non-terminating. define contextual eq as going to closed unit...
+%   see google photo.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
