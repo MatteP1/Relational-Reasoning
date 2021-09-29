@@ -22,6 +22,13 @@
 \renewcommand*\sfdefault{lmss}
 \renewcommand*\ttdefault{txtt}
 
+
+% Theorems, Corollaries, and Lemmas
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BNF Grammar
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,8 +98,13 @@
 % Judgement
 \def\envs#1#2\exp#3\type#4{#1 \; | \; #2 \; \vdash #3 : #4}
 
+% Step
+\newcommand{\step}{\rightarrow}
+\newcommand{\stepS}{\rightarrow^*}
+
 % Head-Step
-\newcommand{\hstep}[2]{#1 \rightarrow_h #2}
+\newcommand{\hstep}{\rightarrow_h}
+\newcommand{\hstepRel}[2]{#1 \hstep #2}
 
 % TODO-command
 \newcommand{\todo}[1]{{\color[rgb]{.5,0,0}\textbf{$\blacktriangleright$#1$\blacktriangleleft$}}}
@@ -276,61 +288,61 @@ Typing rules
 Dynamics
 \begin{mathpar}
   \inferrule*[lab=head-step-step]
-    {\hstep{\expr}{\expr'}}
-    {\elctx[\expr] \rightarrow \elctx[\expr']}
+    {\hstepRel{\expr}{\expr'}}
+    {\elctx[\expr] \step \elctx[\expr']}
 \end{mathpar}
 
 \begin{mathpar}
   \inferrule*[lab=E-add]{}
-    {\hstep{\Num{n_1} + \Num{n_2}} {\Num{n_1 + n_2}}}
+    {\hstepRel{\Num{n_1} + \Num{n_2}} {\Num{n_1 + n_2}}}
   \and
   \inferrule*[lab=E-sub]{}
-    {\hstep{\Num{n_1} - \Num{n_2}} {\Num{n_1 - n_2}}}
+    {\hstepRel{\Num{n_1} - \Num{n_2}} {\Num{n_1 - n_2}}}
   \and
   \inferrule*[lab=E-eq]{n_1 = n_2}
-    {\hstep{\Num{n_1} = \Num{n_2}} {\True}}
+    {\hstepRel{\Num{n_1} = \Num{n_2}} {\True}}
   \and
   \inferrule*[lab=E-not-eq]{n_1 \neq n_2}
-    {\hstep{\Num{n_1} = \Num{n_2}} {\False}}
+    {\hstepRel{\Num{n_1} = \Num{n_2}} {\False}}
   \and
   \inferrule*[lab=E-le]{n_1 \le n_2}
-    {\hstep{\Num{n_1} \le \Num{n_2}} {\True}}
+    {\hstepRel{\Num{n_1} \le \Num{n_2}} {\True}}
   \and
   \inferrule*[lab=E-not-le]{n_1 \not\le n_2}
-    {\hstep{\Num{n_1} \le \Num{n_2}} {\False}}
+    {\hstepRel{\Num{n_1} \le \Num{n_2}} {\False}}
   \and
   \inferrule*[lab=E-lt]{n_1 < n_2}
-    {\hstep{\Num{n_1} < \Num{n_2}} {\True}}
+    {\hstepRel{\Num{n_1} < \Num{n_2}} {\True}}
   \and
   \inferrule*[lab=E-not-lt]{n_1 \not< n_2}
-    {\hstep{\Num{n_1} < \Num{n_2}} {\False}}
+    {\hstepRel{\Num{n_1} < \Num{n_2}} {\False}}
   \and
   \inferrule*[lab=E-if-true]{}
-    {\hstep{\If \True then \expr_2 else \expr_3} {\expr_2}}
+    {\hstepRel{\If \True then \expr_2 else \expr_3} {\expr_2}}
   \and
   \inferrule*[lab=E-if-false]{}
-    {\hstep{\If \False then \expr_2 else \expr_3} {\expr_3}}
+    {\hstepRel{\If \False then \expr_2 else \expr_3} {\expr_3}}
   \and
   \inferrule*[lab=E-fst]{}
-    {\hstep{\Fst (\val_1, \val_2)} {\val_1}}
+    {\hstepRel{\Fst (\val_1, \val_2)} {\val_1}}
   \and
   \inferrule*[lab=E-snd]{}
-    {\hstep{\Snd (\val_1, \val_2)} {\val_2}}
+    {\hstepRel{\Snd (\val_1, \val_2)} {\val_2}}
   \and
   \inferrule*[lab=E-match-inj1]{}
-    {\hstep{\Match (\Inj{1} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
+    {\hstepRel{\Match (\Inj{1} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
      {\subst{\expr_2}{\var}{\val}}}
   \and
   \inferrule*[lab=E-match-inj2]{}
-    {\hstep{\Match (\Inj{2} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
+    {\hstepRel{\Match (\Inj{2} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
      {\subst{\expr_3}{\var}{\val}}}
   \and
   \inferrule*[lab=E-rec-app]{}
-    {\hstep{(\Rec f \var := \expr) \val}
+    {\hstepRel{(\Rec f \var := \expr) \val}
     {\subst{\subst{\expr}{f}{\Rec f \var := \expr}}{\var}{\val}}
     }
   \and
-  \inferrule*[lab=E-tapp-tlam]{}{\hstep{\Tapp{(\Tlam \expr)}}
+  \inferrule*[lab=E-tapp-tlam]{}{\hstepRel{\Tapp{(\Tlam \expr)}}
   {\expr}}
 \end{mathpar}
 
@@ -342,6 +354,92 @@ Dynamics
 % types are curry-style: types are a property of a program in a language.
 %   We can run the program without ever thinking about types. We can run it
 %   even if we have type errors!
+
+
+\begin{lemma}[Evaluation under Context]
+  $ \elctx[\expr] \stepS \expr' \implies 
+    \exists \expr'' . (\expr \stepS \expr'') \land\\
+    \left( (Val(\expr'') \land \elctx[\expr''] \stepS \expr') \lor
+    (\neg Val(\expr'') \land \elctx[\expr''] = \expr') \right)
+    $
+\end{lemma}
+
+\begin{proof}
+  So assuming $\elctx[\expr] \stepS \expr'$, we must show
+  \begin{equation}\label{eqn:EuCGoal}
+    \exists \expr'' . (\expr \stepS \expr'') \land 
+    \left( (Val(\expr'') \land \elctx[\expr''] \stepS \expr') \lor
+    (\neg Val(\expr'') \land \elctx[\expr''] = \expr') \right)
+  \end{equation}
+  We proceed by induction on the number of steps in the evaluation $\elctx[\expr] \stepS \expr'$. Let $n$ denote the number of steps taken, so that $\elctx[\expr] \step^n \expr'$.
+  \begin{itemize}
+    \item Base Case $n = 0$. In this case, we have that $\elctx[\expr] \step^0 \expr'$, which means that $\elctx[\expr] = \expr'$. Now use $\expr$ for $\expr'$ in \ref{eqn:EuCGoal}. We must show
+    \begin{equation*}
+      (\expr \stepS \expr) \land 
+      \left( (Val(\expr) \land \elctx[\expr] \stepS \expr') \lor
+      (\neg Val(\expr) \land \elctx[\expr] = \expr') \right)
+    \end{equation*}
+    Trivially, $\expr \stepS \expr$. For the second part, we proceed by case distinction on $Val(\expr)$.
+    \begin{itemize}
+      \item $Val(\expr)$. We have that $\elctx[\expr] \step^0 \expr'$, so $\elctx[\expr] \stepS \expr'$. Thus, we have $Val(\expr) \land \elctx[\expr] \stepS \expr'$, which matches the left part of the "$\lor$".
+      \item $\neg Val(\expr)$. We know that $\elctx[\expr] = \expr'$, so we have $\neg Val(\expr) \land \elctx[\expr] = \expr'$, which matches the right part of the "$\lor$".
+    \end{itemize}
+    
+    \item Inductive Step $n = m + 1$. Now we have $\elctx[\expr] \step^{m + 1} \expr'$. By the Induction Hypothesis, we have:
+    \begin{multline}\label{eqn:EuCIH}
+      \forall F, f, f'. F[f] \step^m f' \implies \exists f'' . (f \stepS f'') \land \\
+      \left( (Val(f'') \land F[f''] \stepS f') \lor
+      (\neg Val(f'') \land \elctx[f''] = f') \right)
+    \end{multline}
+    Split the evaluation, $\elctx[\expr] \step^{m + 1} \expr'$, up, so that 
+    $\elctx[\expr] \step g \land g \step^{m} \expr'$. Looking at our dynamics, we must have that $\elctx[\expr] = H[h]$, and $g = H[h']$, for some evaluation context $H$, and expressions $h$, $h'$, and $h \hstep h'$.
+    There are now three possible cases:
+    \begin{itemize}
+      \item $\elctx = H$ and $\expr = h$.\\
+        Then $g = H[h'] = \elctx[h']$, and $\expr \hstep h'$. 
+        Furthermore, $\elctx[h'] \step^m \expr'$. Instantiate I.H. with this to get
+        \begin{multline}\label{eqn:EuCC1IH}
+          \exists f'' . (h' \stepS f'') \land\\
+          \left((Val(f'') \land \elctx[f''] \stepS \expr') \lor
+          (\neg Val(f'') \land \elctx[f''] = \expr') \right)
+        \end{multline}
+        Call this quantified expression for $f''$, and use it for $\expr''$ in \ref{eqn:EuCGoal}. We must then show
+        \begin{equation*}
+          (\expr \stepS f'') \land 
+          \left( (Val(f'') \land \elctx[f''] \stepS \expr') \lor
+          (\neg Val(f'') \land \elctx[f''] = \expr') \right)
+        \end{equation*}
+        We know that $\expr \step h'$, as $\expr \hstep h'$, and by 
+        \ref{eqn:EuCC1IH}, we know that $h' \stepS f''$, so that $\expr \stepS f''$. The second part follows directly from \ref{eqn:EuCC1IH}.
+      
+      \item $\elctx[E[]] = H$ and $\expr = E[h]$.\\
+        Then $g = H[h'] = \elctx[E[]][h'] = \elctx[E[h']]$, thus $\elctx[E[h']] \step^m \expr'$. Instantiate I.H. with this to get
+        \begin{multline}\label{eqn:EuCC2IH}
+          \exists f'' . (E[h'] \stepS f'') \land\\
+          \left((Val(f'') \land \elctx[f''] \stepS \expr') \lor
+          (\neg Val(f'') \land \elctx[f''] = \expr') \right)
+        \end{multline}
+        Call this quantified expression for $f''$, and use it for $\expr''$ in \ref{eqn:EuCGoal}. We must then show
+        \begin{equation*}
+          (\expr \stepS f'') \land 
+          \left( (Val(f'') \land \elctx[f''] \stepS \expr') \lor
+          (\neg Val(f'') \land \elctx[f''] = \expr') \right)
+        \end{equation*}
+        We know that $E[h] \step E[h']$, as $h \hstep h'$, and since $\expr = E[h]$, then $\expr \step E[h']$. By 
+        \ref{eqn:EuCC2IH}, we know that $E[h'] \stepS f''$, so that $\expr \stepS f''$. The second part follows directly from \ref{eqn:EuCC2IH}.
+
+      \item $\elctx = H[E[]]$ and $E[\expr] = h$.
+        Here we have $h = E[\expr]$, so $E[\expr] \hstep h'$. Note that $E$ is not the empty evaluation context, as otherwise, we would be in case 1. So by \todo{create lemma and ref here}, we know that $Val(\expr)$. Now, pick $\expr$ for $\expr''$ in \ref{eqn:EuCGoal}. We must show 
+        \begin{equation*}
+          (\expr \stepS \expr) \land 
+          \left( (Val(\expr) \land \elctx[\expr] \stepS \expr') \lor
+          (\neg Val(\expr) \land \elctx[\expr] = \expr') \right)
+        \end{equation*}
+        Trivially, $\expr \stepS \expr$. We also have that $Val(\expr)$, and since $\elctx[\expr] \step^{m + 1} \expr'$, then $\elctx[\expr] \stepS \expr'$.
+    \end{itemize}
+  \end{itemize}
+
+\end{proof}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -394,10 +492,16 @@ v2 != v1, and thus v2 = v1. So if our two programs of type integer are CE, and t
 Now if tau was bool instead, the context $\If [] then \TT else \omega$
 would suffice in showing that v2 = v1. 
 
-And for all the other types, we would also be able to create contexts
-that ensured that the two programs terminated with values that have
-similar behaviour, however, it becomes more difficult to reason about, as
-value of those types can potentially contain sub-expressions. ????In fact, defining when two values of any of the possible types are behaviourally the same is exactly what we will do when we get to defining the Logical Relations for Contextual Equivalence.????
+
+% Talk about non-base types, like function type.
+
+
+% DELETED
+% And for all the other types, we would also be able to create contexts
+% that ensured that the two programs terminated with values that have
+% similar behaviour, however, it becomes more difficult to reason about, as
+% value of those types can potentially contain sub-expressions. ????In fact, defining when two values of any of the possible types are behaviourally the same is exactly what we will do when we get to defining the Logical Relations for Contextual Equivalence.????
+% DELETED
 
 \todo{fix unfinished text passage - end}
 
