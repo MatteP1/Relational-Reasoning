@@ -8,13 +8,17 @@
 - [x] Read parts I and II of types and programming languages
 - [x] Watch videos on Blackboard
 
-## System F w/ recursive functions. Initial part
+## System F w/ recursive functions. The Language
 - [x] Write in language (System F w/rec) in report
-- [x] Define and prove "Evaluation under Context" lemma for System F w/rec
-  - [ ] Define k = [] or Val(e) lemma. Show 1 case
-  - [ ] Write in complete lemma
+- [ ] Define and prove "Evaluation under Context" lemma for System F w/rec
+  - [x] Define k = [] or Val(e) lemma. Show 1 case
+  - [x] Write in complete EuC lemma
+  - [ ] Proof read
+
+## Contextual Equivalence
 - [x] Define Contextual Equivalence for System F w/rec
-  - [ ] Write in Contextual Equivalence
+- [ ] Write in Contextual Equivalence
+- [ ] Explanations
   - [ ] Talk about CE being enough for integers
   - [ ] Maybe mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
   - [ ] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
