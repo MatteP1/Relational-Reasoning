@@ -77,6 +77,9 @@
 
 \newcommand{\subst}[3]{#1{\left[#3 \middle/ #2 \right]}}
 
+\newcommand{\empctx}{[]}
+\newcommand{\ctx}{C}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Typing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,8 +94,8 @@
 \newcommand{\Tall}[2]{\forall #1.\; #2}
 
 \newcommand{\typ}{\tau}
-\newcommand{\ctx}{\Gamma}
-\newcommand{\tctx}{\Xi}
+\newcommand{\tctx}{\Gamma}
+\newcommand{\tenv}{\Xi}
 \newcommand{\hctx}{\Sigma} % not needed
 
 % Judgement
@@ -206,86 +209,86 @@ Syntax
 Typing rules
 \begin{mathpar}
   \inferrule*[lab=T-var]
-    {(\var : \typ) \in \ctx}
-    {\envs \tctx \ctx \exp \var \type \typ}
+    {(\var : \typ) \in \tctx}
+    {\envs \tenv \tctx \exp \var \type \typ}
   \and
-  \inferrule*[lab=T-unit]{ }{\envs \tctx \ctx \exp \TT \type \Tunit}
+  \inferrule*[lab=T-unit]{ }{\envs \tenv \tctx \exp \TT \type \Tunit}
   \and
-  \inferrule*[lab=T-int]{ }{\envs \tctx \ctx \exp \Num{n} \type \Tint}
+  \inferrule*[lab=T-int]{ }{\envs \tenv \tctx \exp \Num{n} \type \Tint}
   \and
   \inferrule*[lab=T-add]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
-    {\envs \tctx \ctx \exp \expr_1 + \expr_2 \type \Tint}
+    {{\envs \tenv \tctx \exp \expr_1\type \Tint} \and {\envs \tenv \tctx \exp \expr_2\type \Tint}}
+    {\envs \tenv \tctx \exp \expr_1 + \expr_2 \type \Tint}
   \and
   \inferrule*[lab=T-sub]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
-    {\envs \tctx \ctx \exp \expr_1 - \expr_2 \type \Tint}
+    {{\envs \tenv \tctx \exp \expr_1\type \Tint} \and {\envs \tenv \tctx \exp \expr_2\type \Tint}}
+    {\envs \tenv \tctx \exp \expr_1 - \expr_2 \type \Tint}
   \and
   \inferrule*[lab=T-le]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
-    {\envs \tctx \ctx \exp \expr_1 \le \expr_2 \type \Tbool}
+    {{\envs \tenv \tctx \exp \expr_1\type \Tint} \and {\envs \tenv \tctx \exp \expr_2\type \Tint}}
+    {\envs \tenv \tctx \exp \expr_1 \le \expr_2 \type \Tbool}
   \and
   \inferrule*[lab=T-lt]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
-    {\envs \tctx \ctx \exp \expr_1 < \expr_2 \type \Tbool}
+    {{\envs \tenv \tctx \exp \expr_1\type \Tint} \and {\envs \tenv \tctx \exp \expr_2\type \Tint}}
+    {\envs \tenv \tctx \exp \expr_1 < \expr_2 \type \Tbool}
   \and
   \inferrule*[lab=T-eq]
-    {{\envs \tctx \ctx \exp \expr_1\type \Tint} \and {\envs \tctx \ctx \exp \expr_2\type \Tint}}
-    {\envs \tctx \ctx \exp \expr_1 = \expr_2 \type \Tbool}
+    {{\envs \tenv \tctx \exp \expr_1\type \Tint} \and {\envs \tenv \tctx \exp \expr_2\type \Tint}}
+    {\envs \tenv \tctx \exp \expr_1 = \expr_2 \type \Tbool}
   \and
-  \inferrule*[lab=T-true]{ }{\envs \tctx \ctx \exp \True \type \Tbool}
+  \inferrule*[lab=T-true]{ }{\envs \tenv \tctx \exp \True \type \Tbool}
   \and
-  \inferrule*[lab=T-false]{ }{\envs \tctx \ctx \exp \False \type \Tbool}
+  \inferrule*[lab=T-false]{ }{\envs \tenv \tctx \exp \False \type \Tbool}
   \and
   \inferrule*[lab=T-if]
-    {{\envs \tctx \ctx \exp \expr_1 \type \Tbool} \and
-    {\envs \tctx \ctx \exp \expr_2 \type \typ} \and
-    {\envs \tctx \ctx \exp \expr_3 \type \typ}}
-    {\envs \tctx \ctx \exp {\If \expr_1 then \expr_2 else \expr_3} \type \typ}
+    {{\envs \tenv \tctx \exp \expr_1 \type \Tbool} \and
+    {\envs \tenv \tctx \exp \expr_2 \type \typ} \and
+    {\envs \tenv \tctx \exp \expr_3 \type \typ}}
+    {\envs \tenv \tctx \exp {\If \expr_1 then \expr_2 else \expr_3} \type \typ}
   \and
   \inferrule*[lab=T-pair]
-    {{\envs \tctx \ctx \exp \expr_1 \type \typ_1} \and
-    {\envs \tctx \ctx \exp \expr_2 \type \typ_2}}
-    {\envs \tctx \ctx \exp (\expr_1, \expr_2) \type \Tprod{\typ_1}{\typ_1}}
+    {{\envs \tenv \tctx \exp \expr_1 \type \typ_1} \and
+    {\envs \tenv \tctx \exp \expr_2 \type \typ_2}}
+    {\envs \tenv \tctx \exp (\expr_1, \expr_2) \type \Tprod{\typ_1}{\typ_1}}
   \and
   \inferrule*[lab=T-fst]
-    {\envs \tctx \ctx \exp \expr \type \Tprod{\typ_1}{\typ_2}}
-    {\envs \tctx \ctx \exp \Fst \expr \type \typ_1}
+    {\envs \tenv \tctx \exp \expr \type \Tprod{\typ_1}{\typ_2}}
+    {\envs \tenv \tctx \exp \Fst \expr \type \typ_1}
   \and
   \inferrule*[lab=T-snd]
-    {\envs \tctx \ctx \exp \expr \type \Tprod{\typ_1}{\typ_2}}
-    {\envs \tctx \ctx \exp \Snd \expr \type \typ_2}
+    {\envs \tenv \tctx \exp \expr \type \Tprod{\typ_1}{\typ_2}}
+    {\envs \tenv \tctx \exp \Snd \expr \type \typ_2}
   \and
-  \inferrule*[lab=T-inj1]{\envs \tctx \ctx \exp \expr \type \typ_1}
-    {\envs \tctx \ctx \exp \Inj{1} \expr \type \Tsum{\typ_1}{\typ_2}}
+  \inferrule*[lab=T-inj1]{\envs \tenv \tctx \exp \expr \type \typ_1}
+    {\envs \tenv \tctx \exp \Inj{1} \expr \type \Tsum{\typ_1}{\typ_2}}
   \and
-  \inferrule*[lab=T-inj2]{\envs \tctx \ctx \exp \expr \type \typ_2}
-    {\envs \tctx \ctx \exp \Inj{2} \expr \type \Tsum{\typ_1}{\typ_2}}
+  \inferrule*[lab=T-inj2]{\envs \tenv \tctx \exp \expr \type \typ_2}
+    {\envs \tenv \tctx \exp \Inj{2} \expr \type \Tsum{\typ_1}{\typ_2}}
   \and
   \inferrule*[lab=T-match]
-    {{\envs \tctx \ctx \exp \expr_1 \type \Tsum{\typ_1}{\typ_2}} \and
-    {\envs \tctx \ctx, \var : \typ_1 \exp \expr_2 \type \typ} \and
-    {\envs \tctx \ctx, \var : \typ_2 \exp \expr_3 \type \typ}
+    {{\envs \tenv \tctx \exp \expr_1 \type \Tsum{\typ_1}{\typ_2}} \and
+    {\envs \tenv \tctx, \var : \typ_1 \exp \expr_2 \type \typ} \and
+    {\envs \tenv \tctx, \var : \typ_2 \exp \expr_3 \type \typ}
     }
-    {\envs \tctx \ctx \exp {\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end} \type \typ}
+    {\envs \tenv \tctx \exp {\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end} \type \typ}
   \and
   \inferrule*[lab=T-rec]
-    {\envs \tctx \ctx, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1 \exp e \type \typ_2}
-    {\envs \tctx \ctx \exp \Rec f \var := \expr \type \Tfunc{\typ_1}{\typ_2}}
+    {\envs \tenv \tctx, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1 \exp e \type \typ_2}
+    {\envs \tenv \tctx \exp \Rec f \var := \expr \type \Tfunc{\typ_1}{\typ_2}}
   \and
   \inferrule*[lab=T-app]
-    {{\envs \tctx \ctx \exp \expr_1 \type \Tfunc{\typ_1}{\typ_2}} \and
-    {\envs \tctx \ctx \exp \expr_2 \type \typ_1}
+    {{\envs \tenv \tctx \exp \expr_1 \type \Tfunc{\typ_1}{\typ_2}} \and
+    {\envs \tenv \tctx \exp \expr_2 \type \typ_1}
     }
-    {\envs \tctx \ctx \exp \expr_1 \; \expr_2 \type \typ_2}
+    {\envs \tenv \tctx \exp \expr_1 \; \expr_2 \type \typ_2}
   \and
   \inferrule*[lab=T-Tlam]
-    {\envs {\tctx, \Tvar} \ctx \exp \expr \type \typ}
-    {\envs \tctx \ctx \exp \Tlam \expr \type \Tall{\Tvar}{\typ}}
+    {\envs {\tenv, \Tvar} \tctx \exp \expr \type \typ}
+    {\envs \tenv \tctx \exp \Tlam \expr \type \Tall{\Tvar}{\typ}}
   \and
   \inferrule*[lab=T-Tapp]
-  {\envs \tctx \ctx \exp \expr \type \Tall{\Tvar}{\typ}}
-  {\envs \tctx \ctx \exp \Tapp{\expr} \type \subst{\typ}{\Tvar}{\typ'}}
+  {\envs \tenv \tctx \exp \expr \type \Tall{\Tvar}{\typ}}
+  {\envs \tenv \tctx \exp \Tapp{\expr} \type \subst{\typ}{\Tvar}{\typ'}}
 \end{mathpar}
 \newpage
 Dynamics
@@ -462,12 +465,28 @@ Dynamics
 
 \todo{draft}
 
+Context
+\begin{align*}
+  \ctx \BNFdef& \empctx \ALT
+                \ctx + \expr \ALT \expr + \ctx \ALT
+                \ctx - \expr \ALT \expr - \ctx \ALT
+                \ctx \le \expr \ALT \expr \le \ctx \ALT
+                \ctx < \expr \ALT \expr < \ctx \ALT
+                \ctx = \expr \ALT \expr = \ctx \ALT\\
+              & {\If \ctx then \expr else \expr} \ALT
+                {\If \expr then \ctx else \expr} \ALT
+                {\If \expr then \expr else \ctx} \ALT
+                (\ctx, \expr) \ALT (\expr, \ctx) \ALT\\
+              & \Fst \ctx \ALT \Snd \ctx \ALT
+                \Inj{1} \ctx \ALT \Inj{2} \ctx \ALT
+                \Match \ctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT\\
+              & \Match \expr with \Inj{1} \var => \ctx | \Inj{2} \var => \expr end \ALT\\
+              & \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \ctx end \ALT
+              \Rec f \var := \ctx \ALT
+              \ctx \; \expr \ALT \expr \; \ctx \ALT \Tapp{\ctx}
+\end{align*}
 
-% NOTES
 
-% Non-terminating language and contextual equivalence?
-%   it is non-terminating. define contextual eq as going to closed unit...
-%   see google photo.
 
 \todo{fix unfinished text passage - start}
 
