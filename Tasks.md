@@ -10,10 +10,10 @@
 
 ## System F w/ recursive functions. The Language
 - [x] Write in language (System F w/rec) in report
-- [ ] Define and prove "Evaluation under Context" lemma for System F w/rec
+- [x] Define and prove "Evaluation under Context" lemma for System F w/rec
   - [x] Define k = [] or Val(e) lemma. Show 1 case
   - [x] Write in complete EuC lemma
-  - [ ] Proof read
+  - [x] Proof read
 
 ## Contextual Equivalence
 - [x] Define Contextual Equivalence for System F w/rec

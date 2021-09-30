@@ -363,7 +363,7 @@ Dynamics
 \end{lemma}
 
 \begin{proof}
-  This can be shown by doing case distinction on the head-step $\elctx[\expr] \hstep \expr'$. We show it here for case E-ADD.\medskip\\
+  This can be shown by doing case distinction on the head-step $\elctx[\expr] \hstep \expr'$. We show it here only for case E-ADD, as all the other cases are similar. \medskip\\
   So assume $\elctx[\expr] = \Num{n_1} + \Num{n_2}$, and $\expr' = \Num{n_1 + n_2}$.
   Then there are three cases: $\elctx = []$ and $\expr = \Num{n_1} + \Num{n_2}$, $\elctx = [] + \Num{n_2}$ and $\expr = \Num{n_1}$, or $\elctx = \Num{n_1} + []$ and $\expr = \Num{n_2}$. The first case raises a contradiction as we have assumed $\neg (\elctx = \empelctx)$. In the remaining two cases, we may conclude $\Val{\expr}$, as wanted.
 \end{proof}
@@ -386,7 +386,7 @@ Dynamics
   \end{equation}
   We proceed by induction on the number of steps in the evaluation $\elctx[\expr] \stepS \expr'$. Let $n$ denote the number of steps taken, so that $\elctx[\expr] \step^n \expr'$.
   \begin{itemize}
-    \item Base Case $n = 0$. In this case, we have that $\elctx[\expr] \step^0 \expr'$, which means that $\elctx[\expr] = \expr'$. Now use $\expr$ for $\expr'$ in \ref{eqn:EuCGoal}. We must show
+    \item Base Case $n = 0$. In this case, we have that $\elctx[\expr] \step^0 \expr'$, which means that $\elctx[\expr] = \expr'$. Now use $\expr$ for $\expr''$ in \ref{eqn:EuCGoal}. We must show
     \begin{equation*}
       (\expr \stepS \expr) \land 
       \left( (\Val{\expr} \land \elctx[\expr] \stepS \expr') \lor
@@ -402,11 +402,11 @@ Dynamics
     \begin{multline}\label{eqn:EuCIH}
       \forall F, f, f'. F[f] \step^m f' \implies \exists f'' . (f \stepS f'') \land \\
       \left( (\Val{f''} \land F[f''] \stepS f') \lor
-      (\neg Val{f''} \land \elctx[f''] = f') \right)
+      (\neg \Val{f''} \land \elctx[f''] = f') \right)
     \end{multline}
     Split the evaluation, $\elctx[\expr] \step^{m + 1} \expr'$, up, so that 
     $\elctx[\expr] \step g \land g \step^{m} \expr'$. Looking at our dynamics, we must have that $\elctx[\expr] = H[h]$, and $g = H[h']$, for some evaluation context $H$, and expressions $h$, $h'$, and $h \hstep h'$.
-    There are now three possible cases:
+    There are now three possible cases. Either $\expr = h$, $\expr$ is a superexpression of $h$, or $\expr$ is a subexpression of $h$. We will consider each in turn.
     \begin{itemize}
       \item $\elctx = H$ and $\expr = h$.\\
         Then $g = H[h'] = \elctx[h']$, and $\expr \hstep h'$. 
