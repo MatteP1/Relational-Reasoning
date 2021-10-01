@@ -17,7 +17,7 @@
 
 ## Contextual Equivalence
 - [x] Define Contextual Equivalence for System F w/rec
-- [ ] Write in Contextual Equivalence
+- [x] Write in Contextual Equivalence
 - [ ] Explanations
   - [ ] Talk about CE being enough for integers
   - [ ] Maybe mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
