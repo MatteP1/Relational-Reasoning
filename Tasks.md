@@ -19,9 +19,11 @@
 - [x] Define Contextual Equivalence for System F w/rec
 - [x] Write in Contextual Equivalence
 - [ ] Explanations
-  - [ ] Talk about CE being enough for integers
-  - [ ] Maybe mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
-  - [ ] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
+  - [x] Talk about CE being enough for integers
+  - [ ] Mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
+  - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
+  - [ ] Fix type-setting
+  - [ ] Proof read
 
 ## Logical Relations
 - [ ] Define a logical relations model for CE
