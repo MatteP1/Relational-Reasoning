@@ -28,6 +28,9 @@
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BNF Grammar
@@ -500,53 +503,33 @@ Context Typing
     {C : (\envstyp \tenv \tctx \type \typ) \Rightarrow (\envstyp {\tenv'} {\tctx'} \type {\typ'}) }
 \end{mathpar}
 Read as: the context takes an expression of type $\typ$ under $\tenv, \tctx$, and outputs an expression of type $\typ'$ under $\tenv', \tctx'$.
-
-Contextual Equivalence
-\begin{equation}
-  \begin{gathered}
-    \envscteq \tenv \tctx \exp1 \expr_1 \exp2 \expr_2 \type \typ\\
-    \iff\\
-    \envs \tenv \tctx \exp \expr_1 \type \typ \quad \land \quad
-    \envs \tenv \tctx \exp \expr_2 \type \typ \quad \land \quad\\
-    \forall \ctx : (\envstyp \tenv \tctx \type \typ) \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow)
-  \end{gathered}
-\end{equation}
+\begin{definition}[Contextual Equivalence]
+  We define contextual equivalence of two expressions $\expr_1$ and $\expr_2$ at type $\typ$ under $\tenv$ and $\tctx$ as
+  \begin{equation*}
+    \begin{gathered}
+      \envscteq \tenv \tctx \exp1 \expr_1 \exp2 \expr_2 \type \typ\\
+      \iff\\
+      \envs \tenv \tctx \exp \expr_1 \type \typ \quad \land \quad
+      \envs \tenv \tctx \exp \expr_2 \type \typ \quad \land \quad\\
+      \forall \ctx : (\envstyp \tenv \tctx \type \typ) \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow)
+    \end{gathered}
+  \end{equation*}
+\end{definition}
 
 
 \todo{fix unfinished text passage - start}
 
-We define CE so that two programs are CE iff under all Contexts,
-one program terminates iff the other does.
-One may ponder whether this definition is really strong enough.
-If both terminate, we really want the result of the two programs to have
-values that are behaviourally the same, otherwise, we can certainly 
-put them in a context, where they have different behaviour.
-For integer values, for example, this means that the two values
-must be the same number, and for product types, this means that
-the first value in each pair should be behaviourally the same, and
-likewise with the second value in each pair.
-To give an intuition as to  why this definition is strong enough, 
-consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\envs \emptenv \emptctx \exp \expr_1 \type \typ$ and $\envs \emptenv \emptctx \exp \expr_2 \type \typ$.
-Note first that if both e1 and e2 don't terminate, then they will be
-behaviourally the same. If we plug them into any context, and the context
-makes us evaluate the expressions, both will not terminate. And if the
-context doesn't make us evaluate the expressions, then they have no
-influence in the run of the programs, so they will behave the same.
+We define CE so that two programs are CE iff under all Contexts, one program terminates iff the other does. One may ponder whether this definition is really strong enough. If both terminate, we really want the result of the two programs to have values that are behaviourally the same, otherwise, we can certainly put them in a context, where they have different behaviour.
+For integer values, for example, this means that the two values must be the same number, and for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
+To give an intuition as to  why this definition is strong enough, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\envs \emptenv \emptctx \exp \expr_1 \type \typ$ and $\envs \emptenv \emptctx \exp \expr_2 \type \typ$.
+Note first that if both $\expr_1$ and $\expr_2$ don't terminate, then they will be behaviourally the same; if we plug them into any context, and the context makes us evaluate the expressions, both will not terminate. And if the context doesn't make us evaluate the expressions, then they have no influence in the run of the programs, so they will behave the same.
 
-Now consider what happens if $\expr_1$ terminates with some value $\val_1$.
-Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$,
-and $\val_1$ and $\val_2$ behave the same?
-Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate if and only if the other one does.
-Let's assume that $\typ = \Tint$. Then consider when
-$\ctx$ has the form $\If [] = \val_1 then \TT else \omega$.
-Here $\ctx[\expr_1] \Downarrow \TT$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rules tell us that we will take the else branch, and hence not terminate. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ terminates, then we know that $\ctx[\expr_2]$ must also terminate. Hence it is not the case that
-$\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, and they both don't run forever, then they must both evaluate to the same number.
+Now consider what happens if $\expr_1$ terminates with some value $\val_1$. Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$, and $\val_1$ and $\val_2$ behave the same? Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate if and only if the other one does.
+Let's assume that $\typ = \Tint$. Then consider when $\ctx$ has the form $\If \empctx = \val_1 then \TT else \omega$. Here $\ctx[\expr_1] \Downarrow \TT$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rules tell us that we will take the else branch, and hence not terminate. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ terminates, then we know that $\ctx[\expr_2]$ must also terminate. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, and they both don't run forever, then they must both evaluate to the same number.
 
-Now if $\typ$ was $\Tbool$ instead, the context $\If [] then \TT else \omega$
-would suffice in showing that $\val_2 = \val_1$. 
+Now if $\typ$ was $\Tbool$ instead, the context $\If \empctx then \TT else \omega$ would suffice in showing that $\val_2 = \val_1$. 
 
-It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tint$ or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent? To see this, consider the following
-
+It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tint$ or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent (in the sense of functional extensionality)? To see this, consider the following congruence rule:
 \begin{mathpar}
   \inferrule*[lab=Congruence-function-app]
   { { \envscteq \tenv \tctx \exp1 f \exp2 {f'} \type {\Tfunc{\typ}{\typ'}} } \and
@@ -554,23 +537,15 @@ It becomes a little more difficult to reason about when $\typ$ is not a base-typ
   }
   { \envscteq \tenv \tctx \exp1 f \; t \exp2 {f' \; t'} \type {\typ'} }
 \end{mathpar}
-
 This essentially gives us what we want: if we have two contextually equivalent functions, then, as long as we give them contextually equivalent inputs, the output will also be contextually equivalent. That output may be another function, but then this rule applies again to that output, and so on. In other words, we can keep on applying this rule until we at some point get a base type, like $\Tint$, and at that point, we know that the two numbers will be the same, by the argument made above.\\
 Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may do something similar for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function types.
 \begin{proof}
-  By the two hypotheses of the rule, we know that $\envs \tenv \tctx \exp {f} \type \Tfunc{\typ}{\typ'}$ and $\envs \tenv \tctx \exp t \type \typ$. So by the T-APP rule, we may conclude $\envs \tenv \tctx \exp {f \; t} \type \typ'$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\envstyp \tenv \tctx \type \typ') \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[f \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow)$. So assume some context, $\ctx$, of the right type. Consider now the context $\ctx[[] \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \Downarrow$. Now consider the context $\ctx[f' []]$. Since $t$ is contextually equivalent to $t'$, then we now $\ctx[f' \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow$. In other words, we have that $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \iff \ctx[f' \; t'] \Downarrow$, which was what we wanted.
+  By the two hypotheses of the rule, we know that $\envs \tenv \tctx \exp {f} \type \Tfunc{\typ}{\typ'}$ and $\envs \tenv \tctx \exp t \type \typ$. So by the T-APP rule, we may conclude $\envs \tenv \tctx \exp {f \; t} \type \typ'$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\envstyp \tenv \tctx \type \typ') \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[f \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow)$. So assume some context, $\ctx$, of the right type. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \Downarrow$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\ctx[f' \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow$. In other words, we have that $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \iff \ctx[f' \; t'] \Downarrow$, which was what we wanted.
 \end{proof}
 
 An interesting point to note here is that one may define contextual equivalence in another, equivalent way. Namely by specifying contextual equivalence, $ctx-equiv$, to be a relation: $ctx-equiv \subseteq \tenv \times \tctx \times \expr \times \expr \times \typ$. It should then have two properties. It should be a congruence relation w.r.t. the typing rules (such as the one we did for function application), and it should be an adequate relation, stating that 
 \todo{what is an adequate relation}. The proof we just did is one step in showing that the two ways of defining contextual equivalence are equivalent.
 
-
-% DELETED
-% And for all the other types, we would also be able to create contexts
-% that ensured that the two programs terminated with values that have
-% similar behaviour, however, it becomes more difficult to reason about, as
-% value of those types can potentially contain sub-expressions. ????In fact, defining when two values of any of the possible types are behaviourally the same is exactly what we will do when we get to defining the Logical Relations for Contextual Equivalence.????
-% DELETED
 
 \todo{fix unfinished text passage - end}
 

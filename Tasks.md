@@ -22,7 +22,7 @@
   - [x] Talk about CE being enough for integers
   - [ ] Mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
   - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
-  - [ ] Fix type-setting
+  - [x] Fix type-setting
   - [ ] Proof read
 
 ## Logical Relations
