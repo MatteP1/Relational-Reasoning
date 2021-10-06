@@ -21,12 +21,15 @@
 - [ ] Explanations
   - [x] Talk about CE being enough for integers
   - [ ] Mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
+  - [ ] Somewhat prove they are equivalent
   - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
   - [x] Fix type-setting
   - [ ] Proof read
 
 ## Logical Relations
 - [ ] Define a logical relations model for CE
+- [ ] Write in LR
+- [ ] Prove compatibility lemmas
 
 ## Using the Logical Relations
 
