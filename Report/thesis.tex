@@ -110,6 +110,9 @@
 \def\envscteq#1#2\exp1#3\exp2#4\type#5
   {#1 \; | \; #2 \; \vdash #3 \approx^{ctx} #4 : #5}
 
+\def\envscteqgen#1#2\exp1#3\exp2#4\type#5
+  {#1 \; | \; #2 \; \vdash #3 \approx #4 : #5}
+
 % Step
 \newcommand{\step}{\rightarrow}
 \newcommand{\stepS}{\rightarrow^*}
@@ -503,7 +506,7 @@ Context Typing
     {C : (\envstyp \tenv \tctx \type \typ) \Rightarrow (\envstyp {\tenv'} {\tctx'} \type {\typ'}) }
 \end{mathpar}
 Read as: the context takes an expression of type $\typ$ under $\tenv, \tctx$, and outputs an expression of type $\typ'$ under $\tenv', \tctx'$.
-\begin{definition}[Contextual Equivalence]
+\begin{definition}[Contextual Equivalence]\label{def:CE}
   We define contextual equivalence of two expressions $\expr_1$ and $\expr_2$ at type $\typ$ under $\tenv$ and $\tctx$ as
   \begin{equation*}
     \begin{gathered}
@@ -529,7 +532,7 @@ Let's assume that $\typ = \Tint$. Then consider when $\ctx$ has the form $\If \e
 
 Now if $\typ$ was $\Tbool$ instead, the context $\If \empctx then \TT else \omega$ would suffice in showing that $\val_2 = \val_1$. 
 
-It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tint$ or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent (in the sense of functional extensionality)? To see this, consider the following congruence rule:
+It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tint$ or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent (in the sense of functional extensionality)? To see this, consider the following "congruence" rule:
 \begin{mathpar}
   \inferrule*[lab=Congruence-function-app]
   { { \envscteq \tenv \tctx \exp1 f \exp2 {f'} \type {\Tfunc{\typ}{\typ'}} } \and
@@ -542,9 +545,68 @@ Of course, it may happen that the output is of another non-base type, such as ty
 \begin{proof}
   By the two hypotheses of the rule, we know that $\envs \tenv \tctx \exp {f} \type \Tfunc{\typ}{\typ'}$ and $\envs \tenv \tctx \exp t \type \typ$. So by the T-APP rule, we may conclude $\envs \tenv \tctx \exp {f \; t} \type \typ'$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\envstyp \tenv \tctx \type \typ') \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[f \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow)$. So assume some context, $\ctx$, of the right type. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \Downarrow$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\ctx[f' \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow$. In other words, we have that $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \iff \ctx[f' \; t'] \Downarrow$, which was what we wanted.
 \end{proof}
+The way we have defined contextual equivalence is quite instructive and intuitionistic. However, one may define contextual equivalence in another, equivalent way, which gives much insight into contextual equivalence, and will make working with the logical relation later more intuitive. We will explore this alternative definition in the next section.
 
-An interesting point to note here is that one may define contextual equivalence in another, equivalent way. Namely by specifying contextual equivalence, $ctx-equiv$, to be a relation: $ctx-equiv \subseteq \tenv \times \tctx \times \expr \times \expr \times \typ$. It should then have two properties. It should be a congruence relation w.r.t. the typing rules (such as the one we did for function application), and it should be an adequate relation, stating that 
-\todo{what is an adequate relation}. The proof we just did is one step in showing that the two ways of defining contextual equivalence are equivalent.
+\section{Alternative Definition of Contextual Equivalence}
+We may define contextual equivalence in the following way
+\begin{definition}\label{def:CE2}
+  Contextual Equivalence is a relation, $R \subseteq \tenv \times \tctx \times \expr \times \expr \times \typ$, such that
+  \begin{itemize}
+    \item all expressions in $R$ are well-typed
+    \item $R$ is a congruence relation with respect to the typing rules
+    \item $R$ is an adequate relation
+  \end{itemize}
+  Finally, it is the coarsest such relation. We shall denote this coarsest relation $ctx-equiv$, and $R$ will refer to any other relation satisfying the above three properties. 
+\end{definition}
+We introduce the following notation: $R(\tenv, \tctx, \expr, \expr', \typ) \triangleq \envscteqgen \tenv \tctx \exp1 \expr \exp2 \expr' \type \typ$, and use them interchangeably.\\ 
+That $ctx-eqiuv$ is a congruence relation with respect to the typing rules means that it satisfies all the congruence rules that arises from the typing rules in the same manner CONGRUENCE-FUNCTION-APP did. For instance, the congruence rule for T-unit and T-app would be:
+\begin{mathpar}
+  \inferrule*[lab=Congruence-unit]{ }
+    { \envscteqgen \tenv \tctx \exp1 \TT \exp2 \TT \type {\Tunit} }
+  \and
+  \inferrule*[lab=Congruence-type-app]
+    { \envscteqgen \tenv \tctx \exp1 \expr \exp2 {\expr'} \type {\Tall{\Tvar}{\typ}} }
+    { \envscteqgen \tenv \tctx \exp1 \Tapp{\expr} \exp2 {\Tapp{\expr'}} \type {\subst{\typ}{\Tvar}{\typ'}} }
+\end{mathpar}
+The next part, $ctx-equiv$ being an adequate relation, essentially just means that it satisfies $\envscteqgen \emptctx \emptenv \exp1 \expr \exp2 \expr' \type \Tunit \implies \expr \Downarrow \iff \expr' \Downarrow$.\\
+Finally, the fact that $ctx-equiv$ is the coarsest such relation simply means the following: $\forall \tenv, \tctx, \expr, \expr', \typ . R(\tenv, \tctx, \expr, \expr', \typ) \implies ctx-equiv(\tenv, \tctx, \expr, \expr', \typ)$.\\
+We of course have to show that this definition of Contextual Equivalence is actually equivalent to the one given in definition \ref{def:CE}:
+\begin{theorem}\label{thm:CE_eq}
+  $\envscteq \tenv \tctx \exp1 \expr \exp2 \expr' \type \typ \iff ctx-equiv(\tenv, \tctx, \expr, \expr', \typ)$
+\end{theorem}
+We will show this in two steps, where each step essentially corresponds to one way of the double implication. Each step will be phrased as a theorem.
+\begin{theorem}\label{thm:CE_eq_part1}
+  $\envscteq \tenv \tctx \exp1 \expr \exp2 \expr' \type \typ \subseteq \tenv \times \tctx \times \expr \times \expr \times \typ$\text{is a congruence relation,}\\\text{ an adequate relation, and all expressions in the relation are well-typed.}
+\end{theorem}
+\begin{proof}
+  First, the well-typedness follows directly from the definition of contextual equivalence.\\
+  Second, let's show that it is an adequate relation. So assuming $\envscteq \emptctx \emptenv \exp1 \expr \exp2 \expr' \type \Tunit$, we must show $\expr \Downarrow \iff \expr' \Downarrow$. We know that $\forall \ctx : (\envstyp \emptenv \emptctx \type \Tunit) \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. So specifically for $C$ being the empty context, we get $\expr \Downarrow \iff \expr' \Downarrow$, which was what we wanted.\\
+  To show that it is a congruence relation, we must go through all the congruence rules, and show that they hold. We did the one for function application above, CONGRUENCE-FUNCTION-APP. The rest will not be shown here.
+\end{proof}
+
+To prove the next theorem, we will need the following lemma
+\begin{lemma}\label{lem:CE_eq_part2_helper}
+  $R(\tenv, \tctx, \expr, \expr', \typ) \; \land \; C:(\envstyp \tenv \tctx \type \typ \Rightarrow \envstyp {\tenv'} {\tctx'} \type {\typ'}) \implies R(\tenv', \tctx', C[\expr], C[\expr'], \typ')$
+\end{lemma}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+With this lemma proved, we are ready to prove the next theorem.
+\begin{theorem}\label{thm:CE_eq_part2}
+  $R(\tenv, \tctx, \expr, \expr', \typ) \implies \envscteq \tenv \tctx \exp1 \expr \exp2 \expr' \type \typ$.
+\end{theorem}
+\begin{proof}
+  So assuming $R(\tenv, \tctx, \expr, \expr', \typ)$, we must show 
+  $ \envs \tenv \tctx \exp \expr \type \typ \; \land \;
+    \envs \tenv \tctx \exp \expr' \type \typ \; \land\\
+    \forall \ctx : (\envstyp \tenv \tctx \type \typ) \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\envstyp \tenv \tctx \type \typ) \Rightarrow (\envstyp {\emptenv} {\emptctx} \type \Tunit) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. So assume some context $C$ of the right type. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \emptctx, C[\expr], C[\expr'], \Tunit)$. By adequacy of $R$, we have that $\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow$, which was what we wanted.
+\end{proof}
+
+Now, the proof of the two definition of contextual equivalence being equivalent follows easily:
+\begin{proof}[Proof of theorem \ref{thm:CE_eq}]
+  By theorem \ref{thm:CE_eq_part1} and from the fact that $ctx-equiv$ is the coarsest relation satisfying the three properties, it follows that $\envscteq \tenv \tctx \exp1 \expr \exp2 \expr' \type \typ \implies ctx-equiv(\tenv, \tctx, \expr, \expr', \typ)$.\\
+  By theorem \ref{thm:CE_eq_part2} and from the fact that $ctx-equiv$ is one such relation $R$, it follows that $ctx-equiv(\tenv, \tctx, \expr, \expr', \typ) \implies \envscteq \tenv \tctx \exp1 \expr \exp2 \expr' \type \typ$
+\end{proof}
 
 
 \todo{fix unfinished text passage - end}

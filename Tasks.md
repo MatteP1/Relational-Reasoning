@@ -18,16 +18,24 @@
 ## Contextual Equivalence
 - [x] Define Contextual Equivalence for System F w/rec
 - [x] Write in Contextual Equivalence
-- [ ] Explanations
+- [x] Explanation and intuition
   - [x] Talk about CE being enough for integers
-  - [ ] Mention the other, equivalent, way of defining Contextual Equivalence (see google photos)
-  - [ ] Somewhat prove they are equivalent
-  - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
-  - [x] Fix type-setting
-  - [ ] Proof read
+  - [x] Talk about CE being enough for non-base types (specifically function type)
+    - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
+- [ ] Mention the other, equivalent way of defining Contextual Equivalence (see google photos)
+  - [ ] To a large extend, prove they are equivalent
+    - [x] ctxeq(forallC) => congruence (we showed one rule) and adequate (google photo)
+    - [ ] other direction: (google photo)
+      - [x] main proof
+      - [x] define helper lemma
+      - [ ] prove helper lemma
+- [ ] Fix type-setting
+  - [ ] ctx-equiv
+  - [ ] type environment and variable environment (tctx -> venv)
+- [ ] Proof read
 
 ## Logical Relations
-- [ ] Define a logical relations model for CE
+- [x] Define a logical relations model for CE
 - [ ] Write in LR
 - [ ] Prove compatibility lemmas
 
