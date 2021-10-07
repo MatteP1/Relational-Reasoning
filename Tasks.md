@@ -31,7 +31,7 @@
       - [ ] prove helper lemma
 - [ ] Fix type-setting
   - [ ] ctx-equiv
-  - [ ] type environment and variable environment (tctx -> venv)
+  - [x] type environment and variable environment (tctx -> venv)
 - [ ] Proof read
 
 ## Logical Relations
