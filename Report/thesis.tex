@@ -566,10 +566,19 @@ We may define contextual equivalence in the following way
   Finally, it is the coarsest such relation. We shall denote this coarsest relation $ctx-equiv$, and $R$ will refer to any other relation satisfying the above three properties. 
 \end{definition}
 We introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \envscteqgen \tenv \venv \exp1 \expr \exp2 \expr' \type \typ$, and use them interchangeably.\\ 
-That $ctx-eqiuv$ is a congruence relation with respect to the typing rules means that it satisfies all the congruence rules that arises from the typing rules in the same manner CONGRUENCE-FUNCTION-APP did. For instance, the congruence rule for T-unit and T-app would be:
+That $ctx-eqiuv$ is a congruence relation with respect to the typing rules means that it satisfies all the congruence rules that arises from the typing rules in the same manner CONGRUENCE-FUNCTION-APP did. For instance, the congruence rule for T-unit, T-add, T-Tlam, and T-app would be:
 \begin{mathpar}
   \inferrule*[lab=Congruence-unit]{ }
     { \envscteqgen \tenv \venv \exp1 \TT \exp2 \TT \type {\Tunit} }
+  \and
+  \inferrule*[lab=Congruence-type-add]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 + \expr_2} \exp2 {\expr_1' + \expr_2'} \type {\Tint} }
+  \and
+  \inferrule*[lab=Congruence-type-abs]
+    { \envscteqgen {\tenv, \Tvar} \venv \exp1 \expr \exp2 {\expr'} \type {\typ} }
+    { \envscteqgen \tenv \venv \exp1 \Tlam{\expr} \exp2 {\Tlam{\expr'}} \type {\Tall{\Tvar}{\typ}} }
   \and
   \inferrule*[lab=Congruence-type-app]
     { \envscteqgen \tenv \venv \exp1 \expr \exp2 {\expr'} \type {\Tall{\Tvar}{\typ}} }
