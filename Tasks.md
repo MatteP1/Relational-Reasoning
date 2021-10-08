@@ -37,6 +37,9 @@
 ## Logical Relations
 - [x] Define a logical relations model for CE
 - [ ] Write in LR
+  - [x] val- and exp-interpretation
+  - [ ] varenv- and typenv-interpretation
+- [ ] Fix type-setting
 - [ ] Prove compatibility lemmas
 
 ## Using the Logical Relations

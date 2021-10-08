@@ -10,7 +10,8 @@
 \usepackage{mathpartir}
 \usepackage{epsfig}
 \usepackage[T1]{fontenc}
-\usepackage{mathptmx}
+% \usepackage{mathptmx}
+\usepackage{stmaryrd}
 \usepackage{color}
 \usepackage{epstopdf}
 \usepackage{microtype}
@@ -121,8 +122,14 @@
 \newcommand{\hstep}{\rightarrow_h}
 \newcommand{\hstepRel}[2]{#1 \hstep #2}
 
+% Logical Relation
+\newcommand{\ValInp}[2]{\mathcal{V}_{#1} \llbracket #2 \rrbracket}
+\newcommand{\ValInpGen}[2]{\ValInp{#1}{#2}(\val_1, \val_2)}
+\newcommand{\ExpInp}[2]{\mathcal{E}_{#1} \llbracket #2 \rrbracket}
+
 % Other
 \newcommand{\Val}[1]{\mathrm{Val}(#1)}
+\newcommand{\map}[2]{#1 \mapsto #2}
 
 % TODO-command
 \newcommand{\todo}[1]{{\color[rgb]{.5,0,0}\textbf{$\blacktriangleright$#1$\blacktriangleleft$}}}
@@ -618,6 +625,37 @@ Now, the proof of the two definition of contextual equivalence being equivalent 
 \label{ch:LR}
 
 \todo{draft}
+
+Logical relations model
+
+\begin{align*}
+  \ValInpGen{\rho}{\typ}    &\triangleq \envs \emptenv \empvenv \exp \val_1 \type \typ \land \envs \emptenv \empvenv \exp \val_2 \type \typ \land \dots\\
+  \ValInpGen{\rho}{\Tunit}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
+  \ValInpGen{\rho}{\Tint}   &\triangleq (\val_1, \val_2) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}\\
+  \ValInpGen{\rho}{\Tbool}  &\triangleq (\val_1, \val_2) \in \{(\True, \True), (\False, \False)\}\\
+  \ValInpGen{\rho}{\Tprod{\typ_1}{\typ_2}}  &\triangleq (\val_1, \val_2) \in \{((\valB_{11}, \valB_{12}), (\valB_{21}, \valB_{22})) \mid \ValInp{\rho}{\typ_1}(\valB_{11}, \valB_{21}) \land \ValInp{\rho}{\typ_2}(\valB_{12}, \valB_{22})\}\\
+  \ValInpGen{\rho}{\Tsum{\typ_1}{\typ_2}}   &\triangleq 
+  \begin{aligned}[t]
+    (\val_1, \val_2) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\rho}{\typ_1}(\valB_1, \valB_2)\} \lor \\
+    (\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\rho}{\typ_2}(\valB_1, \valB_2)\}
+  \end{aligned}\\
+  \ValInpGen{\rho}{\Tfunc{\typ_1}{\typ_2}}  &\triangleq 
+  \begin{aligned}[t]
+    (\val_1, \val_2) \in \{(\Rec f_1 \var_1 := \expr_1, \Rec f_2 \var_2 := \expr_2) \mid \forall \valB_1, \valB_2 . \ValInp{\rho}{\typ_1}(\valB_{1}, \valB_{2})\\
+    \implies \ExpInp{\rho}{\typ_2}(\subst{\expr_1}{\var_1}{\valB_1}, \subst{\expr_2}{\var_2}{\valB_2})\}
+  \end{aligned}\\
+  \ValInpGen{\rho}{\Tall{\Tvar}{\typ}}  &\triangleq 
+  \begin{aligned}[t]
+    (\val_1, \val_2) \in \{(\Tlam \expr_1, \Tlam \expr_2) \mid \forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] .\\
+    \ExpInp{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}{\typ}(\subst{\expr_1}{\Tvar}{\typ_1}, \subst{\expr_2}{\Tvar}{\typ_2})\}
+  \end{aligned}\\
+  \ExpInp{\rho}{\typ}(\expr_1, \expr_2) &\triangleq 
+  \begin{aligned}[t]
+    \envs \emptenv \empvenv \exp \expr_1 \type \rho_1{\typ} \land \envs \emptenv \empvenv \exp \expr_2 \type \rho_2{\typ} \land \expr_1 \Downarrow \iff \expr_2 \Downarrow \land\\
+    (\forall \val_1, \val_2 . \expr_1 \Downarrow \val_1 \land \expr_2 \Downarrow \val_2 \implies \ValInpGen{\rho}{\typ})
+  \end{aligned}
+\end{align*}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
