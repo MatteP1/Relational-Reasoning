@@ -268,7 +268,7 @@ Typing rules
   \inferrule*[lab=T-pair]
     {{\envs \tenv \venv \exp \expr_1 \type \typ_1} \and
     {\envs \tenv \venv \exp \expr_2 \type \typ_2}}
-    {\envs \tenv \venv \exp (\expr_1, \expr_2) \type \Tprod{\typ_1}{\typ_1}}
+    {\envs \tenv \venv \exp (\expr_1, \expr_2) \type \Tprod{\typ_1}{\typ_2}}
   \and
   \inferrule*[lab=T-fst]
     {\envs \tenv \venv \exp \expr \type \Tprod{\typ_1}{\typ_2}}
@@ -482,8 +482,12 @@ Dynamics
 \chapter{Contextual Equivalence}
 \label{ch:CE}
 
-\todo{draft}
+\todo{draft}\\
+Imagine you are writing a larger program, and as part of that program, you need to use a stack. So as part of your program, you implement a stack. However, your implementation is naive, and not efficient. Thus you implement a new stack, that is more complex, but also more efficient. You would of course want to use the more efficient stack implementation in your larger program, but since it is more complex, you are not really sure whether you can justify the refactoring – the implementations might show differing behaviour.\\
+What you want to show, then, is that your two stack implementation \textit{behaves} the same. In other words, no matter which \textit{context} you use your two stack implementations in, they will always behave the same as part of the context. This is intuitively what we want to define with \textit{Contextual Equivalence}.\\
+In this section we give two equivalent definitions of what it means for programs to be contextually equivalent. The first definition will be more intuitive and instructive, while the second will give a deeper insight into the theoretical underpinnings of contextual equivalence.
 
+\section{Definition of Contextual Equivalence}
 Context
 \begin{align*}
   \ctx \BNFdef& \empctx \ALT
@@ -526,10 +530,7 @@ Read as: the context takes an expression of type $\typ$ under $\tenv, \venv$, an
   \end{equation*}
 \end{definition}
 
-
-\todo{fix unfinished text passage - start}
-
-We define CE so that two programs are CE iff under all Contexts, one program terminates iff the other does. One may ponder whether this definition is really strong enough. If both terminate, we really want the result of the two programs to have values that are behaviourally the same, otherwise, we can certainly put them in a context, where they have different behaviour.
+We define CE so that two programs are CE when under all Contexts, one program terminates iff the other does. One may ponder whether this definition is really strong enough. If both terminate, we really want the result of the two programs to have values that are behaviourally the same, otherwise, we can certainly put them in a context, where they have different behaviour.
 For integer values, for example, this means that the two values must be the same number, and for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
 To give an intuition as to  why this definition is strong enough, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\envs \emptenv \empvenv \exp \expr_1 \type \typ$ and $\envs \emptenv \empvenv \exp \expr_2 \type \typ$.
 Note first that if both $\expr_1$ and $\expr_2$ don't terminate, then they will be behaviourally the same; if we plug them into any context, and the context makes us evaluate the expressions, both will not terminate. And if the context doesn't make us evaluate the expressions, then they have no influence in the run of the programs, so they will behave the same.
@@ -552,7 +553,7 @@ Of course, it may happen that the output is of another non-base type, such as ty
 \begin{proof}
   By the two hypotheses of the rule, we know that $\envs \tenv \venv \exp {f} \type \Tfunc{\typ}{\typ'}$ and $\envs \tenv \venv \exp t \type \typ$. So by the T-APP rule, we may conclude $\envs \tenv \venv \exp {f \; t} \type \typ'$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\envstyp \tenv \venv \type \typ') \Rightarrow (\envstyp {\emptenv} {\empvenv} \type \Tunit) . (\ctx[f \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow)$. So assume some context, $\ctx$, of the right type. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \Downarrow$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\ctx[f' \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow$. In other words, we have that $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \iff \ctx[f' \; t'] \Downarrow$, which was what we wanted.
 \end{proof}
-The way we have defined contextual equivalence is quite instructive and intuitionistic. However, one may define contextual equivalence in another, equivalent way, which gives much insight into contextual equivalence, and will make working with the logical relation later more intuitive. We will explore this alternative definition in the next section.
+The way we have defined contextual equivalence is quite instructive and intuitive. However, one may define contextual equivalence in another, equivalent way, which gives much insight into contextual equivalence, and will make working with the logical relation later more intuitive. We will explore this alternative definition in the next section.
 
 \section{Alternative Definition of Contextual Equivalence}
 We may define contextual equivalence in the following way
@@ -563,32 +564,24 @@ We may define contextual equivalence in the following way
     \item $R$ is a congruence relation with respect to the typing rules
     \item $R$ is an adequate relation
   \end{itemize}
-  Finally, it is the coarsest such relation. We shall denote this coarsest relation $ctx-equiv$, and $R$ will refer to any other relation satisfying the above three properties. 
+  Finally, it is the coarsest such relation. We shall denote this coarsest relation $CE$, and $R$ will refer to any other relation satisfying the above three properties. 
 \end{definition}
 We introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \envscteqgen \tenv \venv \exp1 \expr \exp2 \expr' \type \typ$, and use them interchangeably.\\ 
-That $ctx-eqiuv$ is a congruence relation with respect to the typing rules means that it satisfies all the congruence rules that arises from the typing rules in the same manner CONGRUENCE-FUNCTION-APP did. For instance, the congruence rule for T-unit, T-add, T-Tlam, and T-app would be:
+That $CE$ is a congruence relation with respect to the typing rules means that it satisfies all the congruence rules that arises from the typing rules in the same manner CONGRUENCE-FUNCTION-APP did. For instance, the congruence rules for T-unit and T-app would be:
 \begin{mathpar}
   \inferrule*[lab=Congruence-unit]{ }
     { \envscteqgen \tenv \venv \exp1 \TT \exp2 \TT \type {\Tunit} }
-  \and
-  \inferrule*[lab=Congruence-type-add]
-    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
-    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
-    { \envscteqgen \tenv \venv \exp1 {\expr_1 + \expr_2} \exp2 {\expr_1' + \expr_2'} \type {\Tint} }
-  \and
-  \inferrule*[lab=Congruence-type-abs]
-    { \envscteqgen {\tenv, \Tvar} \venv \exp1 \expr \exp2 {\expr'} \type {\typ} }
-    { \envscteqgen \tenv \venv \exp1 \Tlam{\expr} \exp2 {\Tlam{\expr'}} \type {\Tall{\Tvar}{\typ}} }
   \and
   \inferrule*[lab=Congruence-type-app]
     { \envscteqgen \tenv \venv \exp1 \expr \exp2 {\expr'} \type {\Tall{\Tvar}{\typ}} }
     { \envscteqgen \tenv \venv \exp1 \Tapp{\expr} \exp2 {\Tapp{\expr'}} \type {\subst{\typ}{\Tvar}{\typ'}} }
 \end{mathpar}
-The next part, $ctx-equiv$ being an adequate relation, essentially just means that it satisfies $\envscteqgen \empvenv \emptenv \exp1 \expr \exp2 \expr' \type \Tunit \implies \expr \Downarrow \iff \expr' \Downarrow$.\\
-Finally, the fact that $ctx-equiv$ is the coarsest such relation simply means the following: $\forall \tenv, \venv, \expr, \expr', \typ . R(\tenv, \venv, \expr, \expr', \typ) \implies ctx-equiv(\tenv, \venv, \expr, \expr', \typ)$.\\
+The remaining congruence rules can be found in the appendix (\ref{appendix:Cgr}).\\
+The next part, $CE$ being an adequate relation, essentially just means that it satisfies $\envscteqgen \empvenv \emptenv \exp1 \expr \exp2 \expr' \type \Tunit \implies \expr \Downarrow \iff \expr' \Downarrow$.\\
+Finally, the fact that $CE$ is the coarsest such relation simply means the following: $\forall \tenv, \venv, \expr, \expr', \typ . R(\tenv, \venv, \expr, \expr', \typ) \implies CE(\tenv, \venv, \expr, \expr', \typ)$.\\
 We of course have to show that this definition of Contextual Equivalence is actually equivalent to the one given in definition \ref{def:CE}:
 \begin{theorem}\label{thm:CE_eq}
-  $\envscteq \tenv \venv \exp1 \expr \exp2 \expr' \type \typ \iff ctx-equiv(\tenv, \venv, \expr, \expr', \typ)$
+  $\envscteq \tenv \venv \exp1 \expr \exp2 \expr' \type \typ \iff CE(\tenv, \venv, \expr, \expr', \typ)$
 \end{theorem}
 We will show this in two steps, where each step essentially corresponds to one way of the double implication. Each step will be phrased as a theorem.
 \begin{theorem}\label{thm:CE_eq_part1}
@@ -600,7 +593,14 @@ We will show this in two steps, where each step essentially corresponds to one w
   To show that it is a congruence relation, we must go through all the congruence rules, and show that they hold. We did the one for function application above, CONGRUENCE-FUNCTION-APP. The rest will not be shown here.
 \end{proof}
 
-To prove the next theorem, we will need the following lemma
+To prove the next theorem, we will need to show two lemmas.
+\begin{lemma}[Reflexivity of R]\label{lem:R_is_reflexive}
+  $\envs \tenv \venv \exp \expr \type \typ \implies R(\tenv, \venv, \expr, \expr, \typ)$
+\end{lemma}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+
 \begin{lemma}\label{lem:CE_eq_part2_helper}
   $R(\tenv, \venv, \expr, \expr', \typ) \; \land \; C:(\envstyp \tenv \venv \type \typ \Rightarrow \envstyp {\tenv'} {\venv'} \type {\typ'}) \implies R(\tenv', \venv', C[\expr], C[\expr'], \typ')$
 \end{lemma}
@@ -618,15 +618,11 @@ With this lemma proved, we are ready to prove the next theorem.
     \forall \ctx : (\envstyp \tenv \venv \type \typ) \Rightarrow (\envstyp {\emptenv} {\empvenv} \type \Tunit) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\envstyp \tenv \venv \type \typ) \Rightarrow (\envstyp {\emptenv} {\empvenv} \type \Tunit) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. So assume some context $C$ of the right type. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \empvenv, C[\expr], C[\expr'], \Tunit)$. By adequacy of $R$, we have that $\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow$, which was what we wanted.
 \end{proof}
 
-Now, the proof of the two definition of contextual equivalence being equivalent follows easily:
+Now, the proof of the two definitions of contextual equivalence being equivalent follows easily:
 \begin{proof}[Proof of theorem \ref{thm:CE_eq}]
-  By theorem \ref{thm:CE_eq_part1} and from the fact that $ctx-equiv$ is the coarsest relation satisfying the three properties, it follows that $\envscteq \tenv \venv \exp1 \expr \exp2 \expr' \type \typ \implies ctx-equiv(\tenv, \venv, \expr, \expr', \typ)$.\\
-  By theorem \ref{thm:CE_eq_part2} and from the fact that $ctx-equiv$ is one such relation $R$, it follows that $ctx-equiv(\tenv, \venv, \expr, \expr', \typ) \implies \envscteq \tenv \venv \exp1 \expr \exp2 \expr' \type \typ$
+  By theorem \ref{thm:CE_eq_part1} and from the fact that $CE$ is the coarsest relation satisfying the three properties, it follows that $\envscteq \tenv \venv \exp1 \expr \exp2 \expr' \type \typ \implies CE(\tenv, \venv, \expr, \expr', \typ)$.\\
+  By theorem \ref{thm:CE_eq_part2} and from the fact that $CE$ is one such relation $R$, it follows that $CE(\tenv, \venv, \expr, \expr', \typ) \implies \envscteq \tenv \venv \exp1 \expr \exp2 \expr' \type \typ$
 \end{proof}
-
-
-\todo{fix unfinished text passage - end}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -658,6 +654,7 @@ Logical relations model
     (\val_1, \val_2) \in \{(\Tlam \expr_1, \Tlam \expr_2) \mid \forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] .\\
     \ExpInp{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}{\typ}(\subst{\expr_1}{\Tvar}{\typ_1}, \subst{\expr_2}{\Tvar}{\typ_2})\}
   \end{aligned}\\
+  \ValInpGen{\rho}{\Tvar} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]\\
   \ExpInp{\rho}{\typ}(\expr_1, \expr_2) &\triangleq 
   \begin{aligned}[t]
     \envs \emptenv \empvenv \exp \expr_1 \type \rho_1{\typ} \land \envs \emptenv \empvenv \exp \expr_2 \type \rho_2{\typ} \land \expr_1 \Downarrow \iff \expr_2 \Downarrow \land\\
@@ -706,6 +703,100 @@ Logical relations model
 \chapter{The Technical Details}
 
 \todo{\dots}
+
+\section{Congruence Rules for Alternative Definition of Contextual Equivalence}\label{appendix:Cgr}
+
+\begin{mathpar}
+  \inferrule*[lab=Cgr-var \todo{is this correct?}]
+    {(\var : \typ) \in \venv}
+    {\envscteqgen \tenv \venv \exp1 {\var} \exp2 {\var} \type {\typ} }
+  \and
+  \inferrule*[lab=Cgr-unit]{ }{ \envscteqgen \tenv \venv \exp1 {\TT} \exp2 {\TT} \type {\Tunit} }
+  \and
+  \inferrule*[lab=Cgr-int]{ }{ \envscteqgen \tenv \venv \exp1 {\Num{n}} \exp2 {\Num{n}} \type {\Tint} }
+  \and
+  \inferrule*[lab=Cgr-add]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 + \expr_2} \exp2 {\expr_1' + \expr_2'} \type {\Tint} }
+  \and
+  \inferrule*[lab=Cgr-sub]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 - \expr_2} \exp2 {\expr_1' - \expr_2'} \type {\Tint} }
+  \and
+  \inferrule*[lab=Cgr-le]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 \le \expr_2} \exp2 {\expr_1' \le \expr_2'} \type {\Tbool} }
+  \and
+  \inferrule*[lab=Cgr-lt]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 < \expr_2} \exp2 {\expr_1' < \expr_2'} \type {\Tbool} }
+  \and
+  \inferrule*[lab=Cgr-eq]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 = \expr_2} \exp2 {\expr_1' = \expr_2'} \type {\Tbool} }
+  \and
+  \inferrule*[lab=Cgr-true]{ }{ \envscteqgen \tenv \venv \exp1 {\True} \exp2 {\True} \type {\Tbool} }
+  \and
+  \inferrule*[lab=Cgr-false]{ }{ \envscteqgen \tenv \venv \exp1 {\False} \exp2 {\False} \type {\Tbool} }
+  \and
+  \inferrule*[lab=Cgr-if]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tbool} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\typ} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_3} \exp2 {\expr_3'} \type {\typ} }
+    }
+    { \envscteqgen \tenv \venv \exp1 {\If \expr_1 then \expr_2 else \expr_3} \exp2 {\If {\expr_1'} then {\expr_2'} else {\expr_3'}} \type {\typ} }
+  \and
+  \inferrule*[lab=Cgr-pair]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\typ_1} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\typ_2} } }
+    { \envscteqgen \tenv \venv \exp1 {(\expr_1,\expr_2)} \exp2 {(\expr_1', \expr_2')} \type {\Tprod{\typ_1}{\typ_2}} }
+  \and
+  \inferrule*[lab=Cgr-fst]
+    { \envscteqgen \tenv \venv \exp1 {\expr} \exp2 {\expr'} \type {\Tprod{\typ_1}{\typ_2}} }
+    { \envscteqgen \tenv \venv \exp1 {\Fst \expr} \exp2 {\Fst \expr'} \type {\typ_1} }
+  \and
+  \inferrule*[lab=Cgr-snd]
+    { \envscteqgen \tenv \venv \exp1 {\expr} \exp2 {\expr'} \type {\Tprod{\typ_1}{\typ_2}} }
+    { \envscteqgen \tenv \venv \exp1 {\Snd \expr} \exp2 {\Snd \expr'} \type {\typ_2} }
+  \and
+  \inferrule*[lab=Cgr-inj1]
+    { \envscteqgen \tenv \venv \exp1 {\expr} \exp2 {\expr'} \type {\typ_1} }
+    { \envscteqgen \tenv \venv \exp1 {\Inj{1} \expr} \exp2 {\Inj{1} \expr'} \type {\Tsum{\typ_1}{\typ_2}} }
+  \and
+  \inferrule*[lab=Cgr-inj2]
+    { \envscteqgen \tenv \venv \exp1 {\expr} \exp2 {\expr'} \type {\typ_2} }
+    { \envscteqgen \tenv \venv \exp1 {\Inj{2} \expr} \exp2 {\Inj{2} \expr'} \type {\Tsum{\typ_1}{\typ_2}} }
+\end{mathpar}
+\begin{mathpar}
+  \inferrule*[lab=Cgr-match]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tsum{\typ_1}{\typ_2}} } \and
+    { \envscteqgen \tenv {\venv, \var : \typ_1} \exp1 {\expr_2} \exp2 {\expr_2'} \type {\typ} } \and
+    { \envscteqgen \tenv {\venv, \var : \typ_1} \exp1 {\expr_3} \exp2 {\expr_3'} \type {\typ} }
+    }
+    { \envscteqgen \tenv \venv \exp1 {\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end} \exp2 {\Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end} \type {\typ} }
+  \and
+  \inferrule*[lab=Cgr-rec]
+    { \envscteqgen \tenv {\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1} \exp1 {\expr} \exp2 {\expr'} \type {\typ_2} }
+    { \envscteqgen \tenv \venv \exp1 {\Rec f \var := \expr} \exp2 {\Rec f \var := \expr'} \type {\typ_1} }
+  \and
+  \inferrule*[lab=Cgr-app]
+    { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tfunc{\typ_1}{\typ_2}} } \and
+    { \envscteqgen \tenv \venv \exp1 {\expr_2} \exp2 {\expr_2'} \type {\typ_1} } }
+    { \envscteqgen \tenv \venv \exp1 {\expr_1 \; \expr_2} \exp2 {\expr_1' \; \expr_2'} \type {\typ_2} }
+  \and
+  \inferrule*[lab=Cgr-Tlam]
+    { \envscteqgen {\tenv, \Tvar} \venv \exp1 \expr \exp2 {\expr'} \type {\typ} }
+    { \envscteqgen \tenv \venv \exp1 \Tlam{\expr} \exp2 {\Tlam{\expr'}} \type {\Tall{\Tvar}{\typ}} }
+  \and
+  \inferrule*[lab=Cgr-Tapp]
+    { \envscteqgen \tenv \venv \exp1 \expr \exp2 {\expr'} \type {\Tall{\Tvar}{\typ}} }
+    { \envscteqgen \tenv \venv \exp1 \Tapp{\expr} \exp2 {\Tapp{\expr'}} \type {\subst{\typ}{\Tvar}{\typ'}} }
+\end{mathpar}
 
 \end{document}
 
