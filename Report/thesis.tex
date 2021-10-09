@@ -662,6 +662,16 @@ Value interpretation
   \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]\\
 \end{align*}
 
+Relational substitution
+\begin{align*}
+  Rel[\typ_1, \typ_2] \triangleq 
+  \left\{R \; \middle\vert \;
+  \begin{aligned}
+    R \in \mathcal{P}(Val \times Val) \land \envstyp \emptenv \empvenv \type \typ_1 \land \envstyp \emptenv \empvenv \type \typ_1 \land\\ \forall (\val_1, \val_2) \in R . \envs \emptenv \empvenv \exp \val_1 \type \typ_1 \land \envs \emptenv \empvenv \exp \val_2 \type \typ_2
+  \end{aligned}
+  \right\}
+\end{align*}
+
 Expression interpretation
 \begin{align*}
   \ExpInp{\typ}{\rho}(\expr_1, \expr_2) &\triangleq 
