@@ -123,9 +123,13 @@
 \newcommand{\hstepRel}[2]{#1 \hstep #2}
 
 % Logical Relation
-\newcommand{\ValInp}[2]{\mathcal{V}_{#1} \llbracket #2 \rrbracket}
+\newcommand{\ValInp}[2]{\mathcal{V} \llbracket #1 \rrbracket_{#2}}
 \newcommand{\ValInpGen}[2]{\ValInp{#1}{#2}(\val_1, \val_2)}
-\newcommand{\ExpInp}[2]{\mathcal{E}_{#1} \llbracket #2 \rrbracket}
+\newcommand{\ExpInp}[2]{\mathcal{E} \llbracket #1 \rrbracket_{#2}}
+\newcommand{\VenvInp}[2]{\mathcal{G} \llbracket #1 \rrbracket_{#2}}
+\newcommand{\TenvInp}[1]{\mathcal{D} \llbracket #1 \rrbracket}
+
+\newcommand{\LogRel}[5]{#1 \; | \; #2 \; \vdash #3 \approx^{LR} #4 : #5}
 
 % Other
 \newcommand{\Val}[1]{\mathrm{Val}(#1)}
@@ -633,34 +637,62 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 
 Logical relations model
 
+Value interpretation
 \begin{align*}
-  \ValInpGen{\rho}{\typ}    &\triangleq \envs \emptenv \empvenv \exp \val_1 \type \typ \land \envs \emptenv \empvenv \exp \val_2 \type \typ \land \dots\\
-  \ValInpGen{\rho}{\Tunit}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
-  \ValInpGen{\rho}{\Tint}   &\triangleq (\val_1, \val_2) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}\\
-  \ValInpGen{\rho}{\Tbool}  &\triangleq (\val_1, \val_2) \in \{(\True, \True), (\False, \False)\}\\
-  \ValInpGen{\rho}{\Tprod{\typ_1}{\typ_2}}  &\triangleq (\val_1, \val_2) \in \{((\valB_{11}, \valB_{12}), (\valB_{21}, \valB_{22})) \mid \ValInp{\rho}{\typ_1}(\valB_{11}, \valB_{21}) \land \ValInp{\rho}{\typ_2}(\valB_{12}, \valB_{22})\}\\
-  \ValInpGen{\rho}{\Tsum{\typ_1}{\typ_2}}   &\triangleq 
+  \ValInpGen{\typ}{\rho}    &\triangleq \envs \emptenv \empvenv \exp \val_1 \type \typ \land \envs \emptenv \empvenv \exp \val_2 \type \typ \land \dots\\
+  \ValInpGen{\Tunit}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
+  \ValInpGen{\Tint}{\rho}   &\triangleq (\val_1, \val_2) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}\\
+  \ValInpGen{\Tbool}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\True, \True), (\False, \False)\}\\
+  \ValInpGen{\Tprod{\typ_1}{\typ_2}}{\rho}  &\triangleq (\val_1, \val_2) \in \{((\valB_{11}, \valB_{12}), (\valB_{21}, \valB_{22})) \mid \ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21}) \land \ValInp{\typ_2}{\rho}(\valB_{12}, \valB_{22})\}\\
+  \ValInpGen{\Tsum{\typ_1}{\typ_2}}{\rho}   &\triangleq 
   \begin{aligned}[t]
-    (\val_1, \val_2) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\rho}{\typ_1}(\valB_1, \valB_2)\} \lor \\
-    (\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\rho}{\typ_2}(\valB_1, \valB_2)\}
+    (\val_1, \val_2) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor \\
+    (\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}
   \end{aligned}\\
-  \ValInpGen{\rho}{\Tfunc{\typ_1}{\typ_2}}  &\triangleq 
+  \ValInpGen{\Tfunc{\typ_1}{\typ_2}}{\rho}  &\triangleq 
   \begin{aligned}[t]
-    (\val_1, \val_2) \in \{(\Rec f_1 \var_1 := \expr_1, \Rec f_2 \var_2 := \expr_2) \mid \forall \valB_1, \valB_2 . \ValInp{\rho}{\typ_1}(\valB_{1}, \valB_{2})\\
-    \implies \ExpInp{\rho}{\typ_2}(\subst{\expr_1}{\var_1}{\valB_1}, \subst{\expr_2}{\var_2}{\valB_2})\}
+    (\val_1, \val_2) \in \{(\Rec f_1 \var_1 := \expr_1, \Rec f_2 \var_2 := \expr_2) \mid \forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2})\\
+    \implies \ExpInp{\typ_2}{\rho}(\subst{\expr_1}{\var_1}{\valB_1}, \subst{\expr_2}{\var_2}{\valB_2})\}
   \end{aligned}\\
-  \ValInpGen{\rho}{\Tall{\Tvar}{\typ}}  &\triangleq 
+  \ValInpGen{\Tall{\Tvar}{\typ}}{\rho}  &\triangleq 
   \begin{aligned}[t]
     (\val_1, \val_2) \in \{(\Tlam \expr_1, \Tlam \expr_2) \mid \forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] .\\
-    \ExpInp{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}{\typ}(\subst{\expr_1}{\Tvar}{\typ_1}, \subst{\expr_2}{\Tvar}{\typ_2})\}
+    \ExpInp{\typ}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\subst{\expr_1}{\Tvar}{\typ_1}, \subst{\expr_2}{\Tvar}{\typ_2})\}
   \end{aligned}\\
-  \ValInpGen{\rho}{\Tvar} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]\\
-  \ExpInp{\rho}{\typ}(\expr_1, \expr_2) &\triangleq 
+  \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]\\
+\end{align*}
+
+Expression interpretation
+\begin{align*}
+  \ExpInp{\typ}{\rho}(\expr_1, \expr_2) &\triangleq 
   \begin{aligned}[t]
     \envs \emptenv \empvenv \exp \expr_1 \type \rho_1{\typ} \land \envs \emptenv \empvenv \exp \expr_2 \type \rho_2{\typ} \land \expr_1 \Downarrow \iff \expr_2 \Downarrow \land\\
-    (\forall \val_1, \val_2 . \expr_1 \Downarrow \val_1 \land \expr_2 \Downarrow \val_2 \implies \ValInpGen{\rho}{\typ})
+    (\forall \val_1, \val_2 . \expr_1 \Downarrow \val_1 \land \expr_2 \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})
   \end{aligned}
 \end{align*}
+
+Variable environment interpretation
+\begin{align*}
+  \VenvInp{\empvenv}{\rho} &\triangleq \{ \emptyset \}\\
+  \VenvInp{\venv, \var : \typ}{\rho} &\triangleq \{\gamma[\map{\var}{(\val_1, \val_2)}] \mid \gamma \in \VenvInp{\venv}{\rho} \land \ValInpGen{\typ}{\rho}\}
+\end{align*}
+
+Type environment interpretation
+\begin{align*}
+  \TenvInp{\empvenv} &\triangleq \{ \emptyset \}\\
+  \TenvInp{\tenv, \Tvar} &\triangleq \{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}] \mid \rho \in \TenvInp{\tenv} \land R \in Rel[\typ_1, \typ_2]\}
+\end{align*}
+
+Logical relation
+\begin{equation}
+  \begin{gathered}
+    \LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ}\\
+    \iff\\
+    \envs \tenv \venv \exp \expr \type \typ \; \land \; \envs \tenv \venv \exp \expr' \type \typ \; \land\\
+    \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
+    \ExpInp{\typ}{\rho}(\rho_1(\gamma_1(\expr)), \rho_2(\gamma_2(\expr')))
+  \end{gathered}
+\end{equation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

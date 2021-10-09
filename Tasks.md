@@ -32,8 +32,8 @@
       - [x] define helper lemma
       - [ ] prove helper lemma
         - [x] define reflexivity lemma
-        - [ ] prove reflexivity lemma
-          - [ ] show a couple of different cases
+        - [x] prove reflexivity lemma
+          - [x] show a couple of different cases
         - [ ] show a couple of different cases
 - [x] Fix type-setting
   - [x] ctx-equiv -> CE
@@ -42,9 +42,9 @@
 
 ## Logical Relations
 - [x] Define a logical relations model for CE
-- [ ] Write in LR
+- [x] Write in LR
   - [x] val- and exp-interpretation
-  - [ ] varenv- and typenv-interpretation
+  - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
 - [ ] Prove compatibility lemmas
 
