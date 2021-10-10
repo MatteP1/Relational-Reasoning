@@ -47,6 +47,9 @@
   - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
 - [ ] Prove compatibility lemmas
+  - [x] Unit
+  - [x] Add
+  - [ ] ...
 
 ## Using the Logical Relations
 

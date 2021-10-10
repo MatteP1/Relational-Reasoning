@@ -108,6 +108,9 @@
 \def\envs#1#2\exp#3\type#4{#1 \; | \; #2 \; \vdash #3 : #4}
 \def\envstyp#1#2\type#3{#1 \; | \; #2 \; \vdash #3}
 
+\def\envsrel#1#2\exp1#3 \rel#4 \exp2#5\type#6
+  {#1 \; | \; #2 \; \vdash #3 \approx^{#4} #5 : #6}
+
 \def\envscteq#1#2\exp1#3\exp2#4\type#5
   {#1 \; | \; #2 \; \vdash #3 \approx^{ctx} #4 : #5}
 
@@ -639,7 +642,7 @@ Logical relations model
 
 Value interpretation
 \begin{align*}
-  \ValInpGen{\typ}{\rho}    &\triangleq \envs \emptenv \empvenv \exp \val_1 \type \typ \land \envs \emptenv \empvenv \exp \val_2 \type \typ \land \dots\\
+  \ValInpGen{\typ}{\rho}    &\triangleq \envs \emptenv \empvenv \exp \val_1 \type \rho_1(\typ) \land \envs \emptenv \empvenv \exp \val_2 \type \rho_2(\typ) \land \dots\\
   \ValInpGen{\Tunit}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
   \ValInpGen{\Tint}{\rho}   &\triangleq (\val_1, \val_2) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}\\
   \ValInpGen{\Tbool}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\True, \True), (\False, \False)\}\\
@@ -676,7 +679,7 @@ Expression interpretation
 \begin{align*}
   \ExpInp{\typ}{\rho}(\expr_1, \expr_2) &\triangleq 
   \begin{aligned}[t]
-    \envs \emptenv \empvenv \exp \expr_1 \type \rho_1{\typ} \land \envs \emptenv \empvenv \exp \expr_2 \type \rho_2{\typ} \land \expr_1 \Downarrow \iff \expr_2 \Downarrow \land\\
+    \envs \emptenv \empvenv \exp \expr_1 \type \rho_1(\typ) \land \envs \emptenv \empvenv \exp \expr_2 \type \rho_2(\typ) \land \expr_1 \Downarrow \iff \expr_2 \Downarrow \land\\
     (\forall \val_1, \val_2 . \expr_1 \Downarrow \val_1 \land \expr_2 \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})
   \end{aligned}
 \end{align*}
@@ -703,6 +706,18 @@ Logical relation
     \ExpInp{\typ}{\rho}(\rho_1(\gamma_1(\expr)), \rho_2(\gamma_2(\expr')))
   \end{gathered}
 \end{equation}
+
+
+Compatibility lemmas
+Essentially just congruency rules as stated in appendix (but with LR being the relation). We have to prove these (and adequacy) to show that LR ==> CE, meaning we can state theorems in terms of LR instead of CE, and then get CE as a consequence.
+\begin{mathpar}
+  \inferrule*[lab=Cgr-unit]{ }{ \envsrel \tenv \venv \exp1 {\TT} \rel {LR} \exp2 {\TT} \type {\Tunit} }
+  \and
+  \inferrule*[lab=Cgr-add]
+    { {\envsrel \tenv \venv \exp1 {\expr_1} \rel {LR} \exp2 {\expr_1'} \type {\Tint} } \and
+    { \envsrel \tenv \venv \exp1 {\expr_2} \rel {LR} \exp2 {\expr_2'} \type {\Tint} } }
+    { \envsrel \tenv \venv \exp1 {\expr_1 + \expr_2} \rel {LR} \exp2 {\expr_1' + \expr_2'} \type {\Tint} }
+\end{mathpar}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -749,10 +764,14 @@ Logical relation
 \section{Congruence Rules for Alternative Definition of Contextual Equivalence}\label{appendix:Cgr}
 
 \begin{mathpar}
-  \inferrule*[lab=Cgr-var \todo{is this correct?}]
+  \inferrule*[lab=Cgr-var \todo{correct?}]
     {(\var : \typ) \in \venv}
     {\envscteqgen \tenv \venv \exp1 {\var} \exp2 {\var} \type {\typ} }
   \and
+  \inferrule*[lab=Cgr-var2 \todo{or this?}]
+  { }
+  {\envscteqgen \tenv \venv \exp1 {\var} \exp2 {\var} \type {\venv(\var)} }
+\and
   \inferrule*[lab=Cgr-unit]{ }{ \envscteqgen \tenv \venv \exp1 {\TT} \exp2 {\TT} \type {\Tunit} }
   \and
   \inferrule*[lab=Cgr-int]{ }{ \envscteqgen \tenv \venv \exp1 {\Num{n}} \exp2 {\Num{n}} \type {\Tint} }
