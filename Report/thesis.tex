@@ -713,29 +713,47 @@ Type environment interpretation
   \TenvInp{\tenv, \Tvar} &\triangleq \{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}] \mid \rho \in \TenvInp{\tenv} \land R \in Rel[\typ_1, \typ_2]\}
 \end{align*}
 
-Logical relation
-\begin{equation}
-  \begin{gathered}
-    \LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ}\\
-    \iff\\
-    \envs \tenv \venv \exp \expr \type \typ \; \land \; \envs \tenv \venv \exp \expr' \type \typ \; \land\\
-    \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
-    \ExpInp{\typ}{\rho}(\rho_1(\gamma_1(\expr)), \rho_2(\gamma_2(\expr')))
-  \end{gathered}
-\end{equation}
+\begin{definition}[Logical relation]\label{def:LogRel}
+  \begin{equation*}
+    \begin{gathered}
+      \LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ}\\
+      \iff\\
+      \envs \tenv \venv \exp \expr \type \typ \; \land \; \envs \tenv \venv \exp \expr' \type \typ \; \land\\
+      \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
+      \ExpInp{\typ}{\rho}(\rho_1(\gamma_1(\expr)), \rho_2(\gamma_2(\expr')))
+    \end{gathered}
+  \end{equation*}
+\end{definition}
 
 
 Compatibility lemmas
 Essentially just congruency rules as stated in appendix (but with LR being the relation). We have to prove these (and adequacy) to show that LR ==> CE, meaning we can state theorems in terms of LR instead of CE, and then get CE as a consequence.
-\begin{mathpar}
-  \inferrule*[lab=Cgr-unit]{ }{ \envsrel \tenv \venv \exp1 {\TT} \rel {LR} \exp2 {\TT} \type {\Tunit} }
-  \and
-  \inferrule*[lab=Cgr-add]
+\begin{lemma}[Cmpt-unit]
+  $\inferrule{ }{ \envsrel \tenv \venv \exp1 {\TT} \rel {LR} \exp2 {\TT} \type {\Tunit} }$
+\end{lemma}
+\begin{proof}
+  By definition \ref*{def:LogRel}, we must show $\jdg{\tenv}{\venv}{\TT}{\Tunit} \land \jdg{\tenv}{\venv}{\TT}{\Tunit} \land\\ \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
+  \ExpInp{\Tunit}{\rho}(\rho_1(\gamma_1(\TT)), \rho_2(\gamma_2(\TT)))$. The well-typedness simply follows by the typing rule T-unit.\\
+  So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, we must show\\ $\ExpInp{\Tunit}{\rho}(\rho_1(\gamma_1(\TT)), \rho_2(\gamma_2(\TT))) \equiv \ExpInp{\Tunit}{\rho}(\TT, \TT)$. Thus, we must show four things
+  \begin{enumerate}
+    \item $\envs \emptenv \empvenv \exp \TT \type \rho_1(\Tunit)$
+    \item $\envs \emptenv \empvenv \exp \TT \type \rho_2(\Tunit)$
+    \item $\TT \Downarrow \iff \TT \Downarrow$
+    \item $\forall \val_1, \val_2 . \TT \Downarrow \val_1 \land \TT \Downarrow \val_2 \implies \ValInpGen{\Tunit}{\rho})$
+  \end{enumerate}
+  Given that $\rho_1(\Tunit) = \rho_2(\Tunit) = \Tunit$, the well-typedness once again simply follows from typing rule T-unit. (3) holds trivially. So let's show (4). Assume some $\val_1, \val_2$, and $\TT \Downarrow \val_1$ and $\TT \Downarrow \val_2$, then we must show $\ValInpGen{\Tunit}{\rho}$. Since $\TT$ is already a value, we have $\val_1 = \val_2 = \TT$, meaning we must show $\ValInp{\Tunit}{\rho}(\TT, \TT)$. Once again, the well-typedness holds by T-unit, and we have that $(\TT, \TT) \in \{(\TT, \TT)\}$, so we are done.
+\end{proof}
+
+
+\begin{lemma}[Cmpt-add]
+  $\inferrule
     { {\envsrel \tenv \venv \exp1 {\expr_1} \rel {LR} \exp2 {\expr_1'} \type {\Tint} } \and
     { \envsrel \tenv \venv \exp1 {\expr_2} \rel {LR} \exp2 {\expr_2'} \type {\Tint} } }
-    { \envsrel \tenv \venv \exp1 {\expr_1 + \expr_2} \rel {LR} \exp2 {\expr_1' + \expr_2'} \type {\Tint} }
-\end{mathpar}
-
+    { \envsrel \tenv \venv \exp1 {\expr_1 + \expr_2} \rel {LR} \exp2 {\expr_1' + \expr_2'} \type {\Tint} }$
+\end{lemma}
+\begin{proof}
+  \todo{Write in proof}
+\end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
