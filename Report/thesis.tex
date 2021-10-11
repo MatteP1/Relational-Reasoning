@@ -105,17 +105,24 @@
 \newcommand{\emptenv}{\bullet}
 
 % Judgements
-\def\envs#1#2\exp#3\type#4{#1 \; | \; #2 \; \vdash #3 : #4}
-\def\envstyp#1#2\type#3{#1 \; | \; #2 \; \vdash #3}
+\newcommand{\jdg}[4]{#1 \; | \; #2 \; \vdash #3 : #4}
+\newcommand{\jdgType}[3]{#1 \; | \; #2 \; \vdash #3}
+\def\envs#1#2\exp#3\type#4{\jdg{#1}{#2}{#3}{#4}} %TODO: envs -> envsa
+\def\envstyp#1#2\type#3{\jdgType{#1}{#2}{#3}} %TODO: envstyp -> envstypa
+
+\def\envsa #1 | #2 |- #3 : #4 {\jdg{#1}{#2}{#3}{#4}}
+\def\envstypa #1 | #2 |- #3 {\jdgType{#1}{#2}{#3}}
+
+\newcommand{\jdgRel}[6]{#1 \; | \; #2 \; \vdash #3 \approx^{#4} #5 : #6}
 
 \def\envsrel#1#2\exp1#3 \rel#4 \exp2#5\type#6
-  {#1 \; | \; #2 \; \vdash #3 \approx^{#4} #5 : #6}
+  {\jdgRel{#1}{#2}{#3}{#4}{#5}{#6}}
 
 \def\envscteq#1#2\exp1#3\exp2#4\type#5
-  {#1 \; | \; #2 \; \vdash #3 \approx^{ctx} #4 : #5}
+  {\jdgRel{#1}{#2}{#3}{ctx}{#4}{#5}}
 
 \def\envscteqgen#1#2\exp1#3\exp2#4\type#5
-  {#1 \; | \; #2 \; \vdash #3 \approx #4 : #5}
+  {\jdgRel{#1}{#2}{#3}{}{#4}{#5}}
 
 % Step
 \newcommand{\step}{\rightarrow}
@@ -605,7 +612,17 @@ To prove the next theorem, we will need to show two lemmas.
   $\envs \tenv \venv \exp \expr \type \typ \implies R(\tenv, \venv, \expr, \expr, \typ)$
 \end{lemma}
 \begin{proof}
-  \todo{do proof}
+  By induction on the typing derivation $\jdg{\tenv}{\venv}{\expr}{\typ}$. We will only do a few cases here, as they are all very similar.
+  \begin{itemize}
+    \item[case] T-var.\\
+      Assuming $\jdg{\tenv}{\venv}{\var}{\typ}$ and $(\var:\typ) \in \venv$, we must show $R(\tenv, \venv, \var, \var, \typ)$. Since $\venv(\var) = \typ$, this follows from the congruency rule $Cgr-var$ ?? $Cgr-var$.
+    \item[case] T-unit.\\
+      Assuming $\jdg{\tenv}{\venv}{\TT}{\Tunit}$, we must show $R(\tenv, \venv, \TT, \TT, \Tunit)$. This follows directly from the congruency rule $Cgr-unit$.
+    \item[case] T-add.\\
+      Assuming $\jdg{\tenv}{\venv}{\expr_1 + \expr_2}{\Tint}$, $\jdg{\tenv}{\venv}{\expr_1}{\Tint}$, and $\jdg{\tenv}{\venv}{\expr_2}{\Tint}$, we must show $R(\tenv, \venv, \expr_1 + \expr_2, \expr_1 + \expr_2, \Tint)$. By our induction hypotheses, we have $\jdgRel{\tenv}{\venv}{\expr_1}{}{\expr_1}{\Tint}$ and $\jdgRel{\tenv}{\venv}{\expr_2}{}{\expr_2}{\Tint}$. Now, the congruency rule $Cgr-add$ gives us $\jdgRel{\tenv}{\venv}{\expr_1 + \expr_2}{}{\expr_1 + \expr_2}{\Tint}$, which was what we wanted.
+    \item[case] T-tlam.\\
+      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$.By our induction hypothesis, we get $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cgr-tlam$, we get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
+  \end{itemize}
 \end{proof}
 
 \begin{lemma}\label{lem:CE_eq_part2_helper}

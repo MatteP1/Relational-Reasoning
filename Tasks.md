@@ -35,9 +35,10 @@
         - [x] prove reflexivity lemma
           - [x] show a couple of different cases
         - [ ] show a couple of different cases
-- [x] Fix type-setting
+- [ ] Fix type-setting
   - [x] ctx-equiv -> CE
   - [x] type environment and variable environment (tctx -> venv)
+  - [ ] refactor judgements
 - [ ] Proof read
 
 ## Logical Relations

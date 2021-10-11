@@ -2,6 +2,7 @@
 
 - Congruence Rule for T-var?
 - Congruence Rule for T-rec (and other that use variables like T-match)?
+- Name of rules. Is Cgr-... fine?
 - Is the proof of reflexivity correct?
 - What is the induction hypothesis in proof of lemma (R(..., e, e',...) and C => R(..., C(e), C(e'))?
 - Which compatibility lemmas should i prove?
