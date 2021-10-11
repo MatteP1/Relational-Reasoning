@@ -39,6 +39,7 @@
   - [x] ctx-equiv -> CE
   - [x] type environment and variable environment (tctx -> venv)
   - [ ] refactor judgements
+- [ ] Finish writing text
 - [ ] Proof read
 
 ## Logical Relations
