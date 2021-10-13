@@ -33,12 +33,20 @@
       - [ ] prove helper lemma
         - [x] define reflexivity lemma
         - [x] prove reflexivity lemma
-          - [x] show a couple of different cases
-        - [ ] show a couple of different cases
+          - [x] show one case (Tlam)
+        - [ ] show cases
+          - [ ] base [*]
+          - [ ] add
+          - [ ] fst
+          - [ ] rec
+          - [ ] app
+          - [ ] Tlam
 - [ ] Fix type-setting
   - [x] ctx-equiv -> CE
   - [x] type environment and variable environment (tctx -> venv)
   - [ ] refactor judgements
+- [ ] Define Congruency and Adequacy as separate properties
+  - [ ] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
 - [ ] Finish writing text
 - [ ] Proof read
 
@@ -48,10 +56,15 @@
   - [x] val- and exp-interpretation
   - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
-- [ ] Prove compatibility lemmas
+- [ ] Prove compatibility lemmas (only unit and add with well-typedness)
   - [x] Unit
   - [x] Add
-  - [ ] ...
+  - [ ] Match (if-similar, but simpler)
+  - [ ] Fst
+  - [ ] Rec
+  - [ ] App
+  - [ ] Tlam
+  - [ ] Tapp (if space)
 
 ## Using the Logical Relations
 
