@@ -23,9 +23,9 @@
   - [x] Talk about CE being enough for non-base types (specifically function type)
     - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
 - [ ] Mention the other, equivalent way of defining Contextual Equivalence (see google photos)
-  - [ ] Congruence Rules
+  - [x] Congruence Rules
   - [x] Adequacy
-  - [ ] To a large extend, prove they are equivalent
+  - [ ] Prove they are equivalent
     - [x] ctxeq(forallC) => congruence (we showed one rule) and adequate (google photo)
     - [ ] other direction: (google photo)
       - [x] main proof
@@ -45,8 +45,8 @@
   - [x] ctx-equiv -> CE
   - [x] type environment and variable environment (tctx -> venv)
   - [ ] refactor judgements
-- [ ] Define Congruency and Adequacy as separate properties
-  - [ ] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
+- [x] Define Congruency and Adequacy as separate properties
+  - [x] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
 - [ ] Finish writing text
 - [ ] Proof read
 
