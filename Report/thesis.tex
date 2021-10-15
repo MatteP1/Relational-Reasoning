@@ -639,19 +639,20 @@ To prove the next theorem, we will need to show two lemmas.
 \end{lemma}
 \begin{proof}
   By induction on $\ctx$. We show here only a few interesting cases.
+  In general, the induction hypothesis will be $\forall \tenv, \venv, \tenv', \venv', \expr, \expr', \typ, \typ' . R(\tenv, \venv, \expr, \expr', \typ) \land \ctx' : (\envstyp \tenv \venv \type \typ \Rightarrow \envstyp {\tenv'} \venv' \type \typ') \implies R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \typ')$, where $\ctx'$ is structurally smaller than $\ctx$.
   \begin{itemize}
     \item[case] $\ctx = \empctx$.\\
-      \todo{finish case}
-    \item[case] $\ctx = \ctx' + \expr$\\
-      \todo{finish case}
+      So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx: (\envstyp \tenv \venv \type \typ \Rightarrow \envstyp {\tenv'} \venv' \type \typ')$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. We may conclude that $\tenv = \tenv'$, $\venv = \venv'$, and $\typ = \typ'$, given that $\empctx : (\envstyp \tenv \venv \type \typ \Rightarrow \envstyp \tenv \venv \type \typ)$. So since $\expr = \empctx[\expr] = \ctx[\expr]$, and $\expr' = \empctx[\expr'] = \ctx[\expr']$, we get $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$, which was what we wanted.
+    \item[case] $\ctx = \ctx' + \expr''$\\
+      So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. In this case, $\ctx : (\envstyp \tenv \venv \type \typ \Rightarrow \jdgType{\tenv'}{\venv'}{\Tint})$ and $\ctx' : (\envstyp \tenv \venv \type \typ \Rightarrow \envstyp \tenv \venv \type \Tint)$, meaning $\typ' = \Tint$. So we have $R(\tenv, \venv, \expr, \expr', \Tint)$, and our goal then is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tint)$. From the context typing and from rule T-add, we may conclude $\jdg{\tenv'}{\venv'}{\expr''}{\Tint}$. So by lemma \ref{lem:R_Cng_is_reflexive}, we know that $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\Tint}$. And by I.H. we get $R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \Tint) \equiv \jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tint}$. Finally, from the congruence rule cng-add, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] + \expr''}{}{\ctx'[\expr'] + \expr''}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$, which was what we wanted.
     \item[case] $\ctx = \Fst \ctx'$\\
-      \todo{finish case}
+      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_1})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tprod{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_1)$. By I.H. we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tprod{\typ_1}{\typ_2}}$, and by cng-fst with this, we get $\jdgRel{\tenv'}{\venv'}{\Fst \ctx'[\expr]}{}{\Fst \ctx'[\expr']}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$.
     \item[case] $\ctx = \Rec f \var := \ctx'$\\
-      \todo{finish case}
-    \item[case] $\ctx = \ctx' \; \expr$\\
-      \todo{finish case}
+      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv', f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\typ_2})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tfunc{\typ_1}{\typ_2})$. By I.H. we get $\jdgRel{\tenv'}{\venv', f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ_2}$, and by cng-rec with this, we get $\jdgRel{\tenv'}{\venv'}{\Rec f x := \ctx'[\expr]}{}{\Rec f x := \ctx'[\expr']}{\Tfunc{\typ_1}{\typ_2}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tfunc{\typ_1}{\typ_2}}$.
+    \item[case] $\ctx = \ctx' \; \expr''$\\
+      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_2})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_2)$. From the context-typing and T-app, we have $\jdg{\tenv'}{\venv'}{\expr''}{\typ_1}$. By lemma \ref{lem:R_Cng_is_reflexive}, we get $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\typ_1}$. Now, by the induction hypothesis, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr]}{\Tfunc{\typ_1}{\typ_2}}$. And by cng-app with this, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] \; \expr''}{}{\ctx'[\expr] \; \expr''}{\typ_2} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr]}{\typ_2}$.
     \item[case] $\ctx = \Tlam \ctx'$\\
-      \todo{finish case}
+      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tall{\Tvar}{\typ'}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv', \Tvar}{\venv'}{\typ'})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tall{\Tvar}{\typ'})$. By I.H. we get $\jdgRel{\tenv', \Tvar}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ'}$, and by cng-tlam with this, we get $\jdgRel{\tenv'}{\venv'}{\Tlam \ctx'[\expr]}{}{\Tlam \ctx'[\expr']}{\Tall{\Tvar}{\typ'}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tall{\Tvar}{\typ'}}$.
   \end{itemize}
 \end{proof}
 With this lemma proved, we are ready to prove the next theorem.
@@ -926,7 +927,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   \and
   \inferrule*[lab=Cng-rec]
     { \envscteqgen \tenv {\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1} \exp1 {\expr} \exp2 {\expr'} \type {\typ_2} }
-    { \envscteqgen \tenv \venv \exp1 {\Rec f \var := \expr} \exp2 {\Rec f \var := \expr'} \type {\typ_1} }
+    { \envscteqgen \tenv \venv \exp1 {\Rec f \var := \expr} \exp2 {\Rec f \var := \expr'} \type \Tfunc{\typ_1}{\typ_2} }
   \and
   \inferrule*[lab=Cng-app]
     { {\envscteqgen \tenv \venv \exp1 {\expr_1} \exp2 {\expr_1'} \type {\Tfunc{\typ_1}{\typ_2}} } \and
