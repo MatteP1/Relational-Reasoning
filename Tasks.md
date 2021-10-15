@@ -22,25 +22,25 @@
   - [x] Talk about CE being enough for integers
   - [x] Talk about CE being enough for non-base types (specifically function type)
     - [x] Show congruence rule for function application, and argue it's correctness, and why it is enough (see google photos)
-- [ ] Mention the other, equivalent way of defining Contextual Equivalence (see google photos)
+- [x] Mention the other, equivalent way of defining Contextual Equivalence (see google photos)
   - [x] Congruence Rules
   - [x] Adequacy
-  - [ ] Prove they are equivalent
+  - [x] Prove they are equivalent
     - [x] ctxeq(forallC) => congruence (we showed one rule) and adequate (google photo)
-    - [ ] other direction: (google photo)
+    - [x] other direction: (google photo)
       - [x] main proof
       - [x] define helper lemma
-      - [ ] prove helper lemma
+      - [x] prove helper lemma
         - [x] define reflexivity lemma
         - [x] prove reflexivity lemma
           - [x] show one case (Tlam)
-        - [ ] show cases
-          - [ ] base [*]
-          - [ ] add
-          - [ ] fst
-          - [ ] rec
-          - [ ] app
-          - [ ] Tlam
+        - [x] show cases
+          - [x] base [*]
+          - [x] add
+          - [x] fst
+          - [x] rec
+          - [x] app
+          - [x] Tlam
 - [ ] Fix type-setting
   - [x] ctx-equiv -> CE
   - [x] type environment and variable environment (tctx -> venv)
