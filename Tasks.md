@@ -41,10 +41,10 @@
           - [x] rec
           - [x] app
           - [x] Tlam
-- [ ] Fix type-setting
+- [x] Fix type-setting
   - [x] ctx-equiv -> CE
   - [x] type environment and variable environment (tctx -> venv)
-  - [ ] refactor judgements
+  - [x] refactor judgements
 - [x] Define Congruency and Adequacy as separate properties
   - [x] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
 - [ ] Finish writing text
