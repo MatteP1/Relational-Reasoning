@@ -906,7 +906,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   \inferrule*[lab=Cng-match]
     { {\jdgRel{\tenv}{\venv}{\expr_1}{}{\expr_1'}{\Tsum{\typ_1}{\typ_2}} } \and
     { \jdgRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{}{\expr_2'}{\typ} } \and
-    { \jdgRel{\tenv}{\venv, \var : \typ_1}{\expr_3}{}{\expr_3'}{\typ} }
+    { \jdgRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{}{\expr_3'}{\typ} }
     }
     { \jdgRel{\tenv}{\venv}{\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}{}{\Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end}{\typ} }
   \and
