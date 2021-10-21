@@ -5,6 +5,10 @@
 
 - Is my value interpretation for function type correct?
 
+- Expression interpretation 
+    (forall v . e ->* v ==> exists v' . e' ->* v' /\ V[t]_{rho}(v, v')) /\ (forall v' . e' ->* v' ==> exists v . e ->* v /\ V[t]_{rho}(v, v'))
+    - could this work? it may shorten the proofs quite a bit (if we only show one side of the /\ )
+
 - Cng-rec
     - How do we use the initial assumption?
         - How do we instantiate it?
