@@ -119,6 +119,8 @@
 \newcommand{\hstepRel}[2]{#1 \hstep #2}
 
 % Logical Relation
+\newcommand{\WtInp}[2]{\mathcal{W} \llbracket #1 \rrbracket_{#2}}
+\newcommand{\WtInpGen}[2]{\WtInp{#1}{#2}(\val_1, \val_2)}
 \newcommand{\ValInp}[2]{\mathcal{V} \llbracket #1 \rrbracket_{#2}}
 \newcommand{\ValInpGen}[2]{\ValInp{#1}{#2}(\val_1, \val_2)}
 \newcommand{\ExpInp}[2]{\mathcal{E} \llbracket #1 \rrbracket_{#2}}
@@ -685,8 +687,11 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 Logical relations model
 
 Value interpretation
+\begin{equation*}
+  \WtInpGen{\typ}{\rho} \triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)}\\
+\end{equation*}
+As part of all relations below, we have that $\WtInpGen{\typ}{\rho}$, which we don't write for succinctness.
 \begin{align*}
-  \ValInpGen{\typ}{\rho}    &\triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)} \land \dots\\
   \ValInpGen{\Tunit}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
   \ValInpGen{\Tint}{\rho}   &\triangleq (\val_1, \val_2) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}\\
   \ValInpGen{\Tbool}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\True, \True), (\False, \False)\}\\

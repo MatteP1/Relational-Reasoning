@@ -8,15 +8,18 @@
 - [x] Read parts I and II of types and programming languages
 - [x] Watch videos on Blackboard
 
-## System F w/ recursive functions. The Language
-- [x] Write in language (System F w/rec) in report
+## System F. The Language
+- [x] Write in language (System F) in report
 - [x] Define and prove "Evaluation under Context" lemma for System F w/rec
   - [x] Define k = [] or Val(e) lemma. Show 1 case
   - [x] Write in complete EuC lemma
   - [x] Proof read
+- [ ] Refactor for terminating language
+- [ ] Substitution
+- [ ] Fix typ-setting
 
 ## Contextual Equivalence
-- [x] Define Contextual Equivalence for System F w/rec
+- [x] Define Contextual Equivalence for System F
 - [x] Write in Contextual Equivalence
 - [x] Explanation and intuition
   - [x] Talk about CE being enough for integers
@@ -47,18 +50,19 @@
   - [x] refactor judgements
 - [x] Define Congruency and Adequacy as separate properties
   - [x] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
+- [ ] Refactor for terminating language
 - [ ] Finish writing text
 - [ ] Proof read
 
 ## Logical Relations
 - [x] Define a logical relations model for CE
 - [x] Write in LR
-  - [x] val- and exp-interpretation
+  - [ ] val- and exp-interpretation
   - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
 - [ ] Prove compatibility lemmas (only unit and add with well-typedness)
-  - [x] Unit
-  - [x] Add
+  - [ ] Unit
+  - [ ] Add
   - [ ] Match (if-similar, but simpler)
   - [ ] Fst
   - [ ] Rec
