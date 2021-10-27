@@ -184,9 +184,12 @@ Department of Computer Science, Aarhus University\\[1ex]
 
 \chapter{Definition of Language}
 \label{ch:DoL}
-
 \todo{create draft}\\
-Syntax
+To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
+\section{The language}
+We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have. Thus, we may attempt to evaluate a program even though it has type-errors.
+\subsection{Syntax}
+The syntax captures exactly all programs that can be written in our language. We define it in Backus-Naur form as follows:
 \begin{align*}
   \expr \BNFdef & \TT \ALT & \text{(unit value)}\\
                 & \var \ALT & \text{(variables)}\\
@@ -202,7 +205,9 @@ Syntax
                   & \text{(sums)}\\
                 & \Rec f \var := \expr \ALT \expr \; \expr
                   & \text{(recursive functions)}\\
-                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}\\[8pt]
+                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}
+\end{align*}
+\begin{align*}
   \val \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
                   \Rec f \var := \expr \ALT \Tlam \expr
@@ -224,8 +229,10 @@ Syntax
                   \Match \elctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
                   \elctx \; \expr \ALT \val \; \elctx \ALT \Tapp{\elctx}
 \end{align*}
-\newpage
-Typing rules
+Thus, all programs in our language can be derived using the rules above. Evaluation contexts will be used when we get to defining the dynamics. Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
+
+\subsection{Typing rules}
+The typing rules gives us a way to derive the type of a program in our language. They are defined using inference rules as follows:
 \begin{mathpar}
   \inferrule*[lab=T-var]
     {(\var : \typ) \in \venv}
@@ -309,14 +316,15 @@ Typing rules
   {\jdg{\tenv}{\venv}{\expr}{\Tall{\Tvar}{\typ}}}
   {\jdg{\tenv}{\venv}{\Tapp{\expr}}{\subst{\typ}{\Tvar}{\typ'}}}
 \end{mathpar}
-\newpage
-Dynamics
+
+\subsection{Dynamics}
+Finally, we define the semantics of the language. We do this using a single "step" rule, and several "head-step" rules. The head-step rules govern all possible reductions, and the "head-step-step" rule tells us where in our program we can apply these reductions.
 \begin{mathpar}
   \inferrule*[lab=head-step-step]
     {\hstepRel{\expr}{\expr'}}
     {\elctx[\expr] \step \elctx[\expr']}
 \end{mathpar}
-
+The evaluation context, $\elctx$, tells us where in our program we may apply the reduction. If we have an expression $\expr$, and we have $\expr = \elctx[f]$, and $f \hstep f'$, then we may conclude that $\expr \step \elctx[f']$. Now, the head-steps are as follows:
 \begin{mathpar}
   \inferrule*[lab=E-add]{}
     {\hstepRel{\Num{n_1} + \Num{n_2}} {\Num{n_1 + n_2}}}
@@ -370,20 +378,18 @@ Dynamics
   \inferrule*[lab=E-tapp-tlam]{}{\hstepRel{\Tapp{(\Tlam \expr)}}
   {\expr}}
 \end{mathpar}
+At this point, our language has been formally been defined, so next we will note down some facts and results about it.
 
-
-% NOTES
-
-% language is non-terminating. We can define \omega.
-
-% types are curry-style: types are a property of a program in a language.
-%   We can run the program without ever thinking about types. We can run it
-%   even if we have type errors!
-
+\section{Facts about the language}
+The first point we note about the language is that it is non-terminating. This essentially means that we can have well-typed programs that never terminate. Take for example the following program, which we will denote $\omega$.
+\begin{equation*}
+  \omega = (\Rec f x := f x) \; 0
+\end{equation*}
+We can make this program have any type $\typ_2$ we like. By the T-rec rule and T-app rule, we may conclude $(\Rec f x := f x)$ has type $\Tfunc{\Tint}{\typ_2}$. And by T-app rule $\omega$ has type $\tau_2$. This well-typed program never terminates; this becomes evident when we take one step: $(\Rec f x := f x) \; 0 \step (\Rec f x := f x) \; 0$.\bigskip\\
+Next we note down some results about the evaluation context.
 \begin{lemma}\label{lem:headstep_val}
   $\elctx[\expr] \hstep \expr' \land \neg (\elctx = \empelctx) \implies \Val{e}$
 \end{lemma}
-
 \begin{proof}
   This can be shown by doing case distinction on the head-step $\elctx[\expr] \hstep \expr'$. We show it here only for case E-ADD, as all the other cases are similar. \medskip\\
   So assume $\elctx[\expr] = \Num{n_1} + \Num{n_2}$, and $\expr' = \Num{n_1 + n_2}$.
@@ -484,6 +490,19 @@ Dynamics
   (\neg \Val{\expr''} \land \elctx[\expr''] = \val))$. Now, if $\neg \Val{\expr''}$ then $\neg \Val{\elctx[\expr'']}$, which one may see simply by inspecting the possible evaluation contexts. Therefore, $\elctx[\expr''] \neq \val$, so $\neg(\neg \Val{\expr''} \land \elctx[\expr''] = \val)$. Thus, we conclude $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
 \end{proof}
 
+\section{substitution}
+We define a substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows:
+\begin{align*}
+  \emptyset(\expr) &= \expr\\
+  \gamma[\map{\var}{\val}](\expr) &= \gamma(\subst{\expr}{\var}{\val})
+\end{align*}
+
+\begin{lemma}[Substitution]\label{lem:sub}
+  $\gamma[\map{\var}{\val}](\expr) = \subst{\gamma(\expr)}{\var}{\val}$
+\end{lemma}
+\begin{proof}
+  Lemma 10 in notes by Lau.
+\end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

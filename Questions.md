@@ -15,3 +15,5 @@
 
 - Cng-Tlam
     - Should I prove well-typedness in this case. It seems relevant.
+
+- Should I show substitution lemma? It has been shows in notes by Lau.
