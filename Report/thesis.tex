@@ -68,6 +68,7 @@
 \def\MatchV[#1]#2with#3=>#4|#5=>#6end{\begin{aligned}[#1]&\MatchCmd{}\;#2\;\WithCmd{}\\ & \hspace{0.5em}#3\Rightarrow#4\\ & | \hspace{0.2em}#5\Rightarrow#6\\ &\EndCmd{}\end{aligned}}
 \newcommand{\RecCmd}{\Keyword{rec}}
 \long\def\Rec#1 #2:=#3{\RecCmd\; #1(#2) := #3}
+\long\def\fun#1.#2{\lambda #1 .\; #2}
 
 \newcommand{\Tvar}{X}
 \newcommand{\TvarB}{Y}
@@ -189,7 +190,7 @@ Department of Computer Science, Aarhus University\\[1ex]
 \todo{create draft}\\
 To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
 \section{The language}
-We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have. Thus, we may attempt to evaluate a program even though it has type-errors.
+We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have. Thus, we may attempt to evaluate a program even though it has type-errors.
 \subsection{Syntax}
 The syntax captures exactly all programs that can be written in our language. We define it in Backus-Naur form as follows:
 \begin{align*}
@@ -205,14 +206,12 @@ The syntax captures exactly all programs that can be written in our language. We
                 & \Inj{1} \expr \ALT \Inj{2} \expr \ALT 
                   \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
                   & \text{(sums)}\\
-                & \Rec f \var := \expr \ALT \expr \; \expr
-                  & \text{(recursive functions)}\\
+                & \fun \var . \expr \ALT \expr \; \expr
+                  & \text{(functions)}\\
                 & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}
-\end{align*}
-\begin{align*}
   \val \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
-                  \Rec f \var := \expr \ALT \Tlam \expr
+                  \fun \var . \expr \ALT \Tlam \expr
                   & \text{(values)}\\[8pt]
   \typ \BNFdef  & \Tunit \ALT \Tint \ALT \Tbool \ALT {\Tprod \typ \typ} \ALT
                   {\Tsum \typ \typ} \ALT {\Tfunc \typ \typ} \ALT 
@@ -300,9 +299,9 @@ The typing rules gives us a way to derive the type of a program in our language.
     }
     {\jdg{\tenv}{\venv}{\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}{\typ}}
   \and
-  \inferrule*[lab=T-rec]
-    {\jdg{\tenv}{\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\expr}{\typ_2}}
-    {\jdg{\tenv}{\venv}{\Rec f \var := \expr}{\Tfunc{\typ_1}{\typ_2}}}
+  \inferrule*[lab=T-lam]
+    {\jdg{\tenv}{\venv, \var : \typ_1}{\expr}{\typ_2}}
+    {\jdg{\tenv}{\venv}{\fun \var . \expr}{\Tfunc{\typ_1}{\typ_2}}}
   \and
   \inferrule*[lab=T-app]
     {{\jdg{\tenv}{\venv}{\expr_1}{\Tfunc{\typ_1}{\typ_2}}} \and
@@ -372,9 +371,9 @@ The evaluation context, $\elctx$, tells us where in our program we may apply the
     {\hstepRel{\Match (\Inj{2} \val) with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}
      {\subst{\expr_3}{\var}{\val}}}
   \and
-  \inferrule*[lab=E-rec-app]{}
-    {\hstepRel{(\Rec f \var := \expr) \val}
-    {\subst{\subst{\expr}{f}{\Rec f \var := \expr}}{\var}{\val}}
+  \inferrule*[lab=E-lam-app]{}
+    {\hstepRel{(\fun x . \expr) \; \val}
+    {\subst{\expr}{\var}{\val}}
     }
   \and
   \inferrule*[lab=E-tapp-tlam]{}{\hstepRel{\Tapp{(\Tlam \expr)}}
@@ -382,13 +381,10 @@ The evaluation context, $\elctx$, tells us where in our program we may apply the
 \end{mathpar}
 At this point, our language has been formally been defined, so next we will note down some facts and results about it.
 
-\section{Facts about the language}
-The first point we note about the language is that it is non-terminating. This essentially means that we can have well-typed programs that never terminate. Take for example the following program, which we will denote $\omega$.
-\begin{equation*}
-  \omega = (\Rec f x := f x) \; 0
-\end{equation*}
-We can make this program have any type $\typ_2$ we like. By the T-rec rule and T-app rule, we may conclude $(\Rec f x := f x)$ has type $\Tfunc{\Tint}{\typ_2}$. And by T-app rule $\omega$ has type $\tau_2$. This well-typed program never terminates; this becomes evident when we take one step: $(\Rec f x := f x) \; 0 \step (\Rec f x := f x) \; 0$.\bigskip\\
-Next we note down some results about the evaluation context.
+\section{Properties of the language}
+In this section we note down some useful properties of our language, which will help us reason about the concepts in later chapters. First we show some interesting lemmas about the evaluation context.
+
+\subsection{Evaluation Context}
 \begin{lemma}\label{lem:headstep_val}
   $\elctx[\expr] \hstep \expr' \land \neg (\elctx = \empelctx) \implies \Val{e}$
 \end{lemma}
@@ -406,7 +402,6 @@ Next we note down some results about the evaluation context.
     (\neg \Val{\expr''} \land \elctx[\expr''] = \expr') \right)
     $
 \end{lemma}
-
 \begin{proof}
   So assuming $\elctx[\expr] \stepS \expr'$, we must show
   \begin{equation}\label{eqn:EuCGoal}
@@ -492,7 +487,7 @@ Next we note down some results about the evaluation context.
   (\neg \Val{\expr''} \land \elctx[\expr''] = \val))$. Now, if $\neg \Val{\expr''}$ then $\neg \Val{\elctx[\expr'']}$, which one may see simply by inspecting the possible evaluation contexts. Therefore, $\elctx[\expr''] \neq \val$, so $\neg(\neg \Val{\expr''} \land \elctx[\expr''] = \val)$. Thus, we conclude $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
 \end{proof}
 
-\section{substitution}
+\subsection{substitution}
 We define a substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows:
 \begin{align*}
   \emptyset(\expr) &= \expr\\
@@ -503,8 +498,16 @@ We define a substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2},
   $\gamma[\map{\var}{\val}](\expr) = \subst{\gamma(\expr)}{\var}{\val}$
 \end{lemma}
 \begin{proof}
+  \todo{proper ref}
   Lemma 10 in notes by Lau.
 \end{proof}
+
+\subsection{Normalization}
+\todo{expand a little on this topic}
+\begin{theorem}\label{thm:norm}
+  System F is a normalizing language.
+\end{theorem}
+This won't be proved here.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -534,7 +537,7 @@ Context
                 \Match \ctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT\\
               & \Match \expr with \Inj{1} \var => \ctx | \Inj{2} \var => \expr end \ALT\\
               & \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \ctx end \ALT
-              \Rec f \var := \ctx \ALT
+              \fun \var . \ctx \ALT
               \ctx \; \expr \ALT \expr \; \ctx \ALT \Tlam \ctx \ALT \Tapp{\ctx}
 \end{align*}
 
@@ -554,22 +557,20 @@ Read as: the context takes an expression of type $\typ$ under $\tenv, \venv$, an
       \iff\\
       \jdg{\tenv}{\venv}{\expr_1}{\typ} \quad \land \quad
       \jdg{\tenv}{\venv}{\expr_2}{\typ} \quad \land \quad\\
-      \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tunit}) . (\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow)
+      \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr_1] \Downarrow \val \iff \ctx[\expr_2] \Downarrow \val)
     \end{gathered}
   \end{equation*}
 \end{definition}
+The way we have defined contextual equivalence here means that given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some value $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same value, $\val$. Note here that that value must be a boolean, i.e. either $\True$ or $\False$.\\
+One may ponder why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? In fact, we could have used some of them. The important part is that we are able to make the plugged programs elicit differing behaviour, as we will se below. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:norm} we know that both plugged programs terminate, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of whether or not $\expr_1$ and $\expr_2$ are behaviourally equivalent. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
 
-We define CE so that two programs are CE when under all Contexts, one program terminates iff the other does. One may ponder whether this definition is really strong enough. If both terminate, we really want the result of the two programs to have values that are behaviourally the same, otherwise, we can certainly put them in a context, where they have different behaviour.
-For integer values, for example, this means that the two values must be the same number, and for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
-To give an intuition as to  why this definition is strong enough, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
-Note first that if both $\expr_1$ and $\expr_2$ don't terminate, then they will be behaviourally the same; if we plug them into any context, and the context makes us evaluate the expressions, both will not terminate. And if the context doesn't make us evaluate the expressions, then they have no influence in the run of the programs, so they will behave the same.
+Another cause for speculation is whether or not the definition is really strong enough. If both $\expr_1$ and $\expr_2$ reduce to some values, we really want the values to be behaviourally the same.
+If $\expr_1$ and $\expr_2$ are of integer type, for example, then this means that the two values must be the same number. And for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
+To give an intuition as to  why this definition is strong enough and ensures the above examples, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
+Now consider what happens if $\expr_1$ terminates with some value $\val_1$. Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$, and $\val_1$ and $\val_2$ behave the same? Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate at some value $\val$ if and only if the other one does.
+Let's first consider when $\typ = \Tint$. Then consider when $\ctx$ has the form $\If \empctx = \val_1 then \True else \False$. Here $\ctx[\expr_1] \Downarrow \True$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rules tell us that we will take the else branch, and hence $\ctx[\expr_2] \Downarrow \False$. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ reduces to $\True$, then we know that $\ctx[\expr_2]$ must reduce to $\True$. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, and they both don't run forever, then they must both evaluate to the same number.
 
-Now consider what happens if $\expr_1$ terminates with some value $\val_1$. Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$, and $\val_1$ and $\val_2$ behave the same? Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate if and only if the other one does.
-Let's assume that $\typ = \Tint$. Then consider when $\ctx$ has the form $\If \empctx = \val_1 then \TT else \omega$. Here $\ctx[\expr_1] \Downarrow \TT$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rules tell us that we will take the else branch, and hence not terminate. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ terminates, then we know that $\ctx[\expr_2]$ must also terminate. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, and they both don't run forever, then they must both evaluate to the same number.
-
-Now if $\typ$ was $\Tbool$ instead, the context $\If \empctx then \TT else \omega$ would suffice in showing that $\val_2 = \val_1$. 
-
-It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tint$ or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent (in the sense of functional extensionality)? To see this, consider the following "congruence" rule:
+It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tunit$, $\Tint$, or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent? To see this, consider the following "congruence" rule:
 \begin{mathpar}
   \inferrule*[lab=Cng-ctx-app]
   { { \ctxRel{\tenv}{\venv}{f}{f'}{\Tfunc{\typ}{\typ'}} } \and
@@ -578,17 +579,18 @@ It becomes a little more difficult to reason about when $\typ$ is not a base-typ
   { \ctxRel{\tenv}{\venv}{f \; t}{f' \; t'}{\typ'} }
 \end{mathpar}
 This essentially gives us what we want: if we have two contextually equivalent functions, then, as long as we give them contextually equivalent inputs, the output will also be contextually equivalent. That output may be another function, but then this rule applies again to that output, and so on. In other words, we can keep on applying this rule until we at some point get a base type, like $\Tint$, and at that point, we know that the two numbers will be the same, by the argument made above.\\
-Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may do something similar for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function types.
+Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may do something similar for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function application.
 \begin{proof}
-  By the two hypotheses of the rule, we know that $\jdg{\tenv}{\venv}{f}{\Tfunc{\typ}{\typ'}}$ and $\jdg{\tenv}{\venv}{t}{\typ}$. So by the T-APP rule, we may conclude $\jdg{\tenv}{\venv}{{f \; t}}{\typ'}$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ'}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tunit}) . (\ctx[f \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow)$. So assume some context, $\ctx$, of the right type. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \Downarrow$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\ctx[f' \; t] \Downarrow \iff \ctx[f' \; t'] \Downarrow$. In other words, we have that $\ctx[f \; t] \Downarrow \iff \ctx[f' \; t] \iff \ctx[f' \; t'] \Downarrow$, which was what we wanted.
+  By the two hypotheses of the rule, we know that $\jdg{\tenv}{\venv}{f}{\Tfunc{\typ}{\typ'}}$ and $\jdg{\tenv}{\venv}{t}{\typ}$. So by the T-APP rule, we may conclude $\jdg{\tenv}{\venv}{{f \; t}}{\typ'}$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ'}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val)$. So assume some context, $\ctx$, of the right type, and some value $\val$. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\forall \val' . \ctx[f \; t] \Downarrow \val' \iff \ctx[f' \; t] \Downarrow \val'$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\forall \val'' . \ctx[f' \; t] \Downarrow \val'' \iff \ctx[f' \; t'] \Downarrow \val''$. Now it follows by instantiating both of the prior results with $\val$. Then we have $\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val$, which was what we wanted.
 \end{proof}
+
 The way we have defined contextual equivalence is quite instructive and intuitive. However, one may define contextual equivalence in another, equivalent way, which gives much insight into contextual equivalence, and will make working with the logical relation later more intuitive. We will explore this alternative definition in the next section.
 
 \section{Alternative Definition of Contextual Equivalence}
-Before giving the alternative definition, we first introduce a few concepts. In the following, we shall let $R$ denote any relation over $\tenv \times \venv \times \expr \times \expr \times \typ$. I.e. $R \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$. We also introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\typ}$, and use them interchangeably.\\
+Before giving the alternative definition, we first introduce a few concepts. In the following, we shall let $R$ denote any relation over $\tenv, \venv, \expr, \expr, \typ$. I.e. $R \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$. We also introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\typ}$, and use them interchangeably.\\
 Now we define two properties that a relation $R$ may have.
 \begin{definition}[Adequacy]
-  We say $R$ is an adequate relation when it holds for $R$ that $\jdgRel{\empvenv}{\emptenv}{\expr}{}{\expr'}{\Tunit} \implies \expr \Downarrow \iff \expr' \Downarrow$.
+  We say $R$ is an adequate relation when it holds for $R$ that $\jdgRel{\empvenv}{\emptenv}{\expr}{}{\expr'}{\Tbool} \implies \expr \Downarrow \val \iff \expr' \Downarrow \val$.
 \end{definition}
 
 \begin{definition}[Congruency]
@@ -604,7 +606,7 @@ For instance, the congruence rules for T-unit and T-app would be:
     { \jdgRel{\tenv}{\venv}{\Tapp{\expr}}{}{\Tapp{\expr'}}{\subst{\typ}{\Tvar}{\typ'}} }
 \end{mathpar}
 The remaining congruence rules can be found in the appendix (\ref{appendix:Cng}).\\
-Now, we may define contextual equivalence in the following way
+Now, we may define contextual equivalence in the following way.
 \begin{definition}\label{def:CE2}
   Contextual Equivalence is a relation, $CE \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$, such that
   \begin{itemize}
@@ -621,11 +623,11 @@ We of course have to show that this definition of Contextual Equivalence is actu
 \end{theorem}
 We will show this in two steps, where each step essentially corresponds to one way of the double implication. Each step will be phrased as a theorem.
 \begin{theorem}\label{thm:CE_eq_part1}
-  $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$\text{is a congruence relation,}\\\text{ an adequate relation, and all expressions in the relation are well-typed.}
+  $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$ is a congruence relation, an adequate relation, and all expressions in the relation are well-typed.
 \end{theorem}
 \begin{proof}
   First, the well-typedness follows directly from the definition of contextual equivalence.\\
-  Second, let's show that it is an adequate relation. So assuming $\ctxRel{\empvenv}{\emptenv}{\expr}{\expr'}{\Tunit}$, we must show $\expr \Downarrow \iff \expr' \Downarrow$. We know that $\forall \ctx : (\jdgType{\emptenv}{\empvenv}{\Tunit}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tunit}) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. So specifically for $C$ being the empty context, we get $\expr \Downarrow \iff \expr' \Downarrow$, which was what we wanted.\\
+  Second, let's show that it is an adequate relation. So assuming $\ctxRel{\empvenv}{\emptenv}{\expr}{\expr'}{\Tbool}$, we must show $\expr \Downarrow \val \iff \expr' \Downarrow \val$. We know that $\forall \ctx : (\jdgType{\emptenv}{\empvenv}{\Tbool}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val' . (\ctx[\expr] \Downarrow \val' \iff \ctx[\expr'] \Downarrow \val')$. So specifically for $C$ being the empty context and $\val'$ being $\val$, we get $\expr \Downarrow \val \iff \expr' \Downarrow \val$, which was what we wanted.\\
   To show that it is a congruence relation, we must go through all the congruence rules, and show that they hold. We did the one for function application above, Cng-ctx-app. The rest will not be shown here.
 \end{proof}
 
@@ -637,7 +639,7 @@ To prove the next theorem, we will need to show two lemmas.
   By induction on the typing derivation of $\expr$. It follows immediately from applying the induction hypothesis and applying congruency rules. We show one case here.
   \begin{itemize}
     \item[case] T-tlam.\\
-      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$.By our induction hypothesis, we get $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
+      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. By our induction hypothesis, we get $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
   \end{itemize}
 \end{proof}
 
@@ -654,8 +656,8 @@ To prove the next theorem, we will need to show two lemmas.
       So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. In this case, $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tint})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\Tint})$, meaning $\typ' = \Tint$. So we have $R(\tenv, \venv, \expr, \expr', \Tint)$, and our goal then is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tint)$. From the context typing and from rule T-add, we may conclude $\jdg{\tenv'}{\venv'}{\expr''}{\Tint}$. So by lemma \ref{lem:R_Cng_is_reflexive}, we know that $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\Tint}$. And by I.H. we get $R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \Tint) \equiv \jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tint}$. Finally, from the congruence rule cng-add, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] + \expr''}{}{\ctx'[\expr'] + \expr''}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$, which was what we wanted.
     \item[case] $\ctx = \Fst \ctx'$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_1})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tprod{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_1)$. By I.H. we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tprod{\typ_1}{\typ_2}}$, and by cng-fst with this, we get $\jdgRel{\tenv'}{\venv'}{\Fst \ctx'[\expr]}{}{\Fst \ctx'[\expr']}{\typ_1} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\typ_1}$.
-    \item[case] $\ctx = \Rec f \var := \ctx'$\\
-      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv', f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\typ_2})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tfunc{\typ_1}{\typ_2})$. By I.H. we get $\jdgRel{\tenv'}{\venv', f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ_2}$, and by cng-rec with this, we get $\jdgRel{\tenv'}{\venv'}{\Rec f x := \ctx'[\expr]}{}{\Rec f x := \ctx'[\expr']}{\Tfunc{\typ_1}{\typ_2}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tfunc{\typ_1}{\typ_2}}$.
+    \item[case] $\ctx = \fun \var . \ctx'$\\
+      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv', x : \typ_1}{\typ_2})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tfunc{\typ_1}{\typ_2})$. By I.H. we get $\jdgRel{\tenv'}{\venv', x : \typ_1}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ_2}$, and by cng-lam with this, we get $\jdgRel{\tenv'}{\venv'}{\fun \var . \ctx'[\expr]}{}{\fun \var . \ctx'[\expr']}{\Tfunc{\typ_1}{\typ_2}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tfunc{\typ_1}{\typ_2}}$.
     \item[case] $\ctx = \ctx' \; \expr''$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_2})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_2)$. From the context-typing and T-app, we have $\jdg{\tenv'}{\venv'}{\expr''}{\typ_1}$. By lemma \ref{lem:R_Cng_is_reflexive}, we get $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\typ_1}$. Now, by the induction hypothesis, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tfunc{\typ_1}{\typ_2}}$. And by cng-app with this, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] \; \expr''}{}{\ctx'[\expr'] \; \expr''}{\typ_2} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr]}{\typ_2}$.
     \item[case] $\ctx = \Tlam \ctx'$\\
@@ -668,7 +670,7 @@ With this lemma proved, we are ready to prove the next theorem.
 \end{theorem}
 \begin{proof}
   So assuming $R(\tenv, \venv, \expr, \expr', \typ)$, we must show 
-  $\jdg{\tenv}{\venv}{\expr}{\typ} \; \land \; \jdg{\tenv}{\venv}{\expr'}{\typ} \; \land \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tunit}) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tunit}) . (\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow)$. So assume some context $C$ of the right type. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \empvenv, C[\expr], C[\expr'], \Tunit)$. By adequacy of $R$, we have that $\ctx[\expr] \Downarrow \iff \ctx[\expr'] \Downarrow$, which was what we wanted.
+  $\jdg{\tenv}{\venv}{\expr}{\typ} \; \land \; \jdg{\tenv}{\venv}{\expr'}{\typ} \; \land \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. So assume some context $C$ of the right type and some value $\val$. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \empvenv, C[\expr], C[\expr'], \Tbool)$. By adequacy of $R$, we have that $\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val$, which was what we wanted.
 \end{proof}
 
 Now, the proof of the two definitions of contextual equivalence being equivalent follows easily:
@@ -685,11 +687,11 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 \todo{draft}
 
 Logical relations model
-
-Value interpretation
+well-typedness relation
 \begin{equation*}
   \WtInpGen{\typ}{\rho} \triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)}\\
 \end{equation*}
+Value interpretation
 As part of all relations below, we have that $\WtInpGen{\typ}{\rho}$, which we don't write for succinctness.
 \begin{align*}
   \ValInpGen{\Tunit}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
@@ -703,8 +705,8 @@ As part of all relations below, we have that $\WtInpGen{\typ}{\rho}$, which we d
   \end{aligned}\\
   \ValInpGen{\Tfunc{\typ_1}{\typ_2}}{\rho}  &\triangleq 
   \begin{aligned}[t]
-    (\val_1, \val_2) \in \{(\Rec f \var := \expr_1, \Rec f \var := \expr_2) \mid \forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2}) \implies\\
-    \ExpInp{\typ_2}{\rho}(\subst{\subst{\expr_1}{f}{\Rec f \var := \expr_1}}{\var}{\valB_1}, \subst{\subst{\expr_2}{f}{\Rec f \var := \expr_2}}{\var}{\valB_2})\}
+    (\val_1, \val_2) \in \{(\fun \var . \expr_1, \fun \var . \expr_2) \mid \forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2}) \implies\\
+    \ExpInp{\typ_2}{\rho}(\subst{\expr_1}{\var}{\valB_1}, \subst{\expr_2}{\var}{\valB_2})\}
   \end{aligned}\\
   \ValInpGen{\Tall{\Tvar}{\typ}}{\rho}  &\triangleq 
   \begin{aligned}[t]
@@ -725,6 +727,7 @@ Relational substitution
 \end{align*}
 
 Expression interpretation
+\todo{fix for termination}
 \begin{align*}
   \ExpInp{\typ}{\rho}(\expr_1, \expr_2) &\triangleq 
   \begin{aligned}[t]
@@ -868,17 +871,17 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   $\exists \val_{1_f} . \rho_1(\gamma_1(\expr_1)) \stepS \val_{1_f} \land \Match \val_{1_f} with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \stepS \val_{f_1}$. Now, from \ref{cmpt-match:1.1} we get $\rho_2(\gamma_2(\expr'_1)) \Downarrow$. So $\exists \val_{2_f} . \rho_2(\gamma_2(\expr'_1)) \stepS \val_{2_f}$. By \ref{cmpt-match:1.2} we know $\ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_{1_f}, \val_{2_f})$. Thus, 
   $(\val_{1_f}, \val_{2_f}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor
   (\val_{1_f}, \val_{2_f}) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the first case as they are similar. So assume $(\val_{1_f}, \val_{2_f}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\}$. Then $\val_{1_f} = \Inj{1} \valB_1$, $\val_{2_f} = \Inj{1} \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$. So we have\\ $f \stepS \Match \Inj{1} \valB_1 with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \step \subst{\rho_1(\gamma_1(\expr_2))}{\var}{\valB_1} \stepS \val_{f_1}$, and\\
-  $f' \stepS \Match \Inj{1} \valB_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \step \subst{\rho_2(\gamma_2(\expr'_2))}{\var}{\valB_2}$. By \todo{do substitution lemma} $\subst{\rho_1(\gamma_1(\expr_2))}{\var}{\valB_1} = \rho_1(\gamma_1[\map{\var}{\valB_1}](\expr_2))$.
+  $f' \stepS \Match \Inj{1} \valB_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \step \subst{\rho_2(\gamma_2(\expr'_2))}{\var}{\valB_2}$. By \ref{lem:sub} $\subst{\rho_1(\gamma_1(\expr_2))}{\var}{\valB_1} = \rho_1(\gamma_1[\map{\var}{\valB_1}](\expr_2))$.
   Now, from \ref{cmpt-match:2} instantiated with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$ we get
   \begin{align}
     &\rho_1(\gamma'_1(\expr_2)) \Downarrow \iff \rho_2(\gamma'_2(\expr'_2)) \Downarrow\label{cmpt-match:2.1}\\
     &\forall \val_1, \val_2 . \rho_1(\gamma'_1(\expr_2)) \Downarrow \val_1 \land \rho_2(\gamma'_2(\expr'_2)) \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})\label{cmpt-match:2.2}
   \end{align}
-  So by \ref{cmpt-match:2.1}, we get $\rho_2(\gamma_2[\map{\var}{(\valB_1, \valB_2)}](\expr'_2)) \Downarrow$, which again, by \todo{do substitution lemma} gives us $\subst{\rho_2(\gamma_2(\expr'_2))}{\var}{\valB_2} \Downarrow$. Thus $f' \Downarrow$, which was what we wanted.\\
+  So by \ref{cmpt-match:2.1}, we get $\rho_2(\gamma_2[\map{\var}{(\valB_1, \valB_2)}](\expr'_2)) \Downarrow$, which again, by \ref{lem:sub} gives us $\subst{\rho_2(\gamma_2(\expr'_2))}{\var}{\valB_2} \Downarrow$. Thus $f' \Downarrow$, which was what we wanted.\\
   Next we show the second part. So assume $\val$, $\val'$, and $f \Downarrow \val_1$ and $f' \Downarrow \val_2$, we must show $\ValInpGen{\typ}{\rho})$. By corollary \ref{cor:EuC_val}, we get $\exists \val_1 . \rho_1(\gamma_1(\expr_1)) \stepS \val_1 \land \Match \val_1 with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \stepS \val$. Likewise $\exists \val_2 . \rho_2(\gamma_2(\expr'_1)) \stepS \val_2 \land \Match \val_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \stepS \val'$. By \ref{cmpt-match:1.2} we know $\ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)$. Thus, 
   $(\val_1, \val_2) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor
   (\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the second case as they are similar. So assume $(\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. Then $\val_1 = \Inj{2} \valB_1$, $\val_2 = \Inj{2} \valB_2$, and $\ValInp{\typ_2}{\rho}(\valB_1, \valB_2)$. So we have\\ $f \stepS \Match \Inj{2} \valB_1 with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \step \subst{\rho_1(\gamma_1(\expr_3))}{\var}{\valB_1} \stepS \val$, and\\
-  $f' \stepS \Match \Inj{2} \valB_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \step \subst{\rho_2(\gamma_2(\expr'_3))}{\var}{\valB_2} \stepS \val'$. By \todo{do substitution lemma} $\subst{\rho_1(\gamma_1(\expr_3))}{\var}{\valB_1} = \rho_1(\gamma_1[\map{\var}{\valB_1}](\expr_3))$, and $\subst{\rho_2(\gamma_2(\expr'_3))}{\var}{\valB_2} = \rho_2(\gamma_2[\map{\var}{\valB_2}](\expr'_3))$.
+  $f' \stepS \Match \Inj{2} \valB_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \step \subst{\rho_2(\gamma_2(\expr'_3))}{\var}{\valB_2} \stepS \val'$. By \ref{lem:sub} $\subst{\rho_1(\gamma_1(\expr_3))}{\var}{\valB_1} = \rho_1(\gamma_1[\map{\var}{\valB_1}](\expr_3))$, and $\subst{\rho_2(\gamma_2(\expr'_3))}{\var}{\valB_2} = \rho_2(\gamma_2[\map{\var}{\valB_2}](\expr'_3))$.
   Now, from \ref{cmpt-match:3} instantiated with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$ we get
   \begin{align}
     &\rho_1(\gamma'_1(\expr_3)) \Downarrow \iff \rho_2(\gamma'_2(\expr'_3)) \Downarrow\label{cmpt-match:3.1}\\
@@ -888,10 +891,10 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{proof}
 
 
-\begin{lemma}[Cmpt-rec]
+\begin{lemma}[Cmpt-lam]
   $\inferrule
   { \LogRel{\tenv}{\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\expr}{\expr'}{\typ_2} }
-  { \LogRel{\tenv}{\venv}{\Rec f \var := \expr}{\Rec f \var := \expr'}{\Tfunc{\typ_1}{\typ_2}} }$
+  { \LogRel{\tenv}{\venv}{\fun \var . \expr}{\fun \var . \expr'}{\Tfunc{\typ_1}{\typ_2}} }$
 \end{lemma}
 \begin{proof}
   \todo{do proof}
@@ -1070,9 +1073,9 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
     }
     { \jdgRel{\tenv}{\venv}{\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}{}{\Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end}{\typ} }
   \and
-  \inferrule*[lab=Cng-rec]
+  \inferrule*[lab=Cng-lam]
     { \jdgRel{\tenv}{\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\expr}{}{\expr'}{\typ_2} }
-    { \jdgRel{\tenv}{\venv}{\Rec f \var := \expr}{}{\Rec f \var := \expr'}{\Tfunc{\typ_1}{\typ_2}} }
+    { \jdgRel{\tenv}{\venv}{\fun \var . \expr}{}{\fun \var . \expr'}{\Tfunc{\typ_1}{\typ_2}} }
   \and
   \inferrule*[lab=Cng-app]
     { {\jdgRel{\tenv}{\venv}{\expr_1}{}{\expr_1'}{\Tfunc{\typ_1}{\typ_2}} } \and

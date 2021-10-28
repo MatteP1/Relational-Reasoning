@@ -14,7 +14,7 @@
   - [x] Define k = [] or Val(e) lemma. Show 1 case
   - [x] Write in complete EuC lemma
   - [x] Proof read
-- [ ] Refactor for terminating language
+- [x] Refactor for terminating language
 - [ ] Substitution
 - [ ] Fix typ-setting
 
@@ -50,7 +50,7 @@
   - [x] refactor judgements
 - [x] Define Congruency and Adequacy as separate properties
   - [x] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
-- [ ] Refactor for terminating language
+- [x] Refactor for terminating language
 - [ ] Finish writing text
 - [ ] Proof read
 
