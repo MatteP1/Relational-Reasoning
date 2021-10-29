@@ -685,8 +685,11 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 \label{ch:LR}
 
 \todo{draft}
+\section{Logical Relations}
 
-Logical relations model
+\todo{explain briefly what logical relations are}
+
+\section{Defining the Logical Relations model}
 well-typedness relation
 \begin{equation*}
   \WtInpGen{\typ}{\rho} \triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)}\\
@@ -727,14 +730,11 @@ Relational substitution
 \end{align*}
 
 Expression interpretation
-\todo{fix for termination}
-\begin{align*}
-  \ExpInp{\typ}{\rho}(\expr_1, \expr_2) &\triangleq 
-  \begin{aligned}[t]
-    \jdg{\emptenv}{\empvenv}{\expr_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\expr_2}{\rho_2(\typ)} \land \expr_1 \Downarrow \iff \expr_2 \Downarrow \land\\
-    (\forall \val_1, \val_2 . \expr_1 \Downarrow \val_1 \land \expr_2 \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})
-  \end{aligned}
-\end{align*}
+\begin{multline*}
+  \ExpInp{\typ}{\rho}(\expr_1, \expr_2) \triangleq
+    \jdg{\emptenv}{\empvenv}{\expr_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\expr_2}{\rho_2(\typ)} \land \expr_1 \land\\
+    (\exists \val_1, \val_2 . \expr_1 \stepS \val_1 \land \expr_2 \stepS \val_2 \land\ValInpGen{\typ}{\rho})
+\end{multline*}
 
 Variable environment interpretation
 \begin{align*}
@@ -760,8 +760,7 @@ Type environment interpretation
   \end{equation*}
 \end{definition}
 
-
-Compatibility lemmas
+\section{Compatibility lemmas}
 Essentially just congruency rules as stated in appendix (but with LR being the relation). We have to prove these (and adequacy) to show that LR ==> CE, meaning we can state theorems in terms of LR instead of CE, and then get CE as a consequence.
 \begin{lemma}[Cmpt-unit]
   $\inferrule{ }{\LogRel{\tenv}{\venv}{\TT}{\TT}{\Tunit}}$
@@ -931,6 +930,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
     \todo{write in proof}
 \end{proof}
 
+\section{Properties of LR}
 
 \begin{lemma}[Adequacy of LR]
   $\LogRel{\empvenv}{\emptenv}{\expr}{\expr'}{\Tunit} \implies \expr \Downarrow \iff \expr' \Downarrow$
@@ -939,19 +939,19 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   \todo{do proof}
 \end{proof}
 
-\begin{theorem}[Fundamental Theorem]
-  $\jdg{\tenv}{\venv}{\expr}{\typ} \implies \LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$
-\end{theorem}
-\begin{proof}
-  Since LR is a congruence relation, it follows directly from lemma \ref{lem:R_Cng_is_reflexive}.
-\end{proof}
-
 \begin{theorem}
   $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$
 \end{theorem}
 \begin{proof}
   \todo{write properly}
   LR is a congruence relation, LR is an adequate relation, and all expressions in it are well-formed by definition. It thusly follows from theorem \ref{thm:CE_eq_part2}.
+\end{proof}
+
+\begin{theorem}[Fundamental Theorem]
+  $\jdg{\tenv}{\venv}{\expr}{\typ} \implies \LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$
+\end{theorem}
+\begin{proof}
+  Since LR is a congruence relation, it follows directly from lemma \ref{lem:R_Cng_is_reflexive}.
 \end{proof}
 
 
