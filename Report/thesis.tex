@@ -208,7 +208,7 @@ The syntax captures exactly all programs that can be written in our language. We
                   & \text{(sums)}\\
                 & \fun \var . \expr \ALT \expr \; \expr
                   & \text{(functions)}\\
-                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}
+                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}\\
   \val \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
                   \fun \var . \expr \ALT \Tlam \expr
@@ -714,7 +714,7 @@ As part of all relations below, we have that $\WtInpGen{\typ}{\rho}$, which we d
   \ValInpGen{\Tall{\Tvar}{\typ}}{\rho}  &\triangleq 
   \begin{aligned}[t]
     (\val_1, \val_2) \in \{(\Tlam \expr_1, \Tlam \expr_2) \mid \forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] .\\
-    \ExpInp{\typ}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\subst{\expr_1}{\Tvar}{\typ_1}, \subst{\expr_2}{\Tvar}{\typ_2})\}
+    \ExpInp{\typ}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr_1, \expr_2)\}
   \end{aligned}\\
   \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]\\
 \end{align*}
@@ -755,7 +755,7 @@ Type environment interpretation
       \iff\\
       \jdg{\tenv}{\venv}{\expr}{\typ} \; \land \; \jdg{\tenv}{\venv}{\expr'}{\typ} \; \land\\
       \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
-      \ExpInp{\typ}{\rho}(\rho_1(\gamma_1(\expr)), \rho_2(\gamma_2(\expr')))
+      \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))
     \end{gathered}
   \end{equation*}
 \end{definition}
@@ -767,15 +767,14 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{lemma}
 \begin{proof}
   By definition \ref*{def:LogRel}, we must show $\jdg{\tenv}{\venv}{\TT}{\Tunit} \land \jdg{\tenv}{\venv}{\TT}{\Tunit} \land\\ \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
-  \ExpInp{\Tunit}{\rho}(\rho_1(\gamma_1(\TT)), \rho_2(\gamma_2(\TT)))$. The well-typedness simply follows by the typing rule T-unit.\\
-  So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, we must show\\ $\ExpInp{\Tunit}{\rho}(\rho_1(\gamma_1(\TT)), \rho_2(\gamma_2(\TT))) \equiv \ExpInp{\Tunit}{\rho}(\TT, \TT)$. Thus, we must show four things
+  \ExpInp{\Tunit}{\rho}(\gamma_1(\TT), \gamma_2(\TT))$. The well-typedness simply follows by the typing rule T-unit.
+  So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\Tunit}{\rho}(\gamma_1(\TT), \gamma_2(\TT)) \equiv \ExpInp{\Tunit}{\rho}(\TT, \TT)$. Thus, we must show three things
   \begin{enumerate}
     \item $\jdg{\emptenv}{\empvenv}{\TT}{\rho_1(\Tunit)}$
     \item $\jdg{\emptenv}{\empvenv}{\TT}{\rho_2(\Tunit)}$
-    \item $\TT \Downarrow \iff \TT \Downarrow$
-    \item $\forall \val_1, \val_2 . \TT \Downarrow \val_1 \land \TT \Downarrow \val_2 \implies \ValInpGen{\Tunit}{\rho})$
+    \item $\exists \val_1, \val_2 . \TT \stepS \val_1 \land \TT \stepS \val_2 \land \ValInp{\Tunit}{\rho}(\val_1, \val_2)$
   \end{enumerate}
-  Given that $\rho_1(\Tunit) = \rho_2(\Tunit) = \Tunit$, the well-typedness once again simply follows from typing rule T-unit. (3) holds trivially. So let's show (4). Assume some $\val_1, \val_2$, and $\TT \Downarrow \val_1$ and $\TT \Downarrow \val_2$, then we must show $\ValInpGen{\Tunit}{\rho}$. Since $\TT$ is already a value, we have $\val_1 = \val_2 = \TT$, meaning we must show $\ValInp{\Tunit}{\rho}(\TT, \TT)$. Once again, the well-typedness holds by T-unit, and we have that $(\TT, \TT) \in \{(\TT, \TT)\}$, so we are done.
+  Given that $\rho_1(\Tunit) = \rho_2(\Tunit) = \Tunit$, the well-typedness once again simply follows from typing rule T-unit. For (3), we choose $\TT$ for $\val_1$ and $\val_2$. Then we must show $\TT \stepS \TT \land \TT \stepS \TT \land \ValInp{\Tunit}{\rho}(\TT, \TT)$. The first two holds trivially. The last part says we must show $\WtInp{\Tunit}{\rho}(\TT, \TT) \land (\TT, \TT) \in \{(\TT, \TT)\}$. The last part trivially holds, and the first part holds by the same argument made above: $\rho_1(\Tunit) = \rho_2(\Tunit) = \Tunit$, and then it follows from T-unit. 
 \end{proof}
 
 
@@ -786,37 +785,41 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
     {\LogRel{\tenv}{\venv}{\expr_1 + \expr_2}{\expr_1' + \expr_2'}{\Tint}}$
 \end{lemma}
 \begin{proof}
-  So assuming 
+  So assuming
   \begin{align}
     &\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tint}\label{cmpt-add:1}\\
     &\LogRel{\tenv}{\venv}{\expr_2}{\expr_2'}{\Tint}\label{cmpt-add:2}
   \end{align}
-  we must show $\jdg{\tenv}{\venv}{\expr_1 + \expr_2}{\Tint} \land \jdg{\tenv}{\venv}{\expr_1' + \expr_2'}{\Tint} \land\\ \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
-  \ExpInp{\Tint}{\rho}(\rho_1(\gamma_1(\expr_1 + \expr_2)), \rho_2(\gamma_2(\expr_1' + \expr_2')))$. From \ref*{cmpt-add:1}, we have $\jdg{\tenv}{\venv}{\expr_1}{\Tint}$, and from \ref*{cmpt-add:2} we have $\jdg{\tenv}{\venv}{\expr_2}{\Tint}$. So by the T-add rule, we get $\jdg{\tenv}{\venv}{\expr_1 + \expr_2}{\Tint}$. The well-typedness of $\expr_1' + \expr_2'$ follows in the same way.\\
-  So let's assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. We must show $\ExpInp{\Tint}{\rho}(\rho_1(\gamma_1(\expr_1 + \expr_2)), \rho_2(\gamma_2(\expr_1' + \expr_2')))$, which is equivalent to $\ExpInp{\Tint}{\rho}(\rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2)), \rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2')))$. Unfolding the expression interpretation, what we need to show is the following four points
+  we must show $\jdg{\tenv}{\venv}{\expr_1 + \expr_2}{\Tint} \land \jdg{\tenv}{\venv}{\expr_1' + \expr_2'}{\Tint} \land \forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
+  \ExpInp{\Tint}{\rho}(\gamma_1(\expr_1 + \expr_2), \gamma_2(\expr_1' + \expr_2'))$. From (\ref*{cmpt-add:1}), we have $\jdg{\tenv}{\venv}{\expr_1}{\Tint}$, and from (\ref*{cmpt-add:2}) we have $\jdg{\tenv}{\venv}{\expr_2}{\Tint}$. So by the T-add rule, we get $\jdg{\tenv}{\venv}{\expr_1 + \expr_2}{\Tint}$. The well-typedness of $\expr_1' + \expr_2'$ follows in the same way.\\
+  So let's assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. We must show $\ExpInp{\Tint}{\rho}(\gamma_1(\expr_1 + \expr_2), \gamma_2(\expr_1' + \expr_2'))$, which is equivalent to $\ExpInp{\Tint}{\rho}(\gamma_1(\expr_1) + \gamma_1(\expr_2), \gamma_2(\expr_1') + \gamma_2(\expr_2'))$. Unfolding the expression interpretation, what we need to show is the following three points
   \begin{enumerate}
-    \item $\jdg{\emptenv}{\empvenv}{\rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2))}{\rho_1(\Tint)}$
-    \item $\jdg{\emptenv}{\empvenv}{\rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2'))}{\rho_2(\Tint)}$
-    \item $\rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2)) \Downarrow \iff \rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2')) \Downarrow$
-    \item $\forall \val_1, \val_2 . \rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2)) \Downarrow \val_1 \land \rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2')) \Downarrow \val_2 \implies \ValInpGen{\Tint}{\rho})$
+    \item $\jdg{\emptenv}{\empvenv}{\gamma_1(\expr_1) + \gamma_1(\expr_2)}{\rho_1(\Tint)}$
+    \item $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_1') + \gamma_2(\expr_2')}{\rho_2(\Tint)}$
+    \item $\exists \val_1, \val_2 . \gamma_1(\expr_1) + \gamma_1(\expr_2) \stepS \val_1 \land \gamma_2(\expr_1') + \gamma_2(\expr_2') \stepS \val_2 \land \ValInp{\Tint}{\rho}(\val_1, \val_2)$
   \end{enumerate}
-  To prove these points, we will need to use some more information. From the last part of \ref*{cmpt-add:1} instantiated with $\rho$ and $\gamma$, we get
+  To prove these points, we will need some more information. From the last part of (\ref*{cmpt-add:1}) instantiated with $\rho$ and $\gamma$, we get
   \begin{align}
-    &\jdg{\emptenv}{\empvenv}{\rho_1(\gamma_1(\expr_1))}{\rho_1(\Tint)}\label{cmpt-add:1.1}\\
-    &\jdg{\emptenv}{\empvenv}{\rho_2(\gamma_2(\expr_1'))}{\rho_2(\Tint)}\label{cmpt-add:1.2}\\
-    &\rho_1(\gamma_1(\expr_1)) \Downarrow \iff \rho_2(\gamma_2(\expr_1')) \Downarrow\label{cmpt-add:1.3}\\
-    &\forall \val_1, \val_2 . \rho_1(\gamma_1(\expr_1)) \Downarrow \val_1 \land \rho_2(\gamma_2(\expr_1')) \Downarrow \val_2 \implies \ValInpGen{\Tint}{\rho})\label{cmpt-add:1.4}
+    &\jdg{\emptenv}{\empvenv}{\gamma_1(\expr_1)}{\rho_1(\Tint)}\label{cmpt-add:1.1}\\
+    &\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_1')}{\rho_2(\Tint)}\label{cmpt-add:1.2}\\
+    &\exists \val_1, \val_2 . \gamma_1(\expr_1) \stepS \val_1 \land \gamma_2(\expr_1') \stepS \val_2 \land \ValInp{\Tint}{\rho}(\val_1, \val_2)\label{cmpt-add:1.3}
   \end{align}
   Likewise, from the last part of \ref*{cmpt-add:2} instantiated with $\rho$ and $\gamma$, we get
   \begin{align}
-    &\jdg{\emptenv}{\empvenv}{\rho_1(\gamma_1(\expr_2))}{\rho_1(\Tint)}\label{cmpt-add:2.1}\\
-    &\jdg{\emptenv}{\empvenv}{\rho_2(\gamma_2(\expr_2'))}{\rho_2(\Tint)}\label{cmpt-add:2.2}\\
-    &\rho_1(\gamma_1(\expr_2)) \Downarrow \iff \rho_2(\gamma_2(\expr_2')) \Downarrow\label{cmpt-add:2.3}\\
-    &\forall \val_1, \val_2 . \rho_1(\gamma_1(\expr_2)) \Downarrow \val_1 \land \rho_2(\gamma_2(\expr_2')) \Downarrow \val_2 \implies \ValInpGen{\Tint}{\rho})\label{cmpt-add:2.4}
+    &\jdg{\emptenv}{\empvenv}{\gamma_1(\expr_2)}{\rho_1(\Tint)}\label{cmpt-add:2.1}\\
+    &\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_2')}{\rho_2(\Tint)}\label{cmpt-add:2.2}\\
+    &\exists \val_1, \val_2 . \gamma_1(\expr_2) \stepS \val_1 \land \gamma_2(\expr_2') \stepS \val_2 \land \ValInp{\Tint}{\rho}(\val_1, \val_2)\label{cmpt-add:2.3}
   \end{align}
-  Now to prove the four points above. Given that $\Tint$ is a closed type, $\rho(\Tint) = \Tint$. Thus, point 1 follows from \ref*{cmpt-add:1.1}, \ref*{cmpt-add:2.1} and the T-add rule. Similarly, point 2 follows from \ref*{cmpt-add:1.2}, \ref*{cmpt-add:2.2} and the T-add rule.\\
-  To prove point 3, we need to show both ways of the implication. However, since they are similar, we just show one way here. So assume $\rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2))$, we must show $\rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2')) \Downarrow$. By definition of "$\Downarrow$", we know that $\exists \val_f . \rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2)) \stepS \val_f$. From this and two applications of corollary \ref{cor:EuC_val}, we may conclude $\exists \val_{f1} . \rho_1(\gamma_1(\expr_1)) \stepS \val_{f1}$ and $\exists \val_{f2} . \rho_1(\gamma_1(\expr_2)) \stepS \val_{f2}$. But then $\rho_1(\gamma_1(\expr_1)) \Downarrow$ and $\rho_1(\gamma_1(\expr_2)) \Downarrow$. From this and \ref*{cmpt-add:1.3} and \ref*{cmpt-add:2.3}, we get $\rho_2(\gamma_2(\expr_1')) \Downarrow$ and $\rho_2(\gamma_2(\expr_2')) \Downarrow$. Thus $\exists \val_{f1'} . \rho_2(\gamma_2(\expr_1')) \stepS \val_{f1'}$ and $\exists \val_{f2'} . \rho_2(\gamma_2(\expr_2')) \stepS \val_{f2'}$. By \ref*{cmpt-add:2.4}, we know that $\val_{f1'}$ and $\val_{f2'}$ are of type integer: $\Num{\val_{f1'}}$, $\Num{\val_{f2'}}$. So finally, we may conclude $\rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2')) \stepS \Num{\val_{f1'}} + \rho_2(\gamma_2(\expr_2')) \stepS \Num{\val_{f1'}} + \Num{\val_{f2'}} \stepS \Num{\val_{f1'}} + \Num{\val_{f2'}} \step \Num{\val_{f1'} + \val_{f2'}}$, which was what we wanted to show.\\
-  The last part of the proof is point 4. So assume some $\val_1$ and $\val_2$, and $\rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2)) \Downarrow \val_1$ and $\rho_2(\gamma_2(\expr_1')) + \rho_2(\gamma_2(\expr_2')) \Downarrow \val_2$, we must show $\ValInp{\Tint}{\rho}(\val_1, \val_2)$. By two applications of corollary \ref{cor:EuC_val} on $\rho_1(\gamma_1(\expr_1)) + \rho_1(\gamma_1(\expr_2)) \stepS \val_1$, we get $\rho_1(\gamma_1(\expr_1)) \Downarrow \val_{11}$,  $\rho_1(\gamma_1(\expr_2)) \Downarrow \val_{12}$ and $\val_{11} + \val_{12} \stepS \val_1$, for some $\val_{11}$ and $\val_{12}$. Likewise, we get $\rho_2(\gamma_2(\expr_1')) \Downarrow \val_{21}$, $\rho_2(\gamma_2(\expr_2')) \Downarrow \val_{22}$ and $\val_{21} + \val_{22} \stepS \val_2$. From $\rho_1(\gamma_1(\expr_1)) \Downarrow \val_{11}$, $\rho_2(\gamma_2(\expr_1')) \Downarrow \val_{21}$, and \ref*{cmpt-add:1.4} we get $\ValInp{\Tint}{\rho}(\val_{11}, \val_{21})$. Similarly, from $\rho_1(\gamma_1(\expr_2)) \Downarrow \val_{12}$, $\rho_2(\gamma_2(\expr_2')) \Downarrow \val_{22}$, and \ref*{cmpt-add:2.4}, we get $\ValInp{\Tint}{\rho}(\val_{12}, \val_{22})$. We thusly know all our values are well-typed, and are in fact integers: $\Num{\val_{11}}$, $\Num{\val_{12}}$, $\Num{\val_{21}}$, $\Num{\val_{22}}$, and that $\Num{\val_{11}} = \Num{\val_{21}}$ and $\Num{\val_{12}} = \Num{\val_{22}}$. By T-add rule, we have that $\val_1$ and $\val_2$ are also well-typed, and are integers. We may then conclude $\Num{\val_{11}} + \Num{\val_{21}} \step \Num{\val_{11} + \val_{21}}$, and $\Num{\val_{21}} + \Num{\val_{22}} \step \Num{\val_{21} + \val_{22}}$, meaning $\Num{\val_{11}} + \Num{\val_{21}} = \Num{\val_1}$ and $\Num{\val_{21}} + \Num{\val_{22}} = \Num{\val_2}$. Finally, from this we get $\Num{\val_1} = \Num{\val_{11}} + \Num{\val_{21}} = \Num{\val_{21}} + \Num{\val_{22}} = \Num{\val_2}$, meaning $(\Num{\val_1}, \Num{\val_2}) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}$, which was what we needed to show.
+  Now to prove the three points above. Given that $\Tint$ is a closed type, $\rho_1(\Tint) = \rho_2(\Tint) = \Tint$. Thus, point 1 follows from (\ref*{cmpt-add:1.1}), (\ref*{cmpt-add:2.1}), and the T-add rule. Similarly, point 2 follows from (\ref*{cmpt-add:1.2}), (\ref*{cmpt-add:2.2}) and the T-add rule.\\
+  So all that remains to be shown is point 3. Let's denote the values in (\ref*{cmpt-add:1.3}) $\val_1'$ and $\val_2'$, and the values in (\ref*{cmpt-add:2.3}) $\val_1''$ and $\val_2''$. Then we know
+  \begin{align}
+    &\gamma_1(\expr_1) + \gamma_1(\expr_2) \stepS \val_1' + \gamma_1(\expr_2) \stepS \val_1' + \val_1''\label{cmpt-add:3.1}\\
+    &\gamma_2(\expr_1') + \gamma_2(\expr_2') \stepS \val_2' + \gamma_2(\expr_2') \stepS \val_2' + \val_2''\label{cmpt-add:3.2}\\
+    &\ValInp{\Tint}{\rho}(\val_1', \val_2') \land \ValInp{\Tint}{\rho}(\val_1'', \val_2'')\label{cmpt-add:3.3}
+  \end{align}
+  From (\ref*{cmpt-add:3.3}), we know that all our values are integers and $\Num{\val_1'} = \Num{\val_2'}$, and $\Num{\val_1''} = \Num{\val_2''}$. Furthermore
+  $\Num{\val_1'} + \Num{\val_1''} \step \Num{\val_1' + \val_1''}$, and $\Num{\val_2'} + \Num{\val_2''} \step \Num{\val_2' + \val_2''}$. Thus $\gamma_1(\expr_1) + \gamma_1(\expr_2) \stepS \Num{\val_1' + \val_1''}$ and $\gamma_2(\expr_1') + \gamma_2(\expr_2') \stepS \Num{\val_2' + \val_2''}$.\\
+  What we need to show is point 3. So now use $\Num{\val_1' + \val_1''}$ for $\val_1$, and $\Num{\val_2' + \val_2''}$ for $\val_2$. The first two propositions hold by what we have just shown, so all that remains is to show $\ValInp{\Tint}{\rho}(\Num{\val_1' + \val_1''}, \Num{\val_2' + \val_2''})$, which by definition means we have to show $\WtInp{\Tint}{\rho}(\Num{\val_1' + \val_1''}, \Num{\val_2' + \val_2''})$ and $\Num{\val_1' + \val_1''} = \Num{\val_2' + \val_2''}$. The first part follows simply from the T-int rule. For the second part, note that we know $\Num{\val_1'} = \Num{\val_2'}$, and $\Num{\val_1''} = \Num{\val_2''}$, so it follows that $\Num{\val_1' + \val_1''} = \Num{\val_2' + \val_1''} = \Num{\val_2' + \val_2''}$.
 \end{proof}
 
 \begin{lemma}[Cmpt-fst]
@@ -825,18 +828,22 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   { \LogRel{\tenv}{\venv}{\Fst \expr}{\Fst \expr'}{\typ_1} }$
 \end{lemma}
 \begin{proof}
-  So assuming $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\Tsum{\typ_1}{\typ_2}}$, we must show (ignoring well-typedness): $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_1}{\rho}(\rho_1 ( \gamma_1(\Fst \expr)), \rho_2(\gamma_2(\Fst \expr')))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\typ_1}{\rho}(\rho_1 ( \gamma_1(\Fst \expr)), \rho_2(\gamma_2(\Fst \expr'))) \equiv \ExpInp{\typ_1}{\rho}(\Fst \rho_1 ( \gamma_1(\expr)), \Fst \rho_2(\gamma_2(\expr')))$. By definition of our expression interpretation, we must show two things
-  \begin{enumerate}
-    \item $\Fst \rho_1 ( \gamma_1(\expr)) \Downarrow \iff \Fst \rho_2(\gamma_2(\expr')) \Downarrow$
-    \item $\forall \val_1, \val_2 . \Fst \rho_1 ( \gamma_1(\expr)) \Downarrow \val_1 \land \Fst \rho_2(\gamma_2(\expr')) \Downarrow \val_2 \implies \ValInpGen{\typ_1}{\rho})$
-  \end{enumerate}
+  So assuming $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\Tsum{\typ_1}{\typ_2}}$, we must show (ignoring well-typedness): $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr')) \equiv \ExpInp{\typ_1}{\rho}(\Fst \gamma_1(\expr), \Fst \gamma_2(\expr'))$. By definition of our expression interpretation, we must show
+  \begin{equation}\label{cmpt-fst:goal}
+    \exists \val_1, \val_2 . \Fst \gamma_1(\expr) \stepS \val_1 \land \Fst \gamma_2(\expr') \stepS \val_2 \land \ValInp{\typ_1}{\rho}(\val_1, \val_2)
+  \end{equation}
   Note first that if we instantiate our initial assumption with $\rho$ and $\gamma$, we get
   \begin{align}
-    &\rho_1(\gamma_1(\expr)) \Downarrow \iff \rho_2(\gamma_2(\expr')) \Downarrow\label{cmpt-fst:1.1}\\
-    &\forall \val_1, \val_2 . \rho_1(\gamma_1(\expr)) \Downarrow \val_1 \land \rho_2(\gamma_2(\expr')) \Downarrow \val_2 \implies \ValInpGen{\Tprod{\typ_1}{\typ_2}}{\rho})\label{cmpt-fst:1.2}
+    &\exists \val_1, \val_2 . \gamma_1(\expr) \stepS \val_1 \land \gamma_2(\expr') \stepS \val_2 \land \ValInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)\label{cmpt-fst:1}
   \end{align}
-  Now to prove the two goals. For the first part, we show only the "$\implies$" direction. So assuming $\Fst \rho_1 ( \gamma_1(\expr)) \Downarrow$, we must show $\Fst \rho_2(\gamma_2(\expr')) \Downarrow$. By definition of $\Downarrow$, we know $\exists \val . \Fst \rho_1 ( \gamma_1(\expr)) \Downarrow \val$ By corollary \ref{cor:EuC_val} on our assumption, we know $\exists \val_f . \rho_1(\gamma_1(\expr)) \stepS \val_f \land \Fst \val_f \stepS \val$. By \ref{cmpt-fst:1.1} we then get $\exists \val_{f'} . \rho_2(\gamma_2(\expr')) \Downarrow \val_{f'}$. From this and by \ref{cmpt-fst:1.2} we get $\ValInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\val_f, \val_{f'})$. Thus, we know $\val_{f'} = (\varB_{21}, \varB_{22})$, for some values $\varB_{21}$, $\varB_{22}$, and we may conclude $\Fst \rho_2(\gamma_2(\expr')) \stepS \Fst \val_{f'} = \Fst (\valB_{21}, \valB_{22}) \step \valB_{21}$, where the last step is justified by the E-fst rule. Thus, $\Fst \rho_2(\gamma_2(\expr')) \Downarrow$.\\
-  Next we prove the second part. So assume some $\val_1$, $\val_2$, and $\Fst \rho_1 ( \gamma_1(\expr)) \Downarrow \val_1$ and $\Fst \rho_2(\gamma_2(\expr')) \Downarrow \val_2$. We must show $\ValInpGen{\typ_1}{\rho})$. By corollary \ref{cor:EuC_val}, we get $\exists \val_f . \rho_1(\gamma_1(\expr)) \stepS \val_f \land \Fst \val_f \stepS \val_1$, and $\exists \val_{f'}. \rho_1(\gamma_1(\expr')) \stepS \val_{f'} \land \Fst \val_{f'} \stepS \val_2$. By \ref{cmpt-fst:1.2} with this, we know $\ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_f, \val_{f'})$. Thus $\val_{f} = (\valB_{11}, \valB_{12})$ and $\val_{f'} = (\valB_{21}, \valB_{22})$, and $\ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21})$. So since $\Fst \rho_1(\gamma_1(\expr)) \stepS \Fst \val_{f} = \Fst (\valB_{11}, \valB_{12}) \step \valB_{11}$, then $\valB_{11} = \val_1$. Likewise $\valB_{21} = \val_2$, then $\ValInpGen{\typ_1}{\rho}$.
+  Let's instantiate the values in (\ref*{cmpt-fst:1}) as $\val_1'$ and $\val_2'$. Then we know
+  \begin{align}
+    &\Fst \gamma_1(\expr) \stepS \Fst \val_1'\label{cmpt-fst:2.1}\\
+    &\Fst \gamma_2(\expr') \stepS \Fst \val_2'\label{cmpt-fst:2.2}\\
+    &\ValInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\val_1', \val_2')\label{cmpt-fst:2.3}
+  \end{align}
+  By (\ref*{cmpt-fst:2.3}) we know that $\val_1' = (\valB_{11}, \valB_{12})$ and $\val_2' = (\valB_{21}, \valB_{22})$ for some values $\valB_{11}, \valB_{12}, \valB_{21}, \valB_{22}$. Further, $\ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21})$ and $\ValInp{\typ_2}{\rho}(\valB_{12}, \valB_{22})$. Now, by (\ref*{cmpt-fst:2.1}) and E-fst we have $\Fst \gamma_1(\expr) \stepS \valB_{11}$. Likewise, from (\ref*{cmpt-fst:2.2}) and E-fst, we get $\Fst \gamma_2(\expr') \stepS \valB_{21}$.\\
+  Now to prove the goal (\ref*{cmpt-fst:goal}). We take $\valB_{11}$ for $\val_1$ and $\valB_{21}$ for $\val_2$, so that we must show $ \Fst \gamma_1(\expr) \stepS \valB_{11} \land \Fst \gamma_2(\expr') \stepS \valB_{21} \land \ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21})$, all of which we have just argued holds.
 \end{proof}
 
 
@@ -969,6 +976,13 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \label{ch:COWFW}
 
 \todo{draft}
+
+% Idea for future work:
+% * add recursive functions (fixpoint) to the language.
+%   this will make it non-terminating.
+%   project started out with this, but defining LR became much harder
+%   requires step-indexed LR
+% * Iris maybe?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

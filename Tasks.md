@@ -61,11 +61,11 @@
   - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
 - [ ] Prove compatibility lemmas (only unit and add with well-typedness)
-  - [ ] Unit
-  - [ ] Add
+  - [x] Unit
+  - [x] Add
   - [ ] Match (if-similar, but simpler)
-  - [ ] Fst
-  - [ ] Rec
+  - [x] Fst
+  - [x] Rec
   - [ ] App
   - [ ] Tlam
   - [ ] Tapp (if space)
