@@ -893,7 +893,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 
 \begin{lemma}[Cmpt-lam]
   $\inferrule
-  { \LogRel{\tenv}{\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\expr}{\expr'}{\typ_2} }
+  { \LogRel{\tenv}{\venv, x : \typ_1}{\expr}{\expr'}{\typ_2} }
   { \LogRel{\tenv}{\venv}{\fun \var . \expr}{\fun \var . \expr'}{\Tfunc{\typ_1}{\typ_2}} }$
 \end{lemma}
 \begin{proof}
@@ -1074,7 +1074,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
     { \jdgRel{\tenv}{\venv}{\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}{}{\Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end}{\typ} }
   \and
   \inferrule*[lab=Cng-lam]
-    { \jdgRel{\tenv}{\venv, f : \Tfunc{\typ_1}{\typ_2}, x : \typ_1}{\expr}{}{\expr'}{\typ_2} }
+    { \jdgRel{\tenv}{\venv, x : \typ_1}{\expr}{}{\expr'}{\typ_2} }
     { \jdgRel{\tenv}{\venv}{\fun \var . \expr}{}{\fun \var . \expr'}{\Tfunc{\typ_1}{\typ_2}} }
   \and
   \inferrule*[lab=Cng-app]
