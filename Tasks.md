@@ -57,13 +57,13 @@
 ## Logical Relations
 - [x] Define a logical relations model for CE
 - [x] Write in LR
-  - [ ] val- and exp-interpretation
+  - [x] val- and exp-interpretation
   - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
 - [ ] Prove compatibility lemmas (only unit and add with well-typedness)
   - [x] Unit
   - [x] Add
-  - [ ] Match (if-similar, but simpler)
+  - [x] Match (if-similar, but simpler)
   - [x] Fst
   - [x] Rec
   - [ ] App

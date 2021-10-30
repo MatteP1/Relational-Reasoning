@@ -863,37 +863,33 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
     &\LogRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{\expr_2'}{\typ}\label{cmpt-match:2}\\
     &\LogRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{\expr_3'}{\typ}\label{cmpt-match:3}
   \end{align}
-  and must show (ignoring well-typedness) $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ}{\rho}(\expr, \expr')$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\typ}{\rho}(\rho_1(\gamma_1(\expr)), \rho_1(\gamma_1(\expr')))$. We again introduce the following notation $f = \Match \rho_1(\gamma_1(\expr_1)) with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end$, and $f' = \Match \rho_2(\gamma_2(\expr_1')) with \Inj{1} \var => \rho_2(\gamma_2(\expr_2')) | \Inj{2} \var => \rho_2(\gamma_2(\expr_3')) end$, and note that $\rho_1(\gamma_1(\expr)) = f$ and $\rho_2(\gamma_2(\expr')) = f'$, so that we must show. $\ExpInp{\typ}{\rho}(f, f')$. This corresponds to showing
-  \begin{enumerate}
-    \item $f \Downarrow \iff f' \Downarrow$
-    \item $\forall \val_1, \val_2 . f \Downarrow \val_1 \land f' \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})$
-  \end{enumerate}
+  and must show (ignoring well-typedness) $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ}{\rho}(\expr, \expr')$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. We again introduce the following notation $f = \Match \gamma_1(\expr_1) with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end$, and $f' = \Match \gamma_2(\expr_1') with \Inj{1} \var => \gamma_2(\expr_2') | \Inj{2} \var => \gamma_2(\expr_3') end$, and note that $\gamma_1(\expr) = f$ and $\gamma_2(\expr') = f'$. Thus, we must show: $\ExpInp{\typ}{\rho}(f, f')$, which by definition corresponds to showing
+  \begin{equation}\label{cmpt-match:goal}
+    \exists \val_1, \val_2 . f \stepS \val_1 \land f' \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)
+  \end{equation}
   By \ref{cmpt-match:1} instantiated with $\rho, \gamma$, we get
   \begin{align}
-    &\rho_1(\gamma_1(\expr_1)) \Downarrow \iff \rho_2(\gamma_2(\expr'_1)) \Downarrow\label{cmpt-match:1.1}\\
-    &\forall \val_1, \val_2 . \rho_1(\gamma_1(\expr_1)) \Downarrow \val_1 \land \rho_2(\gamma_2(\expr'_1)) \Downarrow \val_2 \implies \ValInpGen{\Tsum{\typ_1}{\typ_2}}{\rho})\label{cmpt-match:1.2}
+    &\exists \val_1, \val_2 . \gamma_1(\expr_1) \stepS \val_1 \land \gamma_2(\expr'_1) \stepS \val_2 \land \ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)\label{cmpt-match:1.1}
   \end{align}
-  Now let's show the first part. We show only the $\implies$ direction. So assume $f \Downarrow \equiv \exists \val_{f_1} . f \Downarrow \val_{f_1}$, we must show $f' \Downarrow$. By corollary \ref{cor:EuC_val}, we get
-  $\exists \val_{1_f} . \rho_1(\gamma_1(\expr_1)) \stepS \val_{1_f} \land \Match \val_{1_f} with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \stepS \val_{f_1}$. Now, from \ref{cmpt-match:1.1} we get $\rho_2(\gamma_2(\expr'_1)) \Downarrow$. So $\exists \val_{2_f} . \rho_2(\gamma_2(\expr'_1)) \stepS \val_{2_f}$. By \ref{cmpt-match:1.2} we know $\ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_{1_f}, \val_{2_f})$. Thus, 
-  $(\val_{1_f}, \val_{2_f}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor
-  (\val_{1_f}, \val_{2_f}) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the first case as they are similar. So assume $(\val_{1_f}, \val_{2_f}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\}$. Then $\val_{1_f} = \Inj{1} \valB_1$, $\val_{2_f} = \Inj{1} \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$. So we have\\ $f \stepS \Match \Inj{1} \valB_1 with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \step \subst{\rho_1(\gamma_1(\expr_2))}{\var}{\valB_1} \stepS \val_{f_1}$, and\\
-  $f' \stepS \Match \Inj{1} \valB_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \step \subst{\rho_2(\gamma_2(\expr'_2))}{\var}{\valB_2}$. By \ref{lem:sub} $\subst{\rho_1(\gamma_1(\expr_2))}{\var}{\valB_1} = \rho_1(\gamma_1[\map{\var}{\valB_1}](\expr_2))$.
+  Let's instantiate the values in (\ref*{cmpt-match:1.1}) as $\val'_{1_1}$ and $\val'_{1_2}$, so that we know $\gamma_1(\expr_1) \stepS \val'_{1_1} \land \gamma_2(\expr'_1) \stepS \val'_{1_2} \land \ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val'_{1_1}, \val'_{1_2})$. By definition of the value interpretation, this gives us\\
+  $(\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor
+  (\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the first case as they are similar. So assume 
+  $(\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\}$. This means that $\val'_{1_1} = \Inj{1} \valB_1$ and $\val'_{1_2} = \Inj{1} \valB_2$ for some $\valB_1, \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$.
   Now, from \ref{cmpt-match:2} instantiated with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$ we get
   \begin{align}
-    &\rho_1(\gamma'_1(\expr_2)) \Downarrow \iff \rho_2(\gamma'_2(\expr'_2)) \Downarrow\label{cmpt-match:2.1}\\
-    &\forall \val_1, \val_2 . \rho_1(\gamma'_1(\expr_2)) \Downarrow \val_1 \land \rho_2(\gamma'_2(\expr'_2)) \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})\label{cmpt-match:2.2}
+    &\exists \val_1, \val_2 . \gamma'_1(\expr_2) \stepS \val_1 \land \gamma'_2(\expr'_2) \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)\label{cmpt-match:2.1}
   \end{align}
-  So by \ref{cmpt-match:2.1}, we get $\rho_2(\gamma_2[\map{\var}{(\valB_1, \valB_2)}](\expr'_2)) \Downarrow$, which again, by \ref{lem:sub} gives us $\subst{\rho_2(\gamma_2(\expr'_2))}{\var}{\valB_2} \Downarrow$. Thus $f' \Downarrow$, which was what we wanted.\\
-  Next we show the second part. So assume $\val$, $\val'$, and $f \Downarrow \val_1$ and $f' \Downarrow \val_2$, we must show $\ValInpGen{\typ}{\rho})$. By corollary \ref{cor:EuC_val}, we get $\exists \val_1 . \rho_1(\gamma_1(\expr_1)) \stepS \val_1 \land \Match \val_1 with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \stepS \val$. Likewise $\exists \val_2 . \rho_2(\gamma_2(\expr'_1)) \stepS \val_2 \land \Match \val_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \stepS \val'$. By \ref{cmpt-match:1.2} we know $\ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)$. Thus, 
-  $(\val_1, \val_2) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor
-  (\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the second case as they are similar. So assume $(\val_1, \val_2) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. Then $\val_1 = \Inj{2} \valB_1$, $\val_2 = \Inj{2} \valB_2$, and $\ValInp{\typ_2}{\rho}(\valB_1, \valB_2)$. So we have\\ $f \stepS \Match \Inj{2} \valB_1 with \Inj{1} \var => \rho_1(\gamma_1(\expr_2)) | \Inj{2} \var => \rho_1(\gamma_1(\expr_3)) end \step \subst{\rho_1(\gamma_1(\expr_3))}{\var}{\valB_1} \stepS \val$, and\\
-  $f' \stepS \Match \Inj{2} \valB_2 with \Inj{1} \var => \rho_2(\gamma_2(\expr'_2)) | \Inj{2} \var => \rho_2(\gamma_2(\expr'_3)) end \step \subst{\rho_2(\gamma_2(\expr'_3))}{\var}{\valB_2} \stepS \val'$. By \ref{lem:sub} $\subst{\rho_1(\gamma_1(\expr_3))}{\var}{\valB_1} = \rho_1(\gamma_1[\map{\var}{\valB_1}](\expr_3))$, and $\subst{\rho_2(\gamma_2(\expr'_3))}{\var}{\valB_2} = \rho_2(\gamma_2[\map{\var}{\valB_2}](\expr'_3))$.
-  Now, from \ref{cmpt-match:3} instantiated with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$ we get
+  If we instantiate the values in (\ref*{cmpt-match:2.1}) as $\val'_{2_1}$ and $\val'_{2_2}$, then we know that $\gamma'_1(\expr_2) \stepS \val'_{2_1} \land \gamma'_2(\expr'_2) \stepS \val'_{2_2} \land \ValInp{\typ}{\rho}(\val'_{2_1}, \val'_{2_2})$. By the substitution lemma (lemma \ref{lem:sub}), we then know:
   \begin{align}
-    &\rho_1(\gamma'_1(\expr_3)) \Downarrow \iff \rho_2(\gamma'_2(\expr'_3)) \Downarrow\label{cmpt-match:3.1}\\
-    &\forall \val_1, \val_2 . \rho_1(\gamma'_1(\expr_3)) \Downarrow \val_1 \land \rho_2(\gamma'_2(\expr'_3)) \Downarrow \val_2 \implies \ValInpGen{\typ}{\rho})\label{cmpt-match:3.2}
+    &\subst{\gamma_1(\expr_2)}{\var}{\valB_1} \stepS \val'_{2_1}\label{cmpt-match:sub.1}\\
+    &\subst{\gamma_2(\expr'_2)}{\var}{\valB_2} \stepS \val'_{2_2}\label{cmpt-match:sub.2}
   \end{align}
-  So by \ref{cmpt-match:3.2} we get $\ValInp{\typ}{\rho}(\val, \val')$.
+  Now let us turn to proving the goal, (\ref*{cmpt-match:goal}). We use $\val'_{2_1}$ for $\val_1$ and $\val'_{2_2}$ for $\val_2$. Thus, we must show 
+  $f \stepS \val'_{2_1} \land f' \stepS \val'_{2_2} \land \ValInp{\typ}{\rho}(\val'_{2_1}, \val'_{2_2})$. We have the following derivations:\\
+  $f \stepS \Match \Inj{1} \valB_1 with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end \step \subst{\gamma_1(\expr_2)}{\var}{\valB_1} \stepS \val'_{2_1}$, and\\
+  $f' \stepS \Match \Inj{1} \valB_2 with \Inj{1} \var => \gamma_2(\expr'_2) | \Inj{2} \var => \gamma_2(\expr'_3) end \step \subst{\gamma_2(\expr'_2)}{\var}{\valB_2} \stepS \val'_{2_2}$.\\
+  In both derivations, the first "$\stepS$" follows from the instantiation of (\ref*{cmpt-match:1.1}), and the fact that $\val'_{1_1} = \Inj{1} \valB_1$ and $\val'_{1_2} = \Inj{1} \valB_2$. The next "$\step$" holds by E-match-inj1. And finally, the last "$\stepS$" holds by (\ref*{cmpt-match:sub.1}) and (\ref*{cmpt-match:sub.2}).
+  Thus the first two parts of the goal are satisfied. The last part of the goal we get from the instantiation of (\ref*{cmpt-match:2.1}).
 \end{proof}
 
 
@@ -934,7 +930,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   { \LogRel{\tenv}{\venv}{\Tapp{\expr}}{\Tapp{\expr'}}{\subst{\typ}{\Tvar}{\typ'}} }$
 \end{lemma}
 \begin{proof}
-    \todo{write in proof}
+    \todo{proper ref} Similar proof given in notes by Lau 
 \end{proof}
 
 \section{Properties of LR}
