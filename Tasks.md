@@ -65,7 +65,7 @@
   - [x] Add
   - [x] Match (if-similar, but simpler)
   - [x] Fst
-  - [x] Rec
+  - [x] Lam
   - [ ] App
   - [ ] Tlam
   - [ ] Tapp (if space)
