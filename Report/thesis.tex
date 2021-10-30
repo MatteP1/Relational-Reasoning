@@ -863,7 +863,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
     &\LogRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{\expr_2'}{\typ}\label{cmpt-match:2}\\
     &\LogRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{\expr_3'}{\typ}\label{cmpt-match:3}
   \end{align}
-  and must show (ignoring well-typedness) $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ}{\rho}(\expr, \expr')$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. We again introduce the following notation $f = \Match \gamma_1(\expr_1) with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end$, and $f' = \Match \gamma_2(\expr_1') with \Inj{1} \var => \gamma_2(\expr_2') | \Inj{2} \var => \gamma_2(\expr_3') end$, and note that $\gamma_1(\expr) = f$ and $\gamma_2(\expr') = f'$. Thus, we must show: $\ExpInp{\typ}{\rho}(f, f')$, which by definition corresponds to showing
+  and must show (ignoring well-typedness) $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. We again introduce the following notation $f = \Match \gamma_1(\expr_1) with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end$, and $f' = \Match \gamma_2(\expr_1') with \Inj{1} \var => \gamma_2(\expr_2') | \Inj{2} \var => \gamma_2(\expr_3') end$, and note that $\gamma_1(\expr) = f$ and $\gamma_2(\expr') = f'$. Thus, we must show: $\ExpInp{\typ}{\rho}(f, f')$, which by definition corresponds to showing
   \begin{equation}\label{cmpt-match:goal}
     \exists \val_1, \val_2 . f \stepS \val_1 \land f' \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)
   \end{equation}
@@ -899,7 +899,19 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   { \LogRel{\tenv}{\venv}{\fun \var . \expr}{\fun \var . \expr'}{\Tfunc{\typ_1}{\typ_2}} }$
 \end{lemma}
 \begin{proof}
-  \todo{do proof}
+  So assuming 
+  \begin{equation}\label{cmpt-lam:1}
+    \LogRel{\tenv}{\venv, x : \typ_1}{\expr}{\expr'}{\typ_2}
+  \end{equation}
+  we must show (ignoring well-typedness) $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\gamma_1(\fun \var . \expr), \gamma_2(\fun \var . \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\gamma_1(\fun \var . \expr), \gamma_2(\fun \var . \expr')) \equiv \ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \gamma_1(\expr), \fun \var . \gamma_2(\expr'))$, which by definition corresponds to
+  \begin{equation}\label{cmpt-lam:goal}
+    \exists \val_1, \val_2 . \fun \var . \gamma_1(\expr) \stepS \val_1 \land \fun \var . \gamma_2(\expr') \stepS \val_2 \land \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)
+  \end{equation}
+  Since $\fun \var . \gamma_1(\expr)$ and $\fun \var . \gamma_2(\expr')$ are already values, we can use these for $\val_1$ and $\val_2$. The first two parts are then trivially satisfied, so we only need to show $\ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \gamma_1(\expr), \fun \var . \gamma_2(\expr'))$, which by definition means we have to show $\forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2}) \implies
+  \ExpInp{\typ_2}{\rho}(\subst{\gamma_1(\expr)}{\var}{\valB_1}, \subst{\gamma_2(\expr')}{\var}{\valB_2})$. So assume some $\valB_1$, $\valB_2$ such that $\ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2})$, then we must show $\ExpInp{\typ_2}{\rho}(\subst{\gamma_1(\expr)}{\var}{\valB_1}, \subst{\gamma_2(\expr')}{\var}{\valB_2})$, which by definition means we have to show 
+  $\exists \val_1, \val_2 . \subst{\gamma_1(\expr)}{\var}{\valB_1} \stepS \val_1 \land \subst{\gamma_2(\expr')}{\var}{\valB_2} \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. Now we instantiate (\ref*{cmpt-lam:1}) with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$, so that we have
+  $\exists \val_1, \val_2 . \gamma'_1(\expr) \stepS \val_1 \land \gamma'_2(\expr') \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. By the substitution lemma (lemma \ref*{lem:sub}), this is equivalent to our goal, so we are done.
+  \todo{Prettify proof}
 \end{proof}
 
 
