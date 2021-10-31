@@ -60,15 +60,20 @@
   - [x] val- and exp-interpretation
   - [x] varenv- and typenv-interpretation
 - [ ] Fix type-setting
-- [ ] Prove compatibility lemmas (only unit and add with well-typedness)
+- [x] Prove compatibility lemmas (only unit and add with well-typedness)
   - [x] Unit
   - [x] Add
   - [x] Match (if-similar, but simpler)
   - [x] Fst
   - [x] Lam
-  - [ ] App
-  - [ ] Tlam
-  - [ ] Tapp (if space)
+  - [x] App
+  - [x] Tlam
+  - [x] Tapp (if space)
+- [ ] Show results about LR
+  - [ ] LR => Ctx
+    - [ ] adequacy
+    - [ ] congruency
+  - [ ] Fundamental theorem
 
 ## Using the Logical Relations
 
