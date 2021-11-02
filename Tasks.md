@@ -69,11 +69,11 @@
   - [x] App
   - [x] Tlam
   - [x] Tapp (if space)
-- [ ] Show results about LR
-  - [ ] LR => Ctx
-    - [ ] adequacy
-    - [ ] congruency
-  - [ ] Fundamental theorem
+- [x] Show results about LR
+  - [x] LR => Ctx
+    - [x] adequacy
+    - [x] congruency
+  - [x] Fundamental theorem
 
 ## Using the Logical Relations
 

@@ -102,8 +102,8 @@
 \newcommand{\venv}{\Gamma}
 \newcommand{\tenv}{\Xi}
 \newcommand{\hctx}{\Sigma} % not needed
-\newcommand{\empvenv}{\bullet}
 \newcommand{\emptenv}{\bullet}
+\newcommand{\empvenv}{\bullet}
 
 % Judgements
 \newcommand{\jdg}[4]{#1 \; | \; #2 \; \vdash #3 : #4}
@@ -590,7 +590,7 @@ The way we have defined contextual equivalence is quite instructive and intuitiv
 Before giving the alternative definition, we first introduce a few concepts. In the following, we shall let $R$ denote any relation over $\tenv, \venv, \expr, \expr, \typ$. I.e. $R \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$. We also introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\typ}$, and use them interchangeably.\\
 Now we define two properties that a relation $R$ may have.
 \begin{definition}[Adequacy]
-  We say $R$ is an adequate relation when it holds for $R$ that $\jdgRel{\empvenv}{\emptenv}{\expr}{}{\expr'}{\Tbool} \implies \expr \Downarrow \val \iff \expr' \Downarrow \val$.
+  We say $R$ is an adequate relation when it holds for $R$ that $\jdgRel{\emptenv}{\empvenv}{\expr}{}{\expr'}{\Tbool} \implies \expr \Downarrow \val \iff \expr' \Downarrow \val$.
 \end{definition}
 
 \begin{definition}[Congruency]
@@ -627,7 +627,7 @@ We will show this in two steps, where each step essentially corresponds to one w
 \end{theorem}
 \begin{proof}
   First, the well-typedness follows directly from the definition of contextual equivalence.\\
-  Second, let's show that it is an adequate relation. So assuming $\ctxRel{\empvenv}{\emptenv}{\expr}{\expr'}{\Tbool}$, we must show $\expr \Downarrow \val \iff \expr' \Downarrow \val$. We know that $\forall \ctx : (\jdgType{\emptenv}{\empvenv}{\Tbool}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val' . (\ctx[\expr] \Downarrow \val' \iff \ctx[\expr'] \Downarrow \val')$. So specifically for $C$ being the empty context and $\val'$ being $\val$, we get $\expr \Downarrow \val \iff \expr' \Downarrow \val$, which was what we wanted.\\
+  Second, let's show that it is an adequate relation. So assuming $\ctxRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool}$, we must show $\expr \Downarrow \val \iff \expr' \Downarrow \val$. We know that $\forall \ctx : (\jdgType{\emptenv}{\empvenv}{\Tbool}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val' . (\ctx[\expr] \Downarrow \val' \iff \ctx[\expr'] \Downarrow \val')$. So specifically for $C$ being the empty context and $\val'$ being $\val$, we get $\expr \Downarrow \val \iff \expr' \Downarrow \val$, which was what we wanted.\\
   To show that it is a congruence relation, we must go through all the congruence rules, and show that they hold. We did the one for function application above, Cng-ctx-app. The rest will not be shown here.
 \end{proof}
 
@@ -744,7 +744,7 @@ Variable environment interpretation
 
 Type environment interpretation
 \begin{align*}
-  \TenvInp{\empvenv} &\triangleq \{ \emptyset \}\\
+  \TenvInp{\emptenv} &\triangleq \{ \emptyset \}\\
   \TenvInp{\tenv, \Tvar} &\triangleq \{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}] \mid \rho \in \TenvInp{\tenv} \land R \in Rel[\typ_1, \typ_2]\}
 \end{align*}
 
@@ -991,26 +991,33 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 
 \section{Properties of LR}
 
-\begin{lemma}[Adequacy of LR]
-  $\LogRel{\empvenv}{\emptenv}{\expr}{\expr'}{\Tunit} \implies \expr \Downarrow \iff \expr' \Downarrow$
+\begin{lemma}[Adequacy of LR]\label{lem:LR_adeq}
+  $\LogRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool} \implies \expr \Downarrow \val \iff \expr' \Downarrow \val$
 \end{lemma}
 \begin{proof}
-  \todo{do proof}
+  Assuming $\LogRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool}$, we must show 
+  $\expr \Downarrow \val \iff \expr' \Downarrow \val$. By the definition of LR, we have that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tbool}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. Given our definitions of $\mathcal{D}$ and $\mathcal{G}$, we can only instantiate it with the empty relational type substitution and the empty variable substitution. Doing this, we get $\ExpInp{\Tbool}{\emptyset}(\emptyset(\expr), \emptyset(\expr')) \equiv \ExpInp{\Tbool}{\emptyset}(\expr, \expr')$, which by definition means we have $\exists \val, \val' . \expr \stepS \val \land \expr' \stepS \val' \land \ValInp{\Tbool}{\emptyset}(\val, \val')$. Instantiating these values, we may conclude that $\expr \Downarrow \val$, $\expr' \Downarrow \val'$, and since $\ValInp{\Tbool}{\emptyset}(\val, \val')$, then either $\val = \val' = \True$, or $\val = \val' = \False$. In any case, $\val = \val'$, so that we can conclude $\expr \Downarrow \val \land \expr' \Downarrow \val$. From this we get what was wanted.
+\end{proof}
+
+\begin{lemma}[Congruency of LR]\label{lem:LR_cong}
+  $LR$ is a congruence relation
+\end{lemma}
+\begin{proof}
+  Follows immediately from the compatibility lemmas.
 \end{proof}
 
 \begin{theorem}
   $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$
 \end{theorem}
 \begin{proof}
-  \todo{write properly}
-  LR is a congruence relation, LR is an adequate relation, and all expressions in it are well-formed by definition. It thusly follows from theorem \ref{thm:CE_eq_part2}.
+  We now know that LR is an adequate relation (lemma \ref{lem:LR_adeq}) and a congruence relation (lemma \ref{lem:LR_cong}). Further, it follows directly from the definition of LR, that all expressions in the relation are well-typed. Thus, by theorem \ref{thm:CE_eq_part2}, we may conclude $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
 \end{proof}
 
 \begin{theorem}[Fundamental Theorem]
   $\jdg{\tenv}{\venv}{\expr}{\typ} \implies \LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$
 \end{theorem}
 \begin{proof}
-  Since LR is a congruence relation, it follows directly from lemma \ref{lem:R_Cng_is_reflexive}.
+  Since LR is a congruence relation (lemma \ref{lem:LR_cong}), it follows directly from lemma \ref{lem:R_Cng_is_reflexive}.
 \end{proof}
 
 
