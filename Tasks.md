@@ -77,7 +77,21 @@
 - [ ] Proof read
 
 ## Using the Logical Relations
-
+- [ ] Identity
+  - [ ] write in theorem
+  - [ ] prove it
+- [ ] Empty type
+  - [ ] write in theorem
+  - [ ] prove it
+- [ ] Commutativity
+  - [ ] write in theorem
+  - [ ] prove it
+- [ ] Idempotency
+  - [ ] write in theorem
+  - [ ] prove it
+- [ ] Lam hoisting
+  - [ ] write in theorem
+  - [ ] prove it
 
 ## Report Writing
 

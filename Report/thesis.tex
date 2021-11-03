@@ -69,6 +69,9 @@
 \newcommand{\RecCmd}{\Keyword{rec}}
 \long\def\Rec#1 #2:=#3{\RecCmd\; #1(#2) := #3}
 \long\def\fun#1.#2{\lambda #1 .\; #2}
+\newcommand{\LetCmd}{\Keyword{let}}
+\newcommand{\InCmd}{\Keyword{in}}
+\long\def\Let#1=#2in#3{\LetCmd \; #1 = #2 \; \InCmd \; #3}
 
 \newcommand{\Tvar}{X}
 \newcommand{\TvarB}{Y}
@@ -722,7 +725,7 @@ Relational substitution
   Rel[\typ_1, \typ_2] \triangleq 
   \left\{R \; \middle\vert \;
   \begin{aligned}
-    R \in \mathcal{P}(Val \times Val) \land \jdgType{\emptenv}{\empvenv}{\typ_1} \land \jdgType{\emptenv}{\empvenv}{\typ_1} \land\\ \forall (\val_1, \val_2) \in R . \jdg{\emptenv}{\empvenv}{\val_1}{\typ_1} \land \jdg{\emptenv}{\empvenv}{\val_2}{\typ_2}
+    R \in \mathcal{P}(Val \times Val) \land \jdgType{\emptenv}{\empvenv}{\typ_1} \land \jdgType{\emptenv}{\empvenv}{\typ_2} \land\\ \forall (\val_1, \val_2) \in R . \jdg{\emptenv}{\empvenv}{\val_1}{\typ_1} \land \jdg{\emptenv}{\empvenv}{\val_2}{\typ_2}
   \end{aligned}
   \right\}
 \end{align*}
@@ -730,7 +733,7 @@ Relational substitution
 Expression interpretation
 \begin{multline*}
   \ExpInp{\typ}{\rho}(\expr_1, \expr_2) \triangleq
-    \jdg{\emptenv}{\empvenv}{\expr_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\expr_2}{\rho_2(\typ)} \land \expr_1 \land\\
+    \jdg{\emptenv}{\empvenv}{\expr_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\expr_2}{\rho_2(\typ)} \land\\
     (\exists \val_1, \val_2 . \expr_1 \stepS \val_1 \land \expr_2 \stepS \val_2 \land\ValInpGen{\typ}{\rho})
 \end{multline*}
 
@@ -1026,6 +1029,62 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \label{ch:ACE}
 
 \todo{draft}
+
+\section{Identity}
+
+\begin{theorem}
+  $\jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}} \implies \ctxRel{\emptenv}{\empvenv}{\expr}{\Tlam \fun \var . \var}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$
+\end{theorem}
+\todo{empty envs or general?}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+
+
+\section{Empty type}
+
+\begin{theorem}
+  $\not\exists \expr . \jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tvar}}$
+\end{theorem}
+\todo{empty envs or general?}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+
+\section{Commutativity}
+
+Syntactic sugar:
+$\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
+
+\begin{theorem}
+  If $\jdg{\tenv}{\venv}{\expr_1}{\typ_1}$ and $\jdg{\tenv}{\venv}{\expr_2}{\typ_2}$ then\\
+  $\ctxRel{\tenv}{\venv}{\Let \var = \expr_2 in (\expr_1, \var)}{(\expr_1, \expr_2)}{\Tprod{\typ_1}{\typ_2}}$
+\end{theorem}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+
+
+\section{Idempotency}
+
+\begin{theorem}
+  If $\jdg{\tenv}{\venv}{\expr}{\typ}$ then $\ctxRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$
+\end{theorem}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+
+
+\section{Lam hoisting}
+
+\begin{theorem}
+  If $\jdg{\tenv}{\venv}{\expr_1}{\typ}$ and $\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}$ then\\
+  $\ctxRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$
+\end{theorem}
+\begin{proof}
+  \todo{do proof}
+\end{proof}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
