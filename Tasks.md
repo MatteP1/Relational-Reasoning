@@ -59,7 +59,6 @@
 - [x] Write in LR
   - [x] val- and exp-interpretation
   - [x] varenv- and typenv-interpretation
-- [ ] Fix type-setting
 - [x] Prove compatibility lemmas (only unit and add with well-typedness)
   - [x] Unit
   - [x] Add
@@ -74,6 +73,8 @@
     - [x] adequacy
     - [x] congruency
   - [x] Fundamental theorem
+- [ ] Fix type-setting
+- [ ] Proof read
 
 ## Using the Logical Relations
 
