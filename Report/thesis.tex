@@ -190,7 +190,7 @@ Department of Computer Science, Aarhus University\\[1ex]
 \chapter{Definition of Language}
 \label{ch:DoL}
 \todo{create draft}\\
-To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
+To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will see specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
 \section{The language}
 We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have. Thus, we may attempt to evaluate a program even though it has type-errors.
 \subsection{Syntax}
@@ -232,7 +232,7 @@ The syntax captures exactly all programs that can be written in our language. We
                   \Match \elctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
                   \elctx \; \expr \ALT \val \; \elctx \ALT \Tapp{\elctx}
 \end{align*}
-Thus, all programs in our language can be derived using the rules above. Evaluation contexts will be used when we get to defining the dynamics. Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
+All programs in our language can be derived using the rules above. Evaluation contexts will be used when we get to defining the dynamics. Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
 
 \subsection{Typing rules}
 The typing rules gives us a way to derive the type of a program in our language. They are defined using inference rules as follows:
@@ -517,8 +517,8 @@ This won't be proved here.
 
 \todo{draft}\\
 Imagine you are writing a larger program, and as part of that program, you need to use a stack. So as part of your program, you implement a stack. However, your implementation is naive, and not efficient. Thus you implement a new stack, that is more complex, but also more efficient. You would of course want to use the more efficient stack implementation in your larger program, but since it is more complex, you are not really sure whether you can justify the refactoring – the implementations might show differing behaviour.\\
-What you want to show, then, is that your two stack implementation \textit{behaves} the same. In other words, no matter which \textit{context} you use your two stack implementations in, they will always behave the same as part of the context. This is intuitively what we want to define with \textit{Contextual Equivalence}.\\
-In this section we give two equivalent definitions of what it means for programs to be contextually equivalent. The first definition will be more intuitive and instructive, while the second will give a deeper insight into the theoretical underpinnings of contextual equivalence.
+What you want to show, then, is that your two stack implementations \textit{behaves} the same. In other words, no matter which \textit{context} you use your two stack implementations in, they will always behave the same as part of the context. This is intuitively what we want to define with \textit{Contextual Equivalence}.\\
+In this chapter we give two equivalent definitions of what it means for programs to be contextually equivalent. The first definition will be more intuitive and instructive, while the second will give a deeper insight into the theoretical underpinnings of contextual equivalence.
 
 \section{Definition of Contextual Equivalence}
 Context
@@ -563,7 +563,7 @@ Read as: the context takes an expression of type $\typ$ under $\tenv, \venv$, an
   \end{equation*}
 \end{definition}
 The way we have defined contextual equivalence here means that given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some value $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same value, $\val$. Note here that that value must be a boolean, i.e. either $\True$ or $\False$.\\
-One may ponder why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? In fact, we could have used some of them. The important part is that we are able to make the plugged programs elicit differing behaviour, as we will se below. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:norm} we know that both plugged programs terminate, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of whether or not $\expr_1$ and $\expr_2$ are behaviourally equivalent. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
+One may ponder why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? In fact, we could have used some of them. The important part is that we are able to make the plugged programs elicit differing behaviour, as we will see below. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:norm} we know that both plugged programs terminate, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of whether or not $\expr_1$ and $\expr_2$ are behaviourally equivalent. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
 
 Another cause for speculation is whether or not the definition is really strong enough. If both $\expr_1$ and $\expr_2$ reduce to some values, we really want the values to be behaviourally the same.
 If $\expr_1$ and $\expr_2$ are of integer type, for example, then this means that the two values must be the same number. And for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
@@ -580,7 +580,7 @@ It becomes a little more difficult to reason about when $\typ$ is not a base-typ
   { \ctxRel{\tenv}{\venv}{f \; t}{f' \; t'}{\typ'} }
 \end{mathpar}
 This essentially gives us what we want: if we have two contextually equivalent functions, then, as long as we give them contextually equivalent inputs, the output will also be contextually equivalent. That output may be another function, but then this rule applies again to that output, and so on. In other words, we can keep on applying this rule until we at some point get a base type, like $\Tint$, and at that point, we know that the two numbers will be the same, by the argument made above.\\
-Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may do something similar for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function application.
+Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may state similar congruence rules for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function application.
 \begin{proof}
   By the two hypotheses of the rule, we know that $\jdg{\tenv}{\venv}{f}{\Tfunc{\typ}{\typ'}}$ and $\jdg{\tenv}{\venv}{t}{\typ}$. So by the T-APP rule, we may conclude $\jdg{\tenv}{\venv}{{f \; t}}{\typ'}$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ'}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val)$. So assume some context, $\ctx$, of the right type, and some value $\val$. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\forall \val' . \ctx[f \; t] \Downarrow \val' \iff \ctx[f' \; t] \Downarrow \val'$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\forall \val'' . \ctx[f' \; t] \Downarrow \val'' \iff \ctx[f' \; t'] \Downarrow \val''$. Now it follows by instantiating both of the prior results with $\val$. Then we have $\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val$, which was what we wanted.
 \end{proof}
@@ -623,6 +623,7 @@ We of course have to show that this definition of Contextual Equivalence is actu
   $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \iff CE(\tenv, \venv, \expr, \expr', \typ)$
 \end{theorem}
 We will show this in two steps, where each step essentially corresponds to one way of the double implication. Each step will be phrased as a theorem.
+\\\todo{How should I phrase this theorem (thm 6)?}
 \begin{theorem}\label{thm:CE_eq_part1}
   $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$ is a congruence relation, an adequate relation, and all expressions in the relation are well-typed.
 \end{theorem}
@@ -640,7 +641,7 @@ To prove the next theorem, we will need to show two lemmas.
   By induction on the typing derivation of $\expr$. It follows immediately from applying the induction hypothesis and applying congruency rules. We show one case here.
   \begin{itemize}
     \item[case] T-tlam.\\
-      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. By our induction hypothesis, we get $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
+      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis says: $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ} \implies R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$. \todo{Just to be sure, this is what our induction hypothesis says, right?} From this we get $R((\tenv, \Tvar), \venv, \expr, \expr, \typ) \equiv \jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
   \end{itemize}
 \end{proof}
 
@@ -654,6 +655,7 @@ To prove the next theorem, we will need to show two lemmas.
     \item[case] $\ctx = \empctx$.\\
       So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx: (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. We may conclude that $\tenv = \tenv'$, $\venv = \venv'$, and $\typ = \typ'$, given that $\empctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\typ})$. So since $\expr = \empctx[\expr] = \ctx[\expr]$, and $\expr' = \empctx[\expr'] = \ctx[\expr']$, we get $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$, which was what we wanted.
     \item[case] $\ctx = \ctx' + \expr''$\\
+      \todo{I'm a bit unsure about how to argue the types of the contexts. Is this fine or is more required?}
       So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. In this case, $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tint})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\Tint})$, meaning $\typ' = \Tint$. So we have $R(\tenv, \venv, \expr, \expr', \Tint)$, and our goal then is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tint)$. From the context typing and from rule T-add, we may conclude $\jdg{\tenv'}{\venv'}{\expr''}{\Tint}$. So by lemma \ref{lem:R_Cng_is_reflexive}, we know that $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\Tint}$. And by I.H. we get $R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \Tint) \equiv \jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tint}$. Finally, from the congruence rule cng-add, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] + \expr''}{}{\ctx'[\expr'] + \expr''}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$, which was what we wanted.
     \item[case] $\ctx = \Fst \ctx'$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_1})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tprod{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_1)$. By I.H. we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tprod{\typ_1}{\typ_2}}$, and by cng-fst with this, we get $\jdgRel{\tenv'}{\venv'}{\Fst \ctx'[\expr]}{}{\Fst \ctx'[\expr']}{\typ_1} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\typ_1}$.
@@ -687,10 +689,9 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 
 \todo{draft}
 \section{Logical Relations}
-
 \todo{explain briefly what logical relations are}
 
-\section{Defining the Logical Relations model}
+\section{Defining the Logical Relations Model}
 well-typedness relation
 \begin{equation*}
   \WtInpGen{\typ}{\rho} \triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)}\\
@@ -988,6 +989,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{lemma}
 \begin{proof}
   Similar to proof given in \cite{DBLP:journals/corr/abs-1907-11133}.
+  \todo{Would you recommend that I show this case or is it fine just to refer? The proofs would be essentially identical}
 \end{proof}
 
 \section{Properties of LR}
@@ -1029,6 +1031,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \label{ch:ACE}
 
 \todo{draft}
+\\\todo{In general, are the theorems correctly stated?}
 
 \section{Identity}
 
