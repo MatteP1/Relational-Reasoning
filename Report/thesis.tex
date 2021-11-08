@@ -1016,7 +1016,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   We now know that LR is an adequate relation (lemma \ref{lem:LR_adeq}) and a congruence relation (lemma \ref{lem:LR_cong}). Further, it follows directly from the definition of LR, that all expressions in the relation are well-typed. Thus, by theorem \ref{thm:CE_eq_part2}, we may conclude $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
 \end{proof}
 
-\begin{theorem}[Fundamental Theorem]
+\begin{theorem}[Fundamental Theorem]\label{thm:fund}
   $\jdg{\tenv}{\venv}{\expr}{\typ} \implies \LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$
 \end{theorem}
 \begin{proof}
@@ -1046,12 +1046,15 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 
 \section{Empty type}
 
+\todo{explain briefly what the empty type is}
+
 \begin{theorem}
   $\not\exists \expr . \jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tvar}}$
 \end{theorem}
 \todo{empty envs or general?}
 \begin{proof}
-  \todo{do proof}
+  Assume for the sake of contradiction that $\exists \expr . \jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tvar}}$. Then, by the fundamental theorem (theorem \ref{thm:fund}), we know that $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\Tall{\Tvar}{\Tvar}}$, which means that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . 
+  \ExpInp{\Tall{\Tvar}{\Tvar}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. Here, pick the empty relation substitutions, so that $\ExpInp{\Tall{\Tvar}{\Tvar}}{\emptyset}(\expr, \expr)$. Which by definition means $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInpGen{\Tall{\Tvar}{\Tvar}}{\emptyset}$. From this we may conclude that $\expr \stepS \Tlam \expr'$, and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tvar}{[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Instantiate this with any two types (for example $\Tint$), and the empty relation, $R = \emptyset$. Then we have $\ExpInp{\Tvar}{[\map{\Tvar}{(\Tint, \Tint, \emptyset)}]}(\expr', \expr')$, from which we know $\exists \val_1, \val_2 . \expr' \stepS \val_1 \land \expr' \stepS \val_2 \land \ValInpGen{\Tvar}{[\map{\Tvar}{(\Tint, \Tint, \emptyset)}]}$. By the definition of the value interpretation for type variables, the last part gives us $(\val_1, \val_2) \in \emptyset$, which is a contradiction.
 \end{proof}
 
 \section{Commutativity}

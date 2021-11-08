@@ -80,9 +80,9 @@
 - [ ] Identity
   - [ ] write in theorem
   - [ ] prove it
-- [ ] Empty type
-  - [ ] write in theorem
-  - [ ] prove it
+- [x] Empty type
+  - [x] write in theorem
+  - [x] prove it
 - [ ] Commutativity
   - [ ] write in theorem
   - [ ] prove it
