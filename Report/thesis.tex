@@ -1009,7 +1009,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   Follows immediately from the compatibility lemmas.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{thm:LR_sound}
   $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$
 \end{theorem}
 \begin{proof}
@@ -1077,7 +1077,34 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
   If $\jdg{\tenv}{\venv}{\expr}{\typ}$ then $\ctxRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$
 \end{theorem}
 \begin{proof}
-  \todo{do proof}
+  We will show the theorem by showing that the two expressions are logically related. Then, by theorem \ref{thm:LR_sound}, it follows that they are also contextually equivalent. So assume $\jdg{\tenv}{\venv}{\expr}{\typ}$, then we will show $\LogRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$. By definition of LR, we must show two things. First that both expressions are well-typed under $\tenv$ and $\venv$. This follows fairly easily from the assumption and by applying the typing rules, so we will not explain it here. Second that, when the expressions and types are closed, they are in the expression interpretation. So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. Then we must show $\ExpInp{\Tprod{\typ}{\typ}}{\rho}(\gamma_1(\Let \var = \expr in (\var, \var)), \gamma_2((\expr, \expr)))$, which by the definition of the expression interpretation means we have to show
+  \begin{align}
+    &\jdg{\emptenv}{\empvenv}{\Let \var = \gamma_1(\expr) in (\var, \var)}{\rho_1(\typ)}\label{idem:goal_1.1}\\
+    &\jdg{\emptenv}{\empvenv}{(\gamma_2(\expr), \gamma_2(\expr))}{\rho_2(\typ)}\label{idem:goal_1.2}\\
+    &\exists \val_1, \val_2 . \Let \var = \gamma_1(\expr) in (\var, \var) \stepS \val_1 \land (\gamma_2(\expr), \gamma_2(\expr)) \stepS \val_2 \land\ValInpGen{\Tprod{\typ}{\typ}}{\rho}\label{idem:goal_1.3}
+  \end{align}
+  From the initial assumption and the fundamental theorem (theorem \ref{thm:fund}) we have that $\LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$, which, when we instantiate with $\rho$ and $\gamma$, gives us 
+  \begin{align}
+    &\jdg{\emptenv}{\empvenv}{\gamma_1(\expr)}{\rho_1(\typ)}\label{idem:1.1}\\
+    &\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\rho_2(\typ)}\label{idem:1.2}\\
+    &\exists \val_1', \val_2' . \gamma_1(\expr) \stepS \val_1' \land \gamma_2(\expr) \stepS \val_2' \land\ValInp{\typ}{\rho}(\val_1', \val_2')\label{idem:1.3}
+  \end{align}
+  From (\ref*{idem:1.1}) and (\ref*{idem:1.2}), we may prove the first two parts of the goal (\ref*{idem:goal_1.1}) and (\ref*{idem:goal_1.2}). So let's turn our attention the last part (\ref*{idem:goal_1.3}).
+  \begin{multline}
+    \Let \var = \gamma_1(\expr) in (\var, \var) \equiv (\fun \var . (\var, \var)) \; \gamma_1(\expr) \stepS (\fun \var . (\var, \var)) \; \val_1' \step\\ \subst{(\var, \var)}{\var}{\val_1'} \equiv (\val_1', \val_1')
+  \end{multline}
+  The first equivalence simply de-sugars the let expression. The next "$\stepS$" follows from (\ref{idem:1.3}). The next step is simply a lambda reduction, and the final equivalence is just performing the substitution.
+
+  \begin{equation}
+    (\gamma_2(\expr), \gamma_2(\expr)) \stepS (\val_2', \gamma_2(\expr)) \stepS (\val_2', \val_2')
+  \end{equation}
+  Both "$\stepS$" follows from (\ref{idem:1.3}).
+  We here use $(\val_1', \val_1')$ for $\val_1$ and $(\val_2', \val_2')$ for $\val_2$. Then we must show
+  \begin{equation}
+    \ValInp{\Tprod{\typ}{\typ}}{\rho}((\val_1', \val_1'), (\val_2', \val_2'))\label{idem:goal_final}
+  \end{equation}
+  By the definition of the value interpretation for product type, it suffices to show well-typedness and $\ValInp{\typ}{\rho}(\val_1', \val_2') \land \ValInp{\typ}{\rho}(\val_1', \val_2')$. Both of which follows from the last part of (\ref{idem:1.3})
+  \todo{prettify proof}
 \end{proof}
 
 

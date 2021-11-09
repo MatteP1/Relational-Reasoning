@@ -87,8 +87,9 @@
   - [ ] write in theorem
   - [ ] prove it
 - [ ] Idempotency
-  - [ ] write in theorem
-  - [ ] prove it
+  - [x] write in theorem
+  - [x] prove it
+  - [ ] prettify proof
 - [ ] Lam hoisting
   - [ ] write in theorem
   - [ ] prove it
