@@ -16,6 +16,7 @@
   - [x] Proof read
 - [x] Refactor for terminating language
 - [ ] Substitution
+- [ ] Determinacy 
 - [ ] Fix typ-setting
 
 ## Contextual Equivalence

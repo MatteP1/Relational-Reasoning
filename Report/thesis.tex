@@ -609,6 +609,7 @@ For instance, the congruence rules for T-unit and T-app would be:
 The remaining congruence rules can be found in the appendix (\ref{appendix:Cng}).\\
 Now, we may define contextual equivalence in the following way.
 \begin{definition}\label{def:CE2}
+    \todo{rephrase as: TENV X VENV X EXPR X EXPR X TYPE}
   Contextual Equivalence is a relation, $CE \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$, such that
   \begin{itemize}
     \item all expressions in $CE$ are well-typed
@@ -624,6 +625,7 @@ We of course have to show that this definition of Contextual Equivalence is actu
 \end{theorem}
 We will show this in two steps, where each step essentially corresponds to one way of the double implication. Each step will be phrased as a theorem.
 \\\todo{How should I phrase this theorem (thm 6)?}
+\todo{rephrase as: TENV X VENV X EXPR X EXPR X TYPE}
 \begin{theorem}\label{thm:CE_eq_part1}
   $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \subseteq \tenv \times \venv \times \expr \times \expr \times \typ$ is a congruence relation, an adequate relation, and all expressions in the relation are well-typed.
 \end{theorem}
@@ -655,7 +657,7 @@ To prove the next theorem, we will need to show two lemmas.
     \item[case] $\ctx = \empctx$.\\
       So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx: (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. We may conclude that $\tenv = \tenv'$, $\venv = \venv'$, and $\typ = \typ'$, given that $\empctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\typ})$. So since $\expr = \empctx[\expr] = \ctx[\expr]$, and $\expr' = \empctx[\expr'] = \ctx[\expr']$, we get $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$, which was what we wanted.
     \item[case] $\ctx = \ctx' + \expr''$\\
-      \todo{I'm a bit unsure about how to argue the types of the contexts. Is this fine or is more required?}
+      \todo{I'm a bit unsure about how to argue the types of the contexts. Is this fine or is more required? it's fine}
       So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. In this case, $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tint})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\Tint})$, meaning $\typ' = \Tint$. So we have $R(\tenv, \venv, \expr, \expr', \Tint)$, and our goal then is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tint)$. From the context typing and from rule T-add, we may conclude $\jdg{\tenv'}{\venv'}{\expr''}{\Tint}$. So by lemma \ref{lem:R_Cng_is_reflexive}, we know that $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\Tint}$. And by I.H. we get $R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \Tint) \equiv \jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tint}$. Finally, from the congruence rule cng-add, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] + \expr''}{}{\ctx'[\expr'] + \expr''}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$, which was what we wanted.
     \item[case] $\ctx = \Fst \ctx'$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_1})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tprod{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_1)$. By I.H. we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tprod{\typ_1}{\typ_2}}$, and by cng-fst with this, we get $\jdgRel{\tenv'}{\venv'}{\Fst \ctx'[\expr]}{}{\Fst \ctx'[\expr']}{\typ_1} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\typ_1}$.
