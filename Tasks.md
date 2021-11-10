@@ -16,7 +16,8 @@
   - [x] Proof read
 - [x] Refactor for terminating language
 - [ ] Substitution
-- [ ] Determinacy 
+- [ ] Normalisation
+- [ ] Determinacy
 - [ ] Fix typ-setting
 
 ## Contextual Equivalence
@@ -79,8 +80,18 @@
 
 ## Using the Logical Relations
 - [ ] Identity
-  - [ ] write in theorem
-  - [ ] prove it
+  - [ ] Identity derivation
+    - [ ] write in theorem
+      - [ ] empty environments
+    - [ ] prove it
+  - [ ] Identity contextual equivalence
+    - [ ] write in theorem
+      - [ ] general environments
+    - [ ] prove it
+      - [x] determinacy
+        - [x] State it (in language chapter)
+      - [ ] substitution preserves typing
+        - [ ] prove it
 - [x] Empty type
   - [x] write in theorem
   - [x] prove it
