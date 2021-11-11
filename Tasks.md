@@ -80,14 +80,15 @@
 
 ## Using the Logical Relations
 - [ ] Identity
-  - [ ] Identity derivation
-    - [ ] write in theorem
-      - [ ] empty environments
-    - [ ] prove it
+  - [x] Identity derivation
+    - [x] write in theorem
+      - [x] empty environments
+    - [x] prove it
   - [ ] Identity contextual equivalence
-    - [ ] write in theorem
-      - [ ] general environments
+    - [x] write in theorem
+      - [x] general environments
     - [ ] prove it
+      - [x] the proof itself
       - [x] determinacy
         - [x] State it (in language chapter)
       - [ ] substitution preserves typing
