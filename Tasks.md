@@ -96,12 +96,14 @@
 - [x] Empty type
   - [x] write in theorem
   - [x] prove it
-- [ ] Commutativity
-  - [ ] write in theorem
-  - [ ] prove it
 - [ ] Idempotency
   - [x] write in theorem
   - [x] prove it
+  - [ ] prettify proof
+- [ ] Commutativity
+  - [x] write in theorem
+  - [x] prove it
+  - [ ] check correctness
   - [ ] prettify proof
 - [ ] Lam hoisting
   - [ ] write in theorem
