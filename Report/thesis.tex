@@ -1184,7 +1184,91 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
   $\ctxRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$
 \end{theorem}
 \begin{proof}
-  \todo{do proof}
+  So assuming 
+  \begin{align}
+    &\jdg{\tenv}{\venv}{\expr_1}{\typ}\label{lamhoist:1}\\
+    &\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}\label{lamhoist:2}
+  \end{align}
+  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. So we assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, and must then show
+  \begin{multline}\label{lamhoist:goal_1}
+    \exists \val_1, \val_2 . (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \stepS \val_1 \land\\
+    (\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)) \stepS \val_2 \land
+    \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)
+  \end{multline}
+  From the fundamental theorem on (\ref{lamhoist:1}) instantiated with $\rho$ and $\gamma$, we know that
+  \begin{equation}\label{lamhoist:1.1}
+    \gamma_1(\expr_1) \stepS \val_{y_1} \land \gamma_2(\expr_1) \stepS \val_{y_2} \land \ValInp{\typ}{\rho}(\val_{y_1}, \val_{y_2})
+  \end{equation}
+  for some values $\val_{y_1}, \val_{y_2}$.
+  \todo{question}
+  We also get that $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_1)}{\rho_1(\typ)}$.
+  In our goal (\ref{lamhoist:goal_1}), we use $\fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}$ for $\val_1$ and $\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)$ for $\val_2$. One may see that the first derivation holds by desugaring the let expression into a function application, then using $\gamma_1(\expr_1) \stepS \val_{y_1}$ from (\ref{lamhoist:1.1}) and the E-lam-app rule to conclude
+  \begin{multline*}
+    (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \equiv (\fun \varB . (\fun \var . \gamma_1(\expr_2))) \; \gamma_1(\expr_1) \stepS\\ (\fun \varB . (\fun \var . \gamma_1(\expr_2))) \; \val_{y_1} \step \fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}
+  \end{multline*}
+  The second derivation holds trivially, so all we need to show is 
+  \begin{equation}
+    \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}, \fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))
+  \end{equation}
+  So we assume some $\valB_1, \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$, and show 
+  \begin{multline}\label{lamhoist:goal_2}
+    \exists \val_1, \val_2 . \subst{(\subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}})}{\var}{\valB_1} \stepS \val_1 \land\\
+    \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2} \stepS \val_2 \land
+    \ValInp{\typ_2}{\rho}(\val_1, \val_2)
+  \end{multline}
+  We now use the fundamental theorem on (\ref{lamhoist:2}) and instantiate it with $\rho$ and $\gamma' = \gamma[\map{\varB}{(\val_{y_1}, \val_{y_2})}][\map{\var}{(\valB_1, \valB_2)}]$. Note that this is fine as both variables map to pairs of values that are in the value interpretation at their respective types. From this we get
+  \begin{equation}\label{lamhoist:2.1}
+    \gamma'_1(\expr_2) \stepS \val_{f_1} \land \gamma'_2(\expr_2) \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})
+  \end{equation}
+  For some values $\val_{f_1}, \val_{f_2}$.
+  Finally, in our goal (\ref{lamhoist:goal_2}), we use $\val_{f_1}$ for $\val_1$, and $\val_{f_2}$ for $\val_2$. The first derivation holds by
+  \begin{align*}
+    \subst{(\subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}})}{\var}{\valB_1}
+    &\equiv
+    \subst{\gamma_1[\map{\varB}{\val_{y_1}](\expr_2)}}{\var}{\valB_1} & \text{(substitution lemma)}\\
+    &\equiv
+    \gamma_1[\map{\varB}{\val_{y_1}}][\map{\var}{\valB_1}](\expr_2) & \text{(substitution lemma)}\\
+    &\equiv \gamma'_1(\expr_2)\\
+    &\stepS \val_{f_1} &\text{(from (\ref{lamhoist:2.1}))}
+  \end{align*}
+  The second derivation holds by
+  \todo{question begin}
+  \begin{align*}
+    \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2}
+    &\equiv
+    \Let \varB = \subst{\gamma_2(\expr_1)}{\var}{\valB_2} in \subst{\gamma_2(\expr_2)}{\var}{\valB_2}\\
+    &\equiv
+    \Let \varB = \gamma_2(\expr_1) in \subst{\gamma_2(\expr_2)}{\var}{\valB_2}\\
+    &\stepS
+    \Let \varB = \val_{y_2} in \subst{\gamma_2(\expr_2)}{\var}{\valB_2}\\
+    &\step
+    \subst{(\subst{\gamma_2(\expr_2)}{\var}{\valB_2})}{\varB}{\val_{y_2}}\\
+    &\equiv
+    \subst{\gamma_2[\map{\var}{\valB_2}](\expr_2)}{\varB}{\val_{y_2}}\\
+    &\equiv
+    \gamma_2[\map{\var}{\valB_2}][\map{\varB}{\val_{y_2}}](\expr_2)\\
+    &\equiv
+    \gamma'_2(\expr_2)\\
+    &\stepS \val_{f_2}
+  \end{align*}
+  \todo{or}
+  \begin{align*}
+    \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2}
+    &\equiv
+    \subst{(\Let \varB = \val_{y_2} in \gamma_2(\expr_2))}{\var}{\valB_2}\\
+    &\step
+    \subst{(\subst{\gamma_2(\expr_2)}{\varB}{\val_{y_2}})}{\var}{\valB_2}\\
+    &\equiv
+    \subst{\gamma_2[\map{\varB}{\val_{y_2}}](\expr_2)}{\var}{\valB_2}\\
+    &\equiv
+    \gamma_2[\map{\varB}{\val_{y_2}}][\map{\var}{\valB_2}](\expr_2)\\
+    &\equiv
+    \gamma'_2(\expr_2)\\
+    &\stepS \val_{f_2}
+  \end{align*}
+  \todo{question end}
+  \todo{annotate each line in the "correct" derivation}
+  And $\ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$ follows from (\ref{lamhoist:2.1}).
 \end{proof}
 
 

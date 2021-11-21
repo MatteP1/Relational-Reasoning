@@ -106,8 +106,10 @@
   - [ ] check correctness
   - [ ] prettify proof
 - [ ] Lam hoisting
-  - [ ] write in theorem
-  - [ ] prove it
+  - [x] write in theorem
+  - [x] prove it
+  - [ ] check correctness
+  - [ ] prettify proof
 
 ## Report Writing
 
