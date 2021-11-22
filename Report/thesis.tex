@@ -1189,7 +1189,7 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
     &\jdg{\tenv}{\venv}{\expr_1}{\typ}\label{lamhoist:1}\\
     &\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}\label{lamhoist:2}
   \end{align}
-  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. So we assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, and must then show
+  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. We shall ignore the task of showing well-typedness here (even though that it in some places is non-trivial \todo{question}). So we assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, and must then show
   \begin{multline}\label{lamhoist:goal_1}
     \exists \val_1, \val_2 . (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \stepS \val_1 \land\\
     (\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)) \stepS \val_2 \land

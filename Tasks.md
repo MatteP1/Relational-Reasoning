@@ -108,7 +108,7 @@
 - [ ] Lam hoisting
   - [x] write in theorem
   - [x] prove it
-  - [ ] check correctness
+  - [x] check correctness
   - [ ] prettify proof
 
 ## Report Writing
