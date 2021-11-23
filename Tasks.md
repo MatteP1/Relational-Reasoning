@@ -79,20 +79,20 @@
 - [ ] Proof read
 
 ## Using the Logical Relations
-- [ ] Identity
+- [x] Identity
   - [x] Identity derivation
     - [x] write in theorem
       - [x] empty environments
     - [x] prove it
-  - [ ] Identity contextual equivalence
+  - [x] Identity contextual equivalence
     - [x] write in theorem
       - [x] general environments
-    - [ ] prove it
+    - [x] prove it
       - [x] the proof itself
       - [x] determinacy
         - [x] State it (in language chapter)
-      - [ ] substitution preserves typing
-        - [ ] prove it
+      - [x] substitution preserves typing
+        - [x] prove it
 - [x] Empty type
   - [x] write in theorem
   - [x] prove it

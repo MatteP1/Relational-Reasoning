@@ -1424,10 +1424,11 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
 \end{proof}
 
 \begin{lemma}[Substitution lemma LR]\label{lem:subst_LR}
-  If $\jdg{\tenv}{\venv}{\expr}{\typ}$ and $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then $\jdg{\emptenv}{\empvenv}{\gamma_1(\expr)}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\typ}$
+  If $\jdg{\tenv}{\venv}{\expr}{\typ}$ and $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then $\jdg{\emptenv}{\empvenv}{\gamma_1(\expr)}{\rho_1(\typ)}$ and $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\rho_2(\typ)}$
 \end{lemma}
 \begin{proof}
-  \todo{do proof. try induction on typing derivation}
+  This follows fairly easily from the fundamental theorem: by the fundamental theorem on $\jdg{\tenv}{\venv}{\expr}{\typ}$, we have $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . 
+  \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. Using our $\rho$ and $\gamma$, we get $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. By definition of the expression interpretation, this means that $\jdg{\emptenv}{\empvenv}{\gamma_1(\expr)}{\rho_1(\typ)}$ and $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\rho_2(\typ)}$, which was what we wanted.
 \end{proof}
 
 
