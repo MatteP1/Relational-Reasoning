@@ -109,6 +109,16 @@
   - [x] write in theorem
   - [x] prove it
   - [x] check correctness
+  - [ ] Well-typedness
+    - [ ] either: 
+      - [ ] build expression from assumptions and then fund thm.
+    - [ ] or:
+      - [ ] state first lemma (google photo)
+      - [ ] state and prove lemma about closing expr with gamma from G
+        - [ ] induction on Gamma
+      - [ ] state second lemma (google photo)
+      - [ ] state and prove lemma about closing type with rho from D
+        - [ ] induction on Xi
   - [ ] prettify proof
 
 ## Report Writing

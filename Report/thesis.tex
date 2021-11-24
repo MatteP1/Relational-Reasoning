@@ -653,7 +653,7 @@ To prove the next theorem, we will need to show two lemmas.
   By induction on the typing derivation of $\expr$. It follows immediately from applying the induction hypothesis and applying congruency rules. We show one case here.
   \begin{itemize}
     \item[case] T-tlam.\\
-      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis says: $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ} \implies R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$. \todo{Just to be sure, this is what our induction hypothesis says, right?} From this we get $R((\tenv, \Tvar), \venv, \expr, \expr, \typ) \equiv \jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
+      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis is $R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$ which is equivalent to $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
   \end{itemize}
 \end{proof}
 
@@ -1071,7 +1071,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{theorem}
 \begin{proof}
   The majority of this proof is simply unfolding definitions; one side of the coin will be working on the goal, and the other side will be working on the fundamental theorem. So we shall go fairly quickly through this.\\
-  So assuming $\jdg{\tenv}{\venv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$, we must show $\ctxRel{\tenv}{\venv}{\expr}{\Tlam \fun \var . \var}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$. We shall do this by showing that the two expressions are logically related. Then contextual equivalence follows from theorem \ref{thm:LR_sound}. So we assume some $ \rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. Then we must show $\exists \val_1, \val_2 . \gamma_1(\expr) \stepS \val_1 \land \Tlam \fun \var . \var \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\rho}(\val_1, \val_2)$. By the fundamental theorem on our initial assumption and by instantiating this with $\rho$ and $\gamma$, we may conclude $\gamma_1(\expr) \stepS \Tlam \expr_1$ and $\gamma_2(\expr) \stepS \Tlam \expr_2$ and 
+  So assuming $\jdg{\tenv}{\venv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$, we must show $\ctxRel{\tenv}{\venv}{\expr}{\Tlam \fun \var . \var}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$. We shall do this by showing that the two expressions are logically related. Then contextual equivalence follows from theorem \ref{thm:LR_sound}. So we assume some $ \rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. Then we must show $\exists \val_1, \val_2 . \gamma_1(\expr) \stepS \val_1 \land \Tlam \fun \var . \var \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\rho}(\val_1, \val_2)$. By the fundamental theorem on our initial assumption and by instantiating this with $\rho$ and $\gamma$, we may conclude $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ and $\gamma_1(\expr) \stepS \Tlam \expr_1$ and $\gamma_2(\expr) \stepS \Tlam \expr_2$ and 
   \begin{equation}\label{ident2:1}
     \forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr_1, \expr_2)
   \end{equation}
@@ -1086,7 +1086,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   \begin{equation*}
     (\Tapp{\gamma_2(\expr)}) \; \valB_2 \stepS (\Tapp{\Tlam \expr_2}) \; \valB_2 \step \expr_2 \; \valB_2 \stepS (\fun \var . \expr_2') \; \valB_2 \step \subst{\expr_2'}{\var}{\valB_2} \stepS \val_{2f}'
   \end{equation*}
-  By lemma \ref{lem:subst_LR}, we may conclude that $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$, so by theorem \ref{thm:identity_reduction} we may conclude $(\Tapp{\gamma_2(\expr)}) \; \valB_2 \stepS \valB_2$. Thus by determinacy of System F (theorem \ref{thm:determinacy}), we have that $\val_{2f}' = \valB_2$. Since we know $(\val_{1f}', \val_{2f}') \in R$, then it follows that $(\val_{1f}', \valB_2) \in R$, which was what we had to show.
+  Since $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ then by theorem \ref{thm:identity_reduction} we may conclude $(\Tapp{\gamma_2(\expr)}) \; \valB_2 \stepS \valB_2$. Thus by determinacy of System F (theorem \ref{thm:determinacy}), we have that $\val_{2f}' = \valB_2$. Since we know $(\val_{1f}', \val_{2f}') \in R$, then it follows that $(\val_{1f}', \valB_2) \in R$, which was what we had to show.
 \end{proof}
 
 
@@ -1232,7 +1232,6 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
     &\stepS \val_{f_1} &\text{(from (\ref{lamhoist:2.1}))}
   \end{align*}
   The second derivation holds by
-  \todo{question begin}
   \begin{align*}
     \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2}
     &\equiv
@@ -1251,22 +1250,6 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
     \gamma'_2(\expr_2)\\
     &\stepS \val_{f_2}
   \end{align*}
-  \todo{or}
-  \begin{align*}
-    \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2}
-    &\equiv
-    \subst{(\Let \varB = \val_{y_2} in \gamma_2(\expr_2))}{\var}{\valB_2}\\
-    &\step
-    \subst{(\subst{\gamma_2(\expr_2)}{\varB}{\val_{y_2}})}{\var}{\valB_2}\\
-    &\equiv
-    \subst{\gamma_2[\map{\varB}{\val_{y_2}}](\expr_2)}{\var}{\valB_2}\\
-    &\equiv
-    \gamma_2[\map{\varB}{\val_{y_2}}][\map{\var}{\valB_2}](\expr_2)\\
-    &\equiv
-    \gamma'_2(\expr_2)\\
-    &\stepS \val_{f_2}
-  \end{align*}
-  \todo{question end}
   \todo{annotate each line in the "correct" derivation}
   And $\ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$ follows from (\ref{lamhoist:2.1}).
 \end{proof}
