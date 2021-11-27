@@ -387,6 +387,8 @@ The evaluation context, $\elctx$, tells us where in our program we may apply the
   \inferrule*[lab=E-tapp-tlam]{}{\hstepRel{\Tapp{(\Tlam \expr)}}
   {\expr}}
 \end{mathpar}
+To strike home the workings of evaluation context, we give here an example. Let's say we want to show that $(\fun \var . \var) \; 2 + 3 \step (\fun \var . \var) \; 5$. Using the evaluation context $\elctx = (\fun \var . \var) \; \empelctx$, which is a valid evaluation context, we may conclude using the head-step-step rule that $\elctx[2 + 3] \step \elctx[5]$, if $2 + 3 \hstep 5$. By the E-add head-step rule, we know that $2 + 3 \hstep 5$, thus we have that $(\fun \var . \var) \; 2 + 3 \equiv \elctx[2 + 3] \step \elctx[5] \equiv (\fun \var . \var) \; 5$. Further, using $\elctx = \empelctx$ and the headstep rule E-lam-app, we may conclude $(\fun \var . \var) \; 5 \step \subst{\var}{\var}{5} \equiv 5$. We can hide the middle step, and simply write $(\fun \var . \var) \; 2 + 3 \step^2 5$, meaning that we perform two steps to reach $5$. We also introduce the notation $\expr \stepS \expr'$, which means that $\expr$ takes zero or more steps to reach $\expr'$.\\
+Throughout the report, we shall leave the evaluation contexts implicit and simply refer to the head-steps when justifying reductions.\medskip\\
 At this point, our language has been formally been defined, so next we will note down some facts and results about it.
 
 \section{Properties of the language}
@@ -495,13 +497,13 @@ In this section we note down some useful properties of our language, which will 
   (\neg \Val{\expr''} \land \elctx[\expr''] = \val))$. Now, if $\neg \Val{\expr''}$ then $\neg \Val{\elctx[\expr'']}$, which one may see simply by inspecting the possible evaluation contexts. Therefore, $\elctx[\expr''] \neq \val$, so $\neg(\neg \Val{\expr''} \land \elctx[\expr''] = \val)$. Thus, we conclude $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
 \end{proof}
 
-\subsection{substitution}
-We define a substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows:
+\subsection{Substitution}
+We will not define formally how a substitution $\subst{\expr}{\var}{\expr'}$ works here, but refer instead to types and programming languages by benjamin c pierce (section 5.3)\todo{proper ref}, who explains how to formally define substitutions so that they are \textit{capture-avoiding}. However, we will be needing a way to close off open expressions later, so we shall define here an extended substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows:
 \begin{align*}
   \emptyset(\expr) &= \expr\\
   \gamma[\map{\var}{\val}](\expr) &= \gamma(\subst{\expr}{\var}{\val})
 \end{align*}
-
+The following lemma will be useful in later proofs.
 \begin{lemma}[Substitution]\label{lem:sub}
   $\gamma[\map{\var}{\val}](\expr) = \subst{\gamma(\expr)}{\var}{\val}$
 \end{lemma}
@@ -509,19 +511,22 @@ We define a substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2},
   Similar to Lemma 10 in \cite{DBLP:journals/corr/abs-1907-11133}.
 \end{proof}
 
-\subsection{Normalization}
-\todo{expand a little on this topic}
-\begin{theorem}\label{thm:norm}
-  System F is a normalizing language.
+\subsection{Type Safety, Normalisation, and Determinacy}
+We note here a few interesting results about System F. They will not be proved here, as it requires a substantial amount of work.\\
+Firstly, System F is a type-safe language. Essentially, this means that well-typed programs don't get "stuck", in the sense that either we can take a step, or we have reduced to a value. We may state this formally as follows
+\begin{theorem}\label{thm:typesafety}
+  $\jdg{\emptenv}{\empvenv}{\expr}{\typ} \land \expr \stepS \expr' \implies \Val{\expr'} \lor \exists \expr'' . \expr' \step \expr''$
 \end{theorem}
-This won't be proved here.
-
-\subsection{Determinacy}
-System F is a deterministic language.
+Secondly, every derivation of an expression in System F will at some point terminate. This property is called "normalisation".
+\begin{theorem}\label{thm:norm}
+  System F is a normalising language.
+\end{theorem}
+Together with type-safety, this implies that all closed and well-typed expressions will terminate at some value. \todo{is this correct?}
+Finally, System F is a deterministic language.
 \begin{theorem}\label{thm:determinacy}
   $\forall \expr, \val_1, \val_2 . \expr \Downarrow \val_1 \land \expr \Downarrow \val_2 \implies \val_1 = \val_2$
 \end{theorem}
-This won't be proved here.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -576,7 +581,7 @@ Read as: the context takes an expression of type $\typ$ under $\tenv, \venv$, an
   \end{equation*}
 \end{definition}
 The way we have defined contextual equivalence here means that given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some value $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same value, $\val$. Note here that that value must be a boolean, i.e. either $\True$ or $\False$.\\
-One may ponder why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? In fact, we could have used some of them. The important part is that we are able to make the plugged programs elicit differing behaviour, as we will see below. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:norm} we know that both plugged programs terminate, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of whether or not $\expr_1$ and $\expr_2$ are behaviourally equivalent. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
+One may ponder why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? In fact, we could have used some of them. The important part is that we are able to make the plugged programs elicit differing behaviour, as we will see below. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:typesafety} and \ref{thm:norm} we know that both plugged programs terminate at a value \todo{is this correct?}, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of whether or not $\expr_1$ and $\expr_2$ are behaviourally equivalent. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
 
 Another cause for speculation is whether or not the definition is really strong enough. If both $\expr_1$ and $\expr_2$ reduce to some values, we really want the values to be behaviourally the same.
 If $\expr_1$ and $\expr_2$ are of integer type, for example, then this means that the two values must be the same number. And for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
@@ -1189,7 +1194,13 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
     &\jdg{\tenv}{\venv}{\expr_1}{\typ}\label{lamhoist:1}\\
     &\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}\label{lamhoist:2}
   \end{align}
-  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. We shall ignore the task of showing well-typedness here (even though that it in some places is non-trivial \todo{question}). So we assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, and must then show
+  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. Using our two assumptions (\ref*{lamhoist:1} and \ref*{lamhoist:2}), along with the typing rules T-lam and T-app, we may conclude
+  \begin{align}
+    &\jdg{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\Tfunc{\typ_1}{\typ_2}}\label{lamhoist:exp1_wt}\\
+    &\jdg{\tenv}{\venv}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}\label{lamhoist:exp2_wt}
+  \end{align}
+  So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2), \fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))$
+  The closedness and well-typedness follows from applying the fundamental theorem on the above judgements (\ref*{lamhoist:exp1_wt} and \ref*{lamhoist:exp2_wt}), and instantiating with $\rho$ and $\gamma$. So what remains to be shown is
   \begin{multline}\label{lamhoist:goal_1}
     \exists \val_1, \val_2 . (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \stepS \val_1 \land\\
     (\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)) \stepS \val_2 \land
@@ -1199,9 +1210,7 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
   \begin{equation}\label{lamhoist:1.1}
     \gamma_1(\expr_1) \stepS \val_{y_1} \land \gamma_2(\expr_1) \stepS \val_{y_2} \land \ValInp{\typ}{\rho}(\val_{y_1}, \val_{y_2})
   \end{equation}
-  for some values $\val_{y_1}, \val_{y_2}$.
-  \todo{question}
-  We also get that $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_1)}{\rho_1(\typ)}$.
+  for some values $\val_{y_1}, \val_{y_2}$. We also get that $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_1)}{\rho_1(\typ)}$.
   In our goal (\ref{lamhoist:goal_1}), we use $\fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}$ for $\val_1$ and $\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)$ for $\val_2$. One may see that the first derivation holds by desugaring the let expression into a function application, then using $\gamma_1(\expr_1) \stepS \val_{y_1}$ from (\ref{lamhoist:1.1}) and the E-lam-app rule to conclude
   \begin{multline*}
     (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \equiv (\fun \varB . (\fun \var . \gamma_1(\expr_2))) \; \gamma_1(\expr_1) \stepS\\ (\fun \varB . (\fun \var . \gamma_1(\expr_2))) \; \val_{y_1} \step \fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}
@@ -1221,7 +1230,7 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
     \gamma'_1(\expr_2) \stepS \val_{f_1} \land \gamma'_2(\expr_2) \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})
   \end{equation}
   For some values $\val_{f_1}, \val_{f_2}$.
-  Finally, in our goal (\ref{lamhoist:goal_2}), we use $\val_{f_1}$ for $\val_1$, and $\val_{f_2}$ for $\val_2$. The first derivation holds by
+  Finally, in our goal (\ref{lamhoist:goal_2}), we use $\val_{f_1}$ for $\val_1$, and $\val_{f_2}$ for $\val_2$. Firstly, $\ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$ follows directly from (\ref{lamhoist:2.1}), so let's show that the derivations hold. The first one holds by
   \begin{align*}
     \subst{(\subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}})}{\var}{\valB_1}
     &\equiv
@@ -1250,8 +1259,7 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
     \gamma'_2(\expr_2)\\
     &\stepS \val_{f_2}
   \end{align*}
-  \todo{annotate each line in the "correct" derivation}
-  And $\ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$ follows from (\ref{lamhoist:2.1}).
+  In the first equivalence, we simply push in the substitution. The next equivalence holds as $\gamma_2(\expr_1)$ is a closed expression. Next we use the fact that $\gamma_2(\expr_1) \stepS \val_{y_2}$. Following that, the let-expression desugars into a function application where both expressions are values, so we use E-lam-app to take a step. Then we apply the substitution lemma twice, and the last step holds by (\ref{lamhoist:2.1}).
 \end{proof}
 
 

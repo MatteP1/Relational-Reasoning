@@ -15,10 +15,10 @@
   - [x] Write in complete EuC lemma
   - [x] Proof read
 - [x] Refactor for terminating language
-- [ ] Substitution
-- [ ] Normalisation
-- [ ] Determinacy
-- [ ] Fix typ-setting
+- [x] Substitution
+- [x] Normalisation
+- [x] Determinacy
+- [ ] Fix type-setting
 
 ## Contextual Equivalence
 - [x] Define Contextual Equivalence for System F
@@ -96,30 +96,28 @@
 - [x] Empty type
   - [x] write in theorem
   - [x] prove it
-- [ ] Idempotency
+- [x] Idempotency
   - [x] write in theorem
   - [x] prove it
-  - [ ] prettify proof
-- [ ] Commutativity
+- [x] Commutativity
   - [x] write in theorem
   - [x] prove it
-  - [ ] check correctness
-  - [ ] prettify proof
+  - [x] check correctness
 - [ ] Lam hoisting
   - [x] write in theorem
   - [x] prove it
   - [x] check correctness
   - [ ] Well-typedness
-    - [ ] either: 
-      - [ ] build expression from assumptions and then fund thm.
-    - [ ] or:
+    - either: 
+      - [x] build expression from assumptions and then fund thm.
+    - or:
       - [ ] state first lemma (google photo)
       - [ ] state and prove lemma about closing expr with gamma from G
         - [ ] induction on Gamma
       - [ ] state second lemma (google photo)
       - [ ] state and prove lemma about closing type with rho from D
         - [ ] induction on Xi
-  - [ ] prettify proof
+- [ ] prettify proofs
 
 ## Report Writing
 
