@@ -195,12 +195,11 @@ Department of Computer Science, Aarhus University\\[1ex]
 
 \chapter{Definition of Language}
 \label{ch:DoL}
-\todo{create draft}\\
 To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will see specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
 \section{The language}
-We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have. Thus, we may attempt to evaluate a program even though it has type-errors.
+We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have.
 \subsection{Syntax}
-The syntax captures exactly all programs that can be written in our language. We define it in Backus-Naur form as follows:
+The syntax captures exactly all programs that can be written in our language – in other words, it governs the "forms" our programs can take. We define it using a context-free grammar whose production rules are in Backus-Naur form:
 \begin{align*}
   \expr \BNFdef & \TT \ALT & \text{(unit value)}\\
                 & \var \ALT & \text{(variables)}\\
@@ -216,7 +215,11 @@ The syntax captures exactly all programs that can be written in our language. We
                   & \text{(sums)}\\
                 & \fun \var . \expr \ALT \expr \; \expr
                   & \text{(functions)}\\
-                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}\\
+                & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}
+\end{align*}
+\todo{question, is only 'e' part of syntax}
+All programs in our language can be derived using the rules above. We shall also define a couple more concepts: values, types, and evaluation contexts.
+\begin{align*}
   \val \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
                   \fun \var . \expr \ALT \Tlam \expr
@@ -238,10 +241,11 @@ The syntax captures exactly all programs that can be written in our language. We
                   \Match \elctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
                   \elctx \; \expr \ALT \val \; \elctx \ALT \Tapp{\elctx}
 \end{align*}
-All programs in our language can be derived using the rules above. Evaluation contexts will be used when we get to defining the dynamics. Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
+Evaluation contexts will be used when we get to defining the dynamics. In general, contexts like this are simply programs with a "hole". That hole can be plugged by some expressions $\expr$, and in that case we write $\elctx[\expr]$. We will see another example of a context in chapter \ref{ch:CE}.\\
+Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
 
 \subsection{Typing rules}
-The typing rules gives us a way to derive the type of a program in our language. They are defined using inference rules as follows:
+The typing rules give us a way to derive the type of a program in our language. They are defined using inference rules as follows:
 \begin{mathpar}
   \inferrule*[lab=T-var]
     {(\var : \typ) \in \venv}
@@ -333,7 +337,7 @@ Finally, we define the semantics of the language. We do this using a single "ste
     {\hstepRel{\expr}{\expr'}}
     {\elctx[\expr] \step \elctx[\expr']}
 \end{mathpar}
-The evaluation context, $\elctx$, tells us where in our program we may apply the reduction. If we have an expression $\expr$, and we have $\expr = \elctx[f]$, and $f \hstep f'$, then we may conclude that $\expr \step \elctx[f']$. Now, the head-steps are as follows:
+The evaluation context, $\elctx$, is the part that tells us where in our program we may apply the reduction. If we have an expression $\expr$, and we have $\expr = \elctx[f]$, and $f \hstep f'$, then we may conclude that $\expr \step \elctx[f']$. Now, the head-steps are as follows:
 \begin{mathpar}
   \inferrule*[lab=E-add]{}
     {\hstepRel{\Num{n_1} + \Num{n_2}} {\Num{n_1 + n_2}}}
@@ -387,9 +391,9 @@ The evaluation context, $\elctx$, tells us where in our program we may apply the
   \inferrule*[lab=E-tapp-tlam]{}{\hstepRel{\Tapp{(\Tlam \expr)}}
   {\expr}}
 \end{mathpar}
-To strike home the workings of evaluation context, we give here an example. Let's say we want to show that $(\fun \var . \var) \; 2 + 3 \step (\fun \var . \var) \; 5$. Using the evaluation context $\elctx = (\fun \var . \var) \; \empelctx$, which is a valid evaluation context, we may conclude using the head-step-step rule that $\elctx[2 + 3] \step \elctx[5]$, if $2 + 3 \hstep 5$. By the E-add head-step rule, we know that $2 + 3 \hstep 5$, thus we have that $(\fun \var . \var) \; 2 + 3 \equiv \elctx[2 + 3] \step \elctx[5] \equiv (\fun \var . \var) \; 5$. Further, using $\elctx = \empelctx$ and the headstep rule E-lam-app, we may conclude $(\fun \var . \var) \; 5 \step \subst{\var}{\var}{5} \equiv 5$. We can hide the middle step, and simply write $(\fun \var . \var) \; 2 + 3 \step^2 5$, meaning that we perform two steps to reach $5$. We also introduce the notation $\expr \stepS \expr'$, which means that $\expr$ takes zero or more steps to reach $\expr'$.\\
-Throughout the report, we shall leave the evaluation contexts implicit and simply refer to the head-steps when justifying reductions.\medskip\\
-At this point, our language has been formally been defined, so next we will note down some facts and results about it.
+To strike home the workings of evaluation context, we give here an example. Let's say we want to show that $(\fun \var . \var) \; 2 + 3 \step (\fun \var . \var) \; 5$. Using the evaluation context $\elctx = (\fun \var . \var) \; \empelctx$, which is a valid evaluation context, we may conclude using the head-step-step rule that $\elctx[2 + 3] \step \elctx[5]$, if $2 + 3 \hstep 5$. By the E-add head-step rule, we know that $2 + 3 \hstep 5$, thus we have that $(\fun \var . \var) \; 2 + 3 \equiv \elctx[2 + 3] \step \elctx[5] \equiv (\fun \var . \var) \; 5$. Further, using $\elctx = \empelctx$ and the headstep rule E-lam-app, we may conclude $(\fun \var . \var) \; 5 \step \subst{\var}{\var}{5} \equiv 5$. We can hide the middle step, and simply write $(\fun \var . \var) \; 2 + 3 \step^2 5$, meaning that we perform two steps to reach $5$. We also introduce the notation $\expr \stepS \expr'$, which means that $\expr$ takes zero or more steps to reach $\expr'$. And if $\expr \stepS \val$, then we shall write $\expr \Downarrow \val$.\\
+In the majority of the report, we will leave the evaluation contexts implicit and simply refer to the head-steps when justifying reductions.\medskip\\
+At this point, our language has been formally defined, so next we will note down some facts and results about it.
 
 \section{Properties of the language}
 In this section we note down some useful properties of our language, which will help us reason about the concepts in later chapters. First we show some interesting lemmas about the evaluation context.
@@ -539,8 +543,10 @@ What you want to show, then, is that your two stack implementations \textit{beha
 In this chapter we give two equivalent definitions of what it means for programs to be contextually equivalent. The first definition will be more intuitive and instructive, while the second will give a deeper insight into the theoretical underpinnings of contextual equivalence.
 
 \section{Definition of Contextual Equivalence}
-Context
-\begin{align*}
+In order to define contextual equivalence, we will first need to define the notion of a context. As with the evaluation context, this will simply be a program with exactly one hole in it, which may be plugged by some expression.
+\begin{definition}[Context]
+  A context $\ctx$ is anything that may be derived using the following CFG.
+  \begin{align*}
   \ctx \BNFdef& \empctx \ALT
                 \ctx + \expr \ALT \expr + \ctx \ALT
                 \ctx - \expr \ALT \expr - \ctx \ALT
@@ -558,16 +564,18 @@ Context
               & \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \ctx end \ALT
               \fun \var . \ctx \ALT
               \ctx \; \expr \ALT \expr \; \ctx \ALT \Tlam \ctx \ALT \Tapp{\ctx}
-\end{align*}
-
-Context Typing
+  \end{align*}
+\end{definition}
+Unlike the evaluation context, the hole can here be \textit{anywhere} in the program. This is due to how we will be defining contextual equivalence. Intuitively, we only want to consider two expressions contextually equivalent, when we can plug them into \textit{any} program with a hole, and they elicit similar behaviour.\\
+Next, we shall define "Context Typing". The type of a context will capture the type of the hole, and the type of plugged program. We define it as an inference rule:
 \begin{mathpar}
   \inferrule*[lab=T-ctx]
     { {\jdg{\tenv}{\venv}{\expr}{\typ}} \and 
       {\jdg{\tenv'}{\venv'}{\ctx[\expr]}{\typ'}}}
-    {C : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\tenv'}{\venv'}{\typ'})}
+    {\ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\tenv'}{\venv'}{\typ'})}
 \end{mathpar}
-Read as: the context takes an expression of type $\typ$ under $\tenv, \venv$, and outputs an expression of type $\typ'$ under $\tenv', \venv'$.
+We can read this as: the context $\ctx$ takes an expression $\expr$ (the expression which plugs the hole) of type $\typ$ under $\tenv, \venv$, and outputs an expression $\ctx[\expr]$ (the plugged program) of type $\typ'$ under $\tenv', \venv'$.\\
+With this defined, we are now ready to define contextual equivalence. We first state the definition, and then give some intuition as to why this definition makes sense. 
 \begin{definition}[Contextual Equivalence]\label{def:CE}
   We define contextual equivalence of two expressions $\expr_1$ and $\expr_2$ at type $\typ$ under $\tenv$ and $\venv$ as
   \begin{equation*}
@@ -580,14 +588,12 @@ Read as: the context takes an expression of type $\typ$ under $\tenv, \venv$, an
     \end{gathered}
   \end{equation*}
 \end{definition}
-The way we have defined contextual equivalence here means that given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some value $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same value, $\val$. Note here that that value must be a boolean, i.e. either $\True$ or $\False$.\\
-One may ponder why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? In fact, we could have used some of them. The important part is that we are able to make the plugged programs elicit differing behaviour, as we will see below. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:typesafety} and \ref{thm:norm} we know that both plugged programs terminate at a value \todo{is this correct?}, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of whether or not $\expr_1$ and $\expr_2$ are behaviourally equivalent. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
+This says that two expressions are contextually equivalent when they are well typed and we can plug them into any context, which closes both expressions and makes the plugged programs have type $\Tbool$, and the plugged programs run down to the same value (thus, either $\True$ or $\False$). In other words, given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some Boolean $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same Boolean, $\val$.\\
+To help demystify this definition, we will discuss a few points. Firstly, why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? The answer is that using $\Tbool$ is "strong enough". We will discuss what this means in a moment. But we could in fact have used some other type like $\Tint$ or even a composite type like $\Tprod{\Tbool}{\Tint}$. The important part is that we are able to make the plugged programs elicit differing behaviour. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:typesafety} and \ref{thm:norm} we know that both plugged programs terminate at a value \todo{is this correct?}, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of what $\expr_1$ and $\expr_2$ looks like. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
 
-Another cause for speculation is whether or not the definition is really strong enough. If both $\expr_1$ and $\expr_2$ reduce to some values, we really want the values to be behaviourally the same.
-If $\expr_1$ and $\expr_2$ are of integer type, for example, then this means that the two values must be the same number. And for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair.
-To give an intuition as to  why this definition is strong enough and ensures the above examples, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
+Now, let's discuss why our definition is strong enough, and what that even means. If $\expr_1$ and $\expr_2$ run down to some values, then those values should be behaviourally the same. If they are of integer type, for example, then intuitively, the two values should be the same number. And for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair. Our definition of contextual equivalence ensures this. To see why this is the case, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
 Now consider what happens if $\expr_1$ terminates with some value $\val_1$. Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$, and $\val_1$ and $\val_2$ behave the same? Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate at some value $\val$ if and only if the other one does.
-Let's first consider when $\typ = \Tint$. Then consider when $\ctx$ has the form $\If \empctx = \val_1 then \True else \False$. Here $\ctx[\expr_1] \Downarrow \True$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rules tell us that we will take the else branch, and hence $\ctx[\expr_2] \Downarrow \False$. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ reduces to $\True$, then we know that $\ctx[\expr_2]$ must reduce to $\True$. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, and they both don't run forever, then they must both evaluate to the same number.
+Let's first consider when $\typ = \Tint$. Then consider when $\ctx$ has the form $\empctx = \val_1$. Here $\ctx[\expr_1] \Downarrow \True$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rule E-not-eq tells us that $\ctx[\expr_2] \Downarrow \False$. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ reduces to $\True$, then we know that $\ctx[\expr_2]$ must reduce to $\True$. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, then they must both evaluate to the same number.
 
 It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tunit$, $\Tint$, or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent? To see this, consider the following "congruence" rule:
 \begin{mathpar}
@@ -597,7 +603,7 @@ It becomes a little more difficult to reason about when $\typ$ is not a base-typ
   }
   { \ctxRel{\tenv}{\venv}{f \; t}{f' \; t'}{\typ'} }
 \end{mathpar}
-This essentially gives us what we want: if we have two contextually equivalent functions, then, as long as we give them contextually equivalent inputs, the output will also be contextually equivalent. That output may be another function, but then this rule applies again to that output, and so on. In other words, we can keep on applying this rule until we at some point get a base type, like $\Tint$, and at that point, we know that the two numbers will be the same, by the argument made above.\\
+This essentially gives us what we want: if we have two contextually equivalent functions, then, as long as we give them contextually equivalent inputs, the outputs will also be contextually equivalent. That output may be another function, but then this rule applies again to that output, and so on. In other words, we can keep on applying this rule until we at some point get a base type, like $\Tint$, and at that point, we know that the two numbers will be the same, by the argument made above.\\
 Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may state similar congruence rules for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function application.
 \begin{proof}
   By the two hypotheses of the rule, we know that $\jdg{\tenv}{\venv}{f}{\Tfunc{\typ}{\typ'}}$ and $\jdg{\tenv}{\venv}{t}{\typ}$. So by the T-APP rule, we may conclude $\jdg{\tenv}{\venv}{{f \; t}}{\typ'}$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ'}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val)$. So assume some context, $\ctx$, of the right type, and some value $\val$. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\forall \val' . \ctx[f \; t] \Downarrow \val' \iff \ctx[f' \; t] \Downarrow \val'$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\forall \val'' . \ctx[f' \; t] \Downarrow \val'' \iff \ctx[f' \; t'] \Downarrow \val''$. Now it follows by instantiating both of the prior results with $\val$. Then we have $\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val$, which was what we wanted.
