@@ -567,7 +567,7 @@ In order to define contextual equivalence, we will first need to define the noti
   \end{align*}
 \end{definition}
 Unlike the evaluation context, the hole can here be \textit{anywhere} in the program. This is due to how we will be defining contextual equivalence. Intuitively, we only want to consider two expressions contextually equivalent, when we can plug them into \textit{any} program with a hole, and they elicit similar behaviour.\\
-Next, we shall define "Context Typing". The type of a context will capture the type of the hole, and the type of plugged program. We define it as an inference rule:
+Next, we shall define "Context Typing". The type of a context will capture the type of the hole, and the type of the plugged program. We define it as an inference rule:
 \begin{mathpar}
   \inferrule*[lab=T-ctx]
     { {\jdg{\tenv}{\venv}{\expr}{\typ}} \and 
