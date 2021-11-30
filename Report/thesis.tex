@@ -537,9 +537,9 @@ Finally, System F is a deterministic language.
 \chapter{Contextual Equivalence}
 \label{ch:CE}
 
-\todo{draft}\\
-Imagine you are writing a larger program, and as part of that program, you need to use a stack. So as part of your program, you implement a stack. However, your implementation is naive, and not efficient. Thus you implement a new stack, that is more complex, but also more efficient. You would of course want to use the more efficient stack implementation in your larger program, but since it is more complex, you are not really sure whether you can justify the refactoring – the implementations might show differing behaviour.\\
+Imagine you are writing a larger program, and as part of that program, you need to use a stack. So as part of your program, you implement a stack. However, your implementation is naive, and not efficient. Thus you implement a new stack, that is more complex, but also more efficient. You would of course want to use the more efficient stack implementation in your larger program, but since it is more complex, you are not sure whether you can justify the refactoring – the implementations might show differing behaviour.\\
 What you want to show, then, is that your two stack implementations \textit{behaves} the same. In other words, no matter which \textit{context} you use your two stack implementations in, they will always behave the same as part of the context. This is intuitively what we want to define with \textit{Contextual Equivalence}.\\
+Contextual Equivalence can be used to show this along with other, "smaller" properties such as idempotency and hoisting of functions. Both of which we will be proving in chapter \ref{ch:ACE}.\\
 In this chapter we give two equivalent definitions of what it means for programs to be contextually equivalent. The first definition will be more intuitive and instructive, while the second will give a deeper insight into the theoretical underpinnings of contextual equivalence.
 
 \section{Definition of Contextual Equivalence}
@@ -591,9 +591,9 @@ With this defined, we are now ready to define contextual equivalence. We first s
 This says that two expressions are contextually equivalent when they are well typed and we can plug them into any context, which closes both expressions and makes the plugged programs have type $\Tbool$, and the plugged programs run down to the same value (thus, either $\True$ or $\False$). In other words, given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some Boolean $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same Boolean, $\val$.\\
 To help demystify this definition, we will discuss a few points. Firstly, why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? The answer is that using $\Tbool$ is "strong enough". We will discuss what this means in a moment. But we could in fact have used some other type like $\Tint$ or even a composite type like $\Tprod{\Tbool}{\Tint}$. The important part is that we are able to make the plugged programs elicit differing behaviour. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:typesafety} and \ref{thm:norm} we know that both plugged programs terminate at a value \todo{is this correct?}, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of what $\expr_1$ and $\expr_2$ looks like. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
 
-Now, let's discuss why our definition is strong enough, and what that even means. If $\expr_1$ and $\expr_2$ run down to some values, then those values should be behaviourally the same. If they are of integer type, for example, then intuitively, the two values should be the same number. And for product types, this means that the first value in each pair should be behaviourally the same, and likewise with the second value in each pair. Our definition of contextual equivalence ensures this. To see why this is the case, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
+Now, let's discuss why our definition is strong enough, and what that means. Firstly, when talking about contextual equivalence, we are not interested in whether or not expressions are syntactically the same – we only care about their observable behaviour. So let's say that two contextually equivalent expressions $\expr_1$ and $\expr_2$ run down to some values, then those values should be behaviourally the same. We have not yet defined formally what we mean by "behaviourally the same". However, intuitively, if the expressions are of integer type, for example, then the two values should be the same number. And for product types, the first value in each pair should be behaviourally the same, and likewise with the second value in each pair. Our definition of contextual equivalence ensures this. To see why this is the case, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
 Now consider what happens if $\expr_1$ terminates with some value $\val_1$. Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$, and $\val_1$ and $\val_2$ behave the same? Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate at some value $\val$ if and only if the other one does.
-Let's first consider when $\typ = \Tint$. Then consider when $\ctx$ has the form $\empctx = \val_1$. Here $\ctx[\expr_1] \Downarrow \True$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rule E-not-eq tells us that $\ctx[\expr_2] \Downarrow \False$. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ reduces to $\True$, then we know that $\ctx[\expr_2]$ must reduce to $\True$. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, then they must both evaluate to the same number.
+Let's first consider when the expressions are of integer type (so $\typ = \Tint$). Then consider when $\ctx$ has the form $\empctx = \val_1$. Here $\ctx[\expr_1] \Downarrow \True$. But what about $\ctx[\expr_2]$? If $\val_2 \neq \val_1$, then our evaluation rule E-not-eq tells us that $\ctx[\expr_2] \Downarrow \False$. However, since $\expr_1$ and $\expr_2$ are contextually equivalent, and $\ctx[\expr_1]$ reduces to $\True$, then we know that $\ctx[\expr_2]$ must reduce to $\True$. Hence it is not the case that $\val_2 \neq \val_1$, thus $\val_2 = \val_1$. So if our two programs of type integer are contextually equivalent, then they must both evaluate to the same number.
 
 It becomes a little more difficult to reason about when $\typ$ is not a base-type, like $\Tunit$, $\Tint$, or $\Tbool$. Take function type, for instance. If $\expr_1$ and $\expr_2$ both evaluate down to functions, how do we know that those functions are behaviourally equivalent? To see this, consider the following "congruence" rule:
 \begin{mathpar}
@@ -606,13 +606,13 @@ It becomes a little more difficult to reason about when $\typ$ is not a base-typ
 This essentially gives us what we want: if we have two contextually equivalent functions, then, as long as we give them contextually equivalent inputs, the outputs will also be contextually equivalent. That output may be another function, but then this rule applies again to that output, and so on. In other words, we can keep on applying this rule until we at some point get a base type, like $\Tint$, and at that point, we know that the two numbers will be the same, by the argument made above.\\
 Of course, it may happen that the output is of another non-base type, such as type abstraction. But we may state similar congruence rules for all other non-base types. However proving all of them is quite tedious, so we will here only prove the congruence rule for function application.
 \begin{proof}
-  By the two hypotheses of the rule, we know that $\jdg{\tenv}{\venv}{f}{\Tfunc{\typ}{\typ'}}$ and $\jdg{\tenv}{\venv}{t}{\typ}$. So by the T-APP rule, we may conclude $\jdg{\tenv}{\venv}{{f \; t}}{\typ'}$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ'}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val)$. So assume some context, $\ctx$, of the right type, and some value $\val$. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\forall \val' . \ctx[f \; t] \Downarrow \val' \iff \ctx[f' \; t] \Downarrow \val'$. Now consider the context $\ctx[f' \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\forall \val'' . \ctx[f' \; t] \Downarrow \val'' \iff \ctx[f' \; t'] \Downarrow \val''$. Now it follows by instantiating both of the prior results with $\val$. Then we have $\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val$, which was what we wanted.
+  By the two hypotheses of the rule, we know that $\jdg{\tenv}{\venv}{f}{\Tfunc{\typ}{\typ'}}$ and $\jdg{\tenv}{\venv}{t}{\typ}$. So by the T-APP rule, we may conclude $\jdg{\tenv}{\venv}{{f \; t}}{\typ'}$. Likewise for the prime variants. So all that remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ'}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val)$. So assume some context, $\ctx$, of the right type, and some value $\val$. Consider now the context $\ctx[\empctx \; t]$. We know that $f$ is contextually equivalent to $f'$, so $\forall \val' . \ctx[f \; t] \Downarrow \val' \iff \ctx[f' \; t] \Downarrow \val'$. Now consider the context $\ctx[f' \; \empctx]$. Since $t$ is contextually equivalent to $t'$, then we know $\forall \val'' . \ctx[f' \; t] \Downarrow \val'' \iff \ctx[f' \; t'] \Downarrow \val''$. Now it follows by instantiating both of the prior results with $\val$. Then we have $\ctx[f \; t] \Downarrow \val \iff \ctx[f' \; t] \Downarrow \val \iff \ctx[f' \; t'] \Downarrow \val$, which was what we wanted.
 \end{proof}
 
-The way we have defined contextual equivalence is quite instructive and intuitive. However, one may define contextual equivalence in another, equivalent way, which gives much insight into contextual equivalence, and will make working with the logical relation later more intuitive. We will explore this alternative definition in the next section.
+The way we have defined contextual equivalence is quite instructive and intuitive. However, one may define contextual equivalence in another, equivalent way, which gives much insight into contextual equivalence, and will make working with the logical relations model later more intuitive. We will explore this alternative definition in the next section.
 
 \section{Alternative Definition of Contextual Equivalence}
-Before giving the alternative definition, we first introduce a few concepts. In the following, we will be working with relations $R \subseteq \TENV \times \VENV \times \EXPR \times \EXPR \times \TYPE$, and $R$ will refer to any such relation. $\TENV$ is simply the set of all type environments, so $\tenv \in \TENV$. Likewise with the rest. We also introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\typ}$, and use them interchangeably.\\
+Before giving the alternative definition, we first introduce a few concepts. In the following, we will be working with relations $R \subseteq \TENV \times \VENV \times \EXPR \times \EXPR \times \TYPE$, and $R$ will refer to any such relation. $\TENV$ is simply the set of all type environments, so $\tenv \in \TENV$. Likewise with the other sets. We also introduce the following notation: $R(\tenv, \venv, \expr, \expr', \typ) \triangleq \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\typ}$, and use them interchangeably.\\
 Now we define two properties that a relation $R$ may have.
 \begin{definition}[Adequacy]
   We say $R$ is an adequate relation when it holds for $R$ that $\jdgRel{\emptenv}{\empvenv}{\expr}{}{\expr'}{\Tbool} \implies \expr \Downarrow \val \iff \expr' \Downarrow \val$.
@@ -631,7 +631,7 @@ For instance, the congruence rules for T-unit and T-app would be:
     { \jdgRel{\tenv}{\venv}{\Tapp{\expr}}{}{\Tapp{\expr'}}{\subst{\typ}{\Tvar}{\typ'}} }
 \end{mathpar}
 The remaining congruence rules can be found in the appendix (\ref{appendix:Cng}).\\
-Now, we may define contextual equivalence in the following way.
+Now we may define contextual equivalence in the following way.
 \begin{definition}\label{def:CE2}
   Contextual Equivalence is a relation, $CE \subseteq \TENV \times \VENV \times \EXPR \times \EXPR \times \TYPE$, such that
   \begin{itemize}
@@ -1052,11 +1052,14 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \chapter{Examples of Application of Contextual Equivalence}
 \label{ch:ACE}
 
-\todo{draft}
+\todo{draft}\\
+With our logical relations model defined and the necessary properties of it proved, we are ready to put it to use on some interesting examples. Some of the theorems will involve contextual equivalence directly, but as we will see, we can even use it in theorems where it isn't mentioned! This is thanks to the fundamental theorem.
 
 \section{Identity}
-
-\subsection{Identity reduction}
+The first example we shall explore is that of identity; if an expression has a certain type, then we may prove that it behaves just as the identity function.
+We shall actually show two theorems. The first one is weaker, in the sense that there are some languages (fx ones with side-effects), where only the first theorem holds.
+\subsection{Identity: Reduction}
+Informally, the first theorem says that an expression $\expr$, which given a value of any type $\typ$ outputs an expression of the same type $\typ$, will always output the value it was given as input. The intuition for why this is, is that since the expression works for any type, it cannot do anything specific to the value given. Since it must output an expression of the same type, and it doesn't know in advance the type of the input, it only has one option: to return the value it was given. \todo{question: how does this relate to theorems for free?}
 \begin{theorem}\label{thm:identity_reduction}
   $\jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}} \land
   \jdg{\emptenv}{\empvenv}{\val}{\typ} \implies 
@@ -1076,7 +1079,8 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   The first "$\stepS$" follows from $\expr \stepS \Tlam \expr'$. The following step holds by E-tapp-tlam. The next "$\stepS$" follows by $\expr' \stepS \fun \var . \expr''$. The next step holds by E-lam-app. and the final "$\stepS$" follows by $\subst{\expr''}{\var}{\val} \stepS \val_f$. Thus we have know shown $(\Tapp{\expr}) \; \val \stepS \val$.
 \end{proof}
 
-\subsection{Identity Contextual Equivalence}
+\subsection{Identity: Contextual Equivalence}
+The next theorem shows that any expression of type $\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}$ may as well be substituted with the simple, generic identity function.
 \begin{theorem}
   $\jdg{\tenv}{\venv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}} \implies \ctxRel{\tenv}{\venv}{\expr}{\Tlam \fun \var . \var}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$
 \end{theorem}
@@ -1114,10 +1118,9 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{proof}
 
 \section{Idempotency}
+For the next three theorems, we shall introduce $\LetCmd$-expressions, which will just be syntactic sugar for a function application: $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
 
-Syntactic sugar:
-$\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
-
+Idempotency in general is the idea that doing something multiple times is equivalent to doing it once. In our theorem below, it corresponds to the fact that evaluating the same expression multiple times does not yield different behaviour compared to just evaluating it once, and using the value you get in its place.
 \begin{theorem}
   If $\jdg{\tenv}{\venv}{\expr}{\typ}$ then $\ctxRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$
 \end{theorem}
@@ -1154,7 +1157,7 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
 
 
 \section{Commutativity}
-
+In short, this commutativity theorem states that the order of evaluation of expressions in tuples is unimportant. Note the order of evaluation in the theorem below. In the left expression, $\expr_2$ is reduced first. And in the right, $\expr_1$ is reduced first.
 \begin{theorem}
   If $\jdg{\tenv}{\venv}{\expr_1}{\typ_1}$ and $\jdg{\tenv}{\venv}{\expr_2}{\typ_2}$ then\\
   $\ctxRel{\tenv}{\venv}{\Let \var = \expr_2 in (\expr_1, \var)}{(\expr_1, \expr_2)}{\Tprod{\typ_1}{\typ_2}}$
@@ -1189,7 +1192,7 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
 
 
 \section{Lam hoisting}
-
+The final theorem we shall show is one which is useful, were we to write a compiler for System F. In some compilers, there is a phase which performs "hoisting". Hoisting is the act of lifting invariant declarations out of loops or functions. We don't have loops in our language, so the theorem below shows that it is safe to hoist declarations ($\LetCmd$-expressions) out of lambda abstractions.
 \begin{theorem}
   If $\jdg{\tenv}{\venv}{\expr_1}{\typ}$ and $\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}$ then\\
   $\ctxRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$
@@ -1277,11 +1280,14 @@ $\Let \var = \expr in \expr' \triangleq (\fun \var . \expr') \; \expr$.
 \todo{draft}
 
 % Idea for future work:
-% * add recursive functions (fixpoint) to the language.
+% * add recursive functions (a fixed-point combinator) to the language.
 %   this will make it non-terminating.
 %   project started out with this, but defining LR became much harder
 %   requires step-indexed LR
 % * Iris maybe?
+%
+% Comparison to other work:
+% should we do any comparison?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

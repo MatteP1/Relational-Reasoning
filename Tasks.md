@@ -7,6 +7,8 @@
 - [x] Prove the two intermediate lemmas
 - [x] Read parts I and II of types and programming languages
 - [x] Watch videos on Blackboard
+- [ ] Read parts of types and programming languages again
+- [ ] Read Theorems for free!
 
 ## System F. The Language
 - [x] Write in language (System F) in report
@@ -121,7 +123,13 @@
 - [ ] prettify proofs
 
 ## Report Writing
-
+- [ ] Comparison to other work and ideas for future work
+- [ ] Write introduction
+- [ ] Write conclusion
+- [ ] Acknowledgments?
+- [ ] Write abstract
+- [ ] Format appendix
+- [ ] Proofread report
 
 ## Exam period
 - [ ] Watch exam video on Blackboard
