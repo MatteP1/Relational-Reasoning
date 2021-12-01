@@ -525,12 +525,14 @@ Secondly, every derivation of an expression in System F will at some point termi
 \begin{theorem}\label{thm:norm}
   System F is a normalising language.
 \end{theorem}
+% we actually prove this in our logical relation. using fundamental theorem we can prove it using the expression relation.
 Together with type-safety, this implies that all closed and well-typed expressions will terminate at some value. \todo{is this correct?}
 Finally, System F is a deterministic language.
 \begin{theorem}\label{thm:determinacy}
   $\forall \expr, \val_1, \val_2 . \expr \Downarrow \val_1 \land \expr \Downarrow \val_2 \implies \val_1 = \val_2$
 \end{theorem}
-
+% if e -> e1 and e -> e2, then e1 = e2.
+% other theorem becomes corollary.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1208,7 +1210,7 @@ The final theorem we shall show is one which is useful, were we to write a compi
     &\jdg{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\Tfunc{\typ_1}{\typ_2}}\label{lamhoist:exp1_wt}\\
     &\jdg{\tenv}{\venv}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}\label{lamhoist:exp2_wt}
   \end{align}
-  So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2), \fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))$
+  So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2), \fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))$.
   The closedness and well-typedness follows from applying the fundamental theorem on the above judgements (\ref*{lamhoist:exp1_wt} and \ref*{lamhoist:exp2_wt}), and instantiating with $\rho$ and $\gamma$. So what remains to be shown is
   \begin{multline}\label{lamhoist:goal_1}
     \exists \val_1, \val_2 . (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \stepS \val_1 \land\\
