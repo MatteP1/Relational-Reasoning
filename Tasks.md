@@ -12,7 +12,7 @@
 
 ## System F. The Language
 - [x] Write in language (System F) in report
-- [ ] Add explaining text to each part
+- [x] Add explaining text to each part
 - [x] Define and prove "Evaluation under Context" lemma for System F w/rec
   - [x] Define k = [] or Val(e) lemma. Show 1 case
   - [x] Write in complete EuC lemma
@@ -23,6 +23,7 @@
 - [x] Determinacy
   - [x] For one step
   - [x] Multi-step evaluation to a value.
+- [ ] Refactor for statics and dynamics
 - [ ] Fix type-setting
 
 ## Contextual Equivalence

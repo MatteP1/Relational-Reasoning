@@ -1,24 +1,12 @@
 # Questions
 
 ----------- Process -----------
-- normalisation and type-safety.
-  - does this mean that all well typed expressions reduce to a value?
-  yes
-  - or is it only normalisation which is required for this?
-  no. normalisation is only to normal form - non-reducbile. but with type-safety, we get normalisation to values
-  - also isn't our language strongly normalising?
-  yes, but we don't need it.
-
-normalisation proof
-- we actually prove this in our logical relation. using fundamental theorem we can prove it using the expression relation.
-
 - are values types and elctx technically part of the syntax?
 statics and dynamics
 they are part of the statics
 expressions is syntax. but they are all statics
 todo: restructure to statics and dynamics
 ----------- Process -----------
-
 
 - Empty type. What is it? how does it relate to the theorem I have proved?
 
