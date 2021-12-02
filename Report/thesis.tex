@@ -529,10 +529,14 @@ Secondly, every derivation of an expression in System F will at some point termi
 Together with type-safety, this implies that all closed and well-typed expressions will terminate at some value. \todo{is this correct?}
 Finally, System F is a deterministic language.
 \begin{theorem}\label{thm:determinacy}
-  $\forall \expr, \val_1, \val_2 . \expr \Downarrow \val_1 \land \expr \Downarrow \val_2 \implies \val_1 = \val_2$
+  If $\expr \step \expr_1$ and $\expr \step \expr_2$ then $\expr_1 = \expr_2$
 \end{theorem}
-% if e -> e1 and e -> e2, then e1 = e2.
-% other theorem becomes corollary.
+A consequence of this is the following corollary.
+\begin{corollary}\label{cor:determinacy_val}
+  $\expr \Downarrow \val_1 \land \expr \Downarrow \val_2 \implies \val_1 = \val_2$
+\end{corollary}
+A proof of this can be found in appendix \ref{appendix:om_proof} at \ref{appendix:om_proof:dtval}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -632,7 +636,7 @@ For instance, the congruence rules for T-unit and T-app would be:
     { \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\Tall{\Tvar}{\typ}} }
     { \jdgRel{\tenv}{\venv}{\Tapp{\expr}}{}{\Tapp{\expr'}}{\subst{\typ}{\Tvar}{\typ'}} }
 \end{mathpar}
-The remaining congruence rules can be found in the appendix (\ref{appendix:Cng}).\\
+The remaining congruence rules can be found in appendix \ref{appendix:Cng}.\\
 Now we may define contextual equivalence in the following way.
 \begin{definition}\label{def:CE2}
   Contextual Equivalence is a relation, $CE \subseteq \TENV \times \VENV \times \EXPR \times \EXPR \times \TYPE$, such that
@@ -1023,7 +1027,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{lemma}
 \begin{proof}
   Assuming $\LogRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool}$, we must show 
-  $\expr \Downarrow \val \iff \expr' \Downarrow \val$. By the definition of LR, we have that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tbool}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. Given our definitions of $\mathcal{D}$ and $\mathcal{G}$, we can only instantiate it with the empty relational type substitution and the empty variable substitution. Doing this, we get $\ExpInp{\Tbool}{\emptyset}(\emptyset(\expr), \emptyset(\expr')) \equiv \ExpInp{\Tbool}{\emptyset}(\expr, \expr')$, which by definition means we have $\exists \val, \val' . \expr \stepS \val \land \expr' \stepS \val' \land \ValInp{\Tbool}{\emptyset}(\val, \val')$. Instantiating these values, we may conclude that $\expr \Downarrow \val$, $\expr' \Downarrow \val'$, and since $\ValInp{\Tbool}{\emptyset}(\val, \val')$, then either $\val = \val' = \True$, or $\val = \val' = \False$. In any case, $\val = \val'$, so that we can conclude $\expr \Downarrow \val \land \expr' \Downarrow \val$. From this we get what was wanted.
+  $\expr \Downarrow \val \iff \expr' \Downarrow \val$. By the definition of LR, we have that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tbool}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. Given our definitions of $\mathcal{D}$ and $\mathcal{G}$, we can only instantiate it with the empty relational type substitution and the empty variable substitution. Doing this, we get $\ExpInp{\Tbool}{\emptyset}(\emptyset(\expr), \emptyset(\expr')) \equiv \ExpInp{\Tbool}{\emptyset}(\expr, \expr')$, which by definition means we have $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr' \stepS \val_2 \land \ValInp{\Tbool}{\emptyset}(\val_1, \val_2)$. Instantiating these values, we may conclude that $\expr \Downarrow \val_1$, $\expr' \Downarrow \val_2$. Now, our goal is to show $\expr \Downarrow \val \iff \expr' \Downarrow \val$. Both sides are similar, so we show just the "$\implies$" direction. So we assume $\expr \Downarrow \val$, and must show $\expr' \Downarrow \val$. By corollary \ref{cor:determinacy_val}, we may conclude that $\val_1 = \val$, so that our goal now is to show $\expr' \Downarrow \val_1$. Given we know that $\expr' \Downarrow \val_2$, then it suffices to show that $\val_1 = \val_2$. Since $\ValInp{\Tbool}{\emptyset}(\val_1, \val_2)$, then either $\val_1 = \val_2 = \True$ or $\val_1 = \val_2 = \False$. In any case, $\val_1 = \val_2$, so we are done.
 \end{proof}
 
 \begin{lemma}[Congruency of LR]\label{lem:LR_cong}
@@ -1073,7 +1077,7 @@ Informally, the first theorem says that an expression $\expr$, which given a val
     &\jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}\label{ident:1}\\
     &\jdg{\emptenv}{\empvenv}{\val}{\typ}
   \end{align}
-  Then we must show $(\Tapp{\expr}) \; \val \stepS \val$. From \ref*{ident:1} and by the fundamental theorem (theorem \ref{thm:fund}) we know $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ from which we get $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. By the definition of the type interpretation and value environment interpretation, we only have one choice of instantiation, so we instantiate both with the empty relational substitution, $\emptyset$. Thus we get $\ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\expr, \expr)$. And from this, we may conclude $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\val_1, \val_2)$. By determinacy (theorem \ref{thm:determinacy}) these values must be the same, and from the value interpretation we further know that the value must be a type abstraction. Thus $\expr \stepS \Tlam \expr'$ and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Here we use $\typ$ for $\typ_1$ and $\typ_2$, and the relation $R' = \{(\val, \val)\}$ for $R$, giving us $\ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\expr', \expr')$, meaning $\exists \val_1', \val_2' . \expr' \stepS \val_1' \land \expr' \stepS \val_2' \land \ValInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\val_1', \val_2')$. Thus $\expr' \stepS \fun \var . \expr''$ and $\forall \valB_1, \valB_2 . \ValInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\valB_{1}, \valB_{2}) \implies \ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\valB_1}, \subst{\expr''}{\var}{\valB_2})$. Using $\val$ for both $\valB_1$ and $\valB_2$, we get $\ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\val}, \subst{\expr''}{\var}{\val})$ which means 
+  Then we must show $(\Tapp{\expr}) \; \val \stepS \val$. From \ref*{ident:1} and by the fundamental theorem (theorem \ref{thm:fund}) we know $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ from which we get $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. By the definition of the type interpretation and value environment interpretation, we only have one choice of instantiation, so we instantiate both with the empty relational substitution, $\emptyset$. Thus we get $\ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\expr, \expr)$. And from this, we may conclude $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\val_1, \val_2)$. By determinacy (specifically, corollary \ref{cor:determinacy_val}) these values must be the same, and from the value interpretation we further know that the value must be a type abstraction. Thus $\expr \stepS \Tlam \expr'$ and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Here we use $\typ$ for $\typ_1$ and $\typ_2$, and the relation $R' = \{(\val, \val)\}$ for $R$, giving us $\ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\expr', \expr')$, meaning $\exists \val_1', \val_2' . \expr' \stepS \val_1' \land \expr' \stepS \val_2' \land \ValInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\val_1', \val_2')$. Thus $\expr' \stepS \fun \var . \expr''$ and $\forall \valB_1, \valB_2 . \ValInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\valB_{1}, \valB_{2}) \implies \ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\valB_1}, \subst{\expr''}{\var}{\valB_2})$. Using $\val$ for both $\valB_1$ and $\valB_2$, we get $\ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\val}, \subst{\expr''}{\var}{\val})$ which means 
   $\exists \val_{1f}, \val_{2f} . \subst{\expr''}{\var}{\val} \stepS \val_{1f} \land \subst{\expr''}{\var}{\val} \stepS \val_{2f} \land \ValInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\val_{1f}, \val_{2f})$, which again means $\subst{\expr''}{\var}{\val} \stepS \val_f$ and $(\val_f, \val_f) \in R'$, but since $R'$ is a singleton, then we must have $\val_f = \val$. From the above, we have the following derivation
   \begin{equation}
     (\Tapp{\expr}) \; \val \stepS (\Tapp{\Tlam \expr'}) \; \val \step \expr' \; \val \stepS (\fun \var . \expr'') \; \val \step \subst{\expr''}{\var}{\val} \stepS \val_f = \val
@@ -1103,7 +1107,7 @@ The next theorem shows that any expression of type $\Tall{\Tvar}{\Tfunc{\Tvar}{\
   \begin{equation*}
     (\Tapp{\gamma_2(\expr)}) \; \valB_2 \stepS (\Tapp{\Tlam \expr_2}) \; \valB_2 \step \expr_2 \; \valB_2 \stepS (\fun \var . \expr_2') \; \valB_2 \step \subst{\expr_2'}{\var}{\valB_2} \stepS \val_{2f}'
   \end{equation*}
-  Since $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ then by theorem \ref{thm:identity_reduction} we may conclude $(\Tapp{\gamma_2(\expr)}) \; \valB_2 \stepS \valB_2$. Thus by determinacy of System F (theorem \ref{thm:determinacy}), we have that $\val_{2f}' = \valB_2$. Since we know $(\val_{1f}', \val_{2f}') \in R$, then it follows that $(\val_{1f}', \valB_2) \in R$, which was what we had to show.
+  Since $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ then by theorem \ref{thm:identity_reduction} we may conclude $(\Tapp{\gamma_2(\expr)}) \; \valB_2 \stepS \valB_2$. Thus by determinacy of System F (specifically, corollary \ref{cor:determinacy_val}), we have that $\val_{2f}' = \valB_2$. Since we know $(\val_{1f}', \val_{2f}') \in R$, then it follows that $(\val_{1f}', \valB_2) \in R$, which was what we had to show.
 \end{proof}
 
 
@@ -1129,8 +1133,8 @@ Idempotency in general is the idea that doing something multiple times is equiva
 \begin{proof}
   We will show the theorem by showing that the two expressions are logically related. Then, by theorem \ref{thm:LR_sound}, it follows that they are also contextually equivalent. So assume $\jdg{\tenv}{\venv}{\expr}{\typ}$, then we will show $\LogRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$. By definition of LR, we must show two things. First that both expressions are well-typed under $\tenv$ and $\venv$. This follows fairly easily from the assumption and by applying the typing rules, so we will not explain it here. Second that, when the expressions and types are closed, they are in the expression interpretation. So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. Then we must show $\ExpInp{\Tprod{\typ}{\typ}}{\rho}(\gamma_1(\Let \var = \expr in (\var, \var)), \gamma_2((\expr, \expr)))$, which by the definition of the expression interpretation means we have to show
   \begin{align}
-    &\jdg{\emptenv}{\empvenv}{\Let \var = \gamma_1(\expr) in (\var, \var)}{\rho_1(\typ)}\label{idem:goal_1.1}\\
-    &\jdg{\emptenv}{\empvenv}{(\gamma_2(\expr), \gamma_2(\expr))}{\rho_2(\typ)}\label{idem:goal_1.2}\\
+    &\jdg{\emptenv}{\empvenv}{\Let \var = \gamma_1(\expr) in (\var, \var)}{\rho_1(\Tprod{\typ}{\typ})}\label{idem:goal_1.1}\\
+    &\jdg{\emptenv}{\empvenv}{(\gamma_2(\expr), \gamma_2(\expr))}{\rho_2(\Tprod{\typ}{\typ})}\label{idem:goal_1.2}\\
     &\exists \val_1, \val_2 . \Let \var = \gamma_1(\expr) in (\var, \var) \stepS \val_1 \land (\gamma_2(\expr), \gamma_2(\expr)) \stepS \val_2 \land\ValInpGen{\Tprod{\typ}{\typ}}{\rho}\label{idem:goal_1.3}
   \end{align}
   From the initial assumption and the fundamental theorem (theorem \ref{thm:fund}) we have that $\LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$, which, when we instantiate with $\rho$ and $\gamma$, gives us 
@@ -1314,11 +1318,7 @@ The final theorem we shall show is one which is useful, were we to write a compi
 
 \cleardoublepage
 \appendix
-\chapter{The Technical Details}
-
-\todo{\dots}
-
-\section{Congruence Rules for Alternative Definition of Contextual Equivalence}\label{appendix:Cng}
+\chapter{Congruence Rules for Contextual Equivalence}\label{appendix:Cng}
 
 \begin{mathpar}
   \inferrule*[lab=Cng-var]
@@ -1364,7 +1364,8 @@ The final theorem we shall show is one which is useful, were we to write a compi
     { \jdgRel{\tenv}{\venv}{\expr_3}{}{\expr_3'}{\typ} }
     }
     { \jdgRel{\tenv}{\venv}{\If \expr_1 then \expr_2 else \expr_3}{}{\If {\expr_1'} then {\expr_2'} else {\expr_3'}}{\typ} }
-  \and
+  \end{mathpar}
+  \begin{mathpar}
   \inferrule*[lab=Cng-pair]
     { {\jdgRel{\tenv}{\venv}{\expr_1}{}{\expr_1'}{\typ_1} } \and
     { \jdgRel{\tenv}{\venv}{\expr_2}{}{\expr_2'}{\typ_2} } }
@@ -1385,8 +1386,7 @@ The final theorem we shall show is one which is useful, were we to write a compi
   \inferrule*[lab=Cng-inj2]
     { \jdgRel{\tenv}{\venv}{\expr}{}{\expr'}{\typ_2} }
     { \jdgRel{\tenv}{\venv}{\Inj{2} \expr}{}{\Inj{2} \expr'}{\Tsum{\typ_1}{\typ_2}} }
-\end{mathpar}
-\begin{mathpar}
+  \and
   \inferrule*[lab=Cng-match]
     { {\jdgRel{\tenv}{\venv}{\expr_1}{}{\expr_1'}{\Tsum{\typ_1}{\typ_2}} } \and
     { \jdgRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{}{\expr_2'}{\typ} } \and
@@ -1412,7 +1412,19 @@ The final theorem we shall show is one which is useful, were we to write a compi
     { \jdgRel{\tenv}{\venv}{\Tapp{\expr}}{}{\Tapp{\expr'}}{\subst{\typ}{\Tvar}{\typ'}} }
 \end{mathpar}
 
-\section{Additional results}
+\chapter{Omitted proofs}\label{appendix:om_proof}
+\section{Proof of corollary \ref{cor:determinacy_val}}\label{appendix:om_proof:dtval}
+\begin{proof}
+  We proceed by induction on the number of steps of the evaluation $\expr \Downarrow \val_1$.
+  \begin{itemize}
+    \item Base Case $n = 0$. Since $\expr \step^0 \val_1$, then $\expr = \val_1$, meaning that $\val_1 \Downarrow \val_2$, which implies that $\val_1 = \val_2$.
+    
+    \item Inductive Step $n = m + 1$. Our induction hypothesis is $\forall \expr', \val_1', \val_2' . \expr' \step^m \val_1' \land \expr' \Downarrow \val_2' \implies \val_1' = \val_2'$.
+    Now, in this case we have that $\expr \step^{m + 1} \val_1$. We split this derivation up as follows: $\expr \step \expr_1$ and $\expr_1 \step^m \val_1$, for some $\expr_1$. Note that this implies that $\expr$ is not a value. Thus, we may conclude that the evaluation, $\expr \stepS \val_2$, uses at least one step. We split this up as well so that $\expr \step \expr_2$ and $\expr_2 \stepS \val_2$, for some $\expr_2$. By determinacy (theorem \ref{thm:determinacy}), we know that $\expr_1 = \expr_2$. Thus $\expr_1 \stepS \val_2$. We may now apply the induction hypothesis, using $\expr_1$ for $\expr'$, $\val_1$ for $\val_1'$, and $\val_2$ for $\val_2'$, and conclude that $\val_1 = \val_2$.
+  \end{itemize}
+\end{proof}
+
+\chapter{Additional Results for the Logical Relations Model}\label{appendix:LR_extra}
 
 \begin{lemma}\label{lem:ValInpTypSub}
   $\Tvar \notin \mathrm{dom}(\rho) \land \Tvar \notin \mathrm{free}(\tau) \implies \forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ValInp{\typ}{\rho}(\val_1, \val_2) \iff \ValInp{\typ}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\val_1, \val_2)$

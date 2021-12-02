@@ -21,6 +21,8 @@
 - [x] Substitution
 - [x] Normalisation
 - [x] Determinacy
+  - [x] For one step
+  - [x] Multi-step evaluation to a value.
 - [ ] Fix type-setting
 
 ## Contextual Equivalence
@@ -106,23 +108,16 @@
   - [x] write in theorem
   - [x] prove it
   - [x] check correctness
-- [ ] Lam hoisting
+- [x] Lam hoisting
   - [x] write in theorem
   - [x] prove it
   - [x] check correctness
-  - [ ] Well-typedness
-    - either: 
-      - [x] build expression from assumptions and then fund thm.
-    - or:
-      - [ ] state first lemma (google photo)
-      - [ ] state and prove lemma about closing expr with gamma from G
-        - [ ] induction on Gamma
-      - [ ] state second lemma (google photo)
-      - [ ] state and prove lemma about closing type with rho from D
-        - [ ] induction on Xi
+  - [x] Well-typedness
+    - [x] build expression from assumptions and then fund thm.
 - [ ] prettify proofs
 
 ## Report Writing
+- [ ] Appendix
 - [ ] Comparison to other work and ideas for future work
 - [ ] Write introduction
 - [ ] Write conclusion
