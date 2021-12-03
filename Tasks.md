@@ -23,7 +23,6 @@
 - [x] Determinacy
   - [x] For one step
   - [x] Multi-step evaluation to a value.
-- [ ] Refactor for statics and dynamics
 - [ ] Fix type-setting
 
 ## Contextual Equivalence
@@ -59,8 +58,8 @@
 - [x] Define Congruency and Adequacy as separate properties
   - [x] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
 - [x] Refactor for terminating language
-- [ ] Finish writing text
-- [ ] Proof read
+- [x] Finish writing text
+- [ ] Fix type-setting
 
 ## Logical Relations
 - [x] Define a logical relations model for CE
@@ -81,8 +80,11 @@
     - [x] adequacy
     - [x] congruency
   - [x] Fundamental theorem
+- [ ] Finish writing text
+  - [ ] Section 4.1 Logical relations
+  - [ ] Section 4.2 Defining the LR Model
+  - [ ] Section 4.3 Compatibility lemmas
 - [ ] Fix type-setting
-- [ ] Proof read
 
 ## Using the Logical Relations
 - [x] Identity
@@ -115,7 +117,13 @@
   - [x] check correctness
   - [x] Well-typedness
     - [x] build expression from assumptions and then fund thm.
-- [ ] prettify proofs
+- [ ] Finish writing text
+  - [ ] Identity
+  - [ ] Empty type
+  - [x] Idempotency
+  - [x] Commutativity
+  - [x] Lam hoisting
+- [ ] fix type-setting
 
 ## Report Writing
 - [ ] Appendix

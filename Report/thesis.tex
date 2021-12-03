@@ -197,7 +197,7 @@ Department of Computer Science, Aarhus University\\[1ex]
 \label{ch:DoL}
 To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will see specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
 \section{The language}
-We define the language in three parts: the syntax, the typing rules, and finally the dynamics (semantics). The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have.
+We define the language in three parts: the syntax, the typing rules, and finally the semantics. The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have.
 \subsection{Syntax}
 The syntax captures exactly all programs that can be written in our language – in other words, it governs the "forms" our programs can take. We define it using a context-free grammar whose production rules are in Backus-Naur form:
 \begin{align*}
@@ -217,8 +217,7 @@ The syntax captures exactly all programs that can be written in our language –
                   & \text{(functions)}\\
                 & \Tlam \expr \ALT \Tapp{\expr} & \text{(polymorphism)}
 \end{align*}
-\todo{question, is only 'e' part of syntax}
-All programs in our language can be derived using the rules above. We shall also define a couple more concepts: values, types, and evaluation contexts.
+All programs in our language can be derived using the rules above. We shall also define the syntax of values, types, and evaluation contexts in a similar fashion.
 \begin{align*}
   \val \BNFdef  & \TT \ALT \Num{n} \ALT \True \ALT \False \ALT
                   (\val, \val) \ALT \Inj{1} \val \ALT \Inj{2} \val \ALT
@@ -241,7 +240,7 @@ All programs in our language can be derived using the rules above. We shall also
                   \Match \elctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT
                   \elctx \; \expr \ALT \val \; \elctx \ALT \Tapp{\elctx}
 \end{align*}
-Evaluation contexts will be used when we get to defining the dynamics. In general, contexts like this are simply programs with a "hole". That hole can be plugged by some expressions $\expr$, and in that case we write $\elctx[\expr]$. We will see another example of a context in chapter \ref{ch:CE}.\\
+Evaluation contexts will be used when we get to defining the semantics. In general, contexts like this are simply programs with a "hole". That hole can be plugged by some expressions $\expr$, and in that case we write $\elctx[\expr]$. We will see another example of a context in chapter \ref{ch:CE}.\\
 Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
 
 \subsection{Typing rules}
@@ -330,7 +329,7 @@ The typing rules give us a way to derive the type of a program in our language. 
   {\jdg{\tenv}{\venv}{\Tapp{\expr}}{\subst{\typ}{\Tvar}{\typ'}}}
 \end{mathpar}
 
-\subsection{Dynamics}
+\subsection{Semantics}
 Finally, we define the semantics of the language. We do this using a single "step" rule, and several "head-step" rules. The head-step rules govern all possible reductions, and the "head-step-step" rule tells us where in our program we can apply these reductions.
 \begin{mathpar}
   \inferrule*[lab=head-step-step]
@@ -444,7 +443,7 @@ In this section we note down some useful properties of our language, which will 
       (\neg \Val{f''} \land \elctx[f''] = f') \right)
     \end{multline}
     Split the evaluation, $\elctx[\expr] \step^{m + 1} \expr'$, up, so that 
-    $\elctx[\expr] \step g \land g \step^{m} \expr'$. Looking at our dynamics, we must have that $\elctx[\expr] = H[h]$, and $g = H[h']$, for some evaluation context $H$, and expressions $h$, $h'$, and $h \hstep h'$.
+    $\elctx[\expr] \step g \land g \step^{m} \expr'$. Looking at our semantics, we must have that $\elctx[\expr] = H[h]$, and $g = H[h']$, for some evaluation context $H$, and expressions $h$, $h'$, and $h \hstep h'$.
     There are now three possible cases. Either $\expr = h$, $\expr$ is a superexpression of $h$, or $\expr$ is a subexpression of $h$. We will consider each in turn.
     \begin{itemize}
       \item $\elctx = H$ and $\expr = h$.\\
@@ -717,7 +716,12 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 
 \todo{draft}
 \section{Logical Relations}
-\todo{explain briefly what logical relations are}
+Before we begin defining our logical relations model (LR model for short), let's briefly discuss what they are.\\
+Logical relations may be described in several ways. Firstly, as a mathematical object, it is, as the name suggest, a \textit{relation}. As we shall see in the next section this relation is type-indexed and inductively defined. Furthermore, the relation may be unary. In this case we usually call it a logical predicate.\\
+Although this description is accurate, it doesn't tell us much about their purpose. So another way to describe logical relations is as a proof method. Some properties are hard to show directly – induction attempts may fail due to the induction hypothesis being too weak. An LR model may solve this problem by taking a different approach. Essentially, an LR model acts as an intermediate step – we design the LR model so that everything in the relation has the property of interest. Then, instead of showing that something has the desired property, we show that it is in our logical relation. Note that it may not contain \textit{everything} with the property, so it may not be able to prove everything involving the property. In fact designing an LR model that is powerful enough for what you want to show is non-trivial and depends on what you want to show about the property of interest.\\
+However, a common design-principle worth noting, is that the property of interest is preserved by eliminating forms. This is the part that, when using the LR model in proofs, makes it stronger than the induction hypothesis from a "direct" proof. This design-principle will also be very common in the LR model we define.\\
+In our case, the property of interest is contextual equivalence of pairs of programs. So when we define our LR model in the next section, we shall do so as to ensure that if two programs are in our relation, then they are also contextually equivalent. By theorem \ref{thm:CE_eq_part2}, we may do this be ensuring that our LR model is a congruence relation, an adequate relation, and that all expressions in it are well-typed. Furthermore, the theorems we want to show about our property, contextual equivalence, can be found in chapter \ref{ch:ACE}. Interestingly, even though we define our LR model to prove theorems involving contextual equivalence, it is not limited to that property. So we shall also see that it is capable of proving theorems unrelated to contextual equivalence.\\
+We keep these points in mind as we move on to the next section, where we shall define an LR model.
 
 \section{Defining the Logical Relations Model}
 well-typedness relation
@@ -1200,7 +1204,7 @@ In short, this commutativity theorem states that the order of evaluation of expr
 \end{proof}
 
 
-\section{Lam hoisting}
+\section{Lam Hoisting}
 The final theorem we shall show is one which is useful, were we to write a compiler for System F. In some compilers, there is a phase which performs "hoisting". Hoisting is the act of lifting invariant declarations out of loops or functions. We don't have loops in our language, so the theorem below shows that it is safe to hoist declarations ($\LetCmd$-expressions) out of lambda abstractions.
 \begin{theorem}
   If $\jdg{\tenv}{\venv}{\expr_1}{\typ}$ and $\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}$ then\\
