@@ -807,10 +807,11 @@ With these interpretations defined, we are now finally ready to give our complet
     \end{gathered}
   \end{equation*}
 \end{definition}
-Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ under $\tenv$ and $\venv$, when both expressions are well typed at type $\typ$ under $\tenv$ and $\venv$, and when we can choose \textit{any} relational type substitution $\rho \in \TenvInp{\tenv}$ and \textit{any} relational variable substitution $\gamma \in \VenvInp{\venv}{\rho}$, and the expressions closed off using $\gamma$ are in our expression interpretation at type $\typ$ with our relational type substitution $\rho$.
+Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ under $\tenv$ and $\venv$, when both expressions are well typed at type $\typ$ under $\tenv$ and $\venv$, and when we can choose \textit{any} relational type substitution $\rho \in \TenvInp{\tenv}$ and \textit{any} relational variable substitution $\gamma \in \VenvInp{\venv}{\rho}$, and the expressions closed off using $\gamma$ are in our expression interpretation at type $\typ$ with our relational type substitution $\rho$.\\
+We shall refer to the relation that arises from \ref{def:LogRel} as "LR".
 
 \section{Compatibility lemmas}
-Essentially just congruency rules as stated in appendix (but with LR being the relation). We have to prove these (and adequacy) to show that LR ==> CE, meaning we can state theorems in terms of LR instead of CE, and then get CE as a consequence.
+As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as "compatibility lemmas". Some compatibility lemmas are very similar, so below we show only a selected few, and the ones not shown will be similar to one of the ones we show.
 \begin{lemma}[Cmpt-unit]
   $\inferrule{ }{\LogRel{\tenv}{\venv}{\TT}{\TT}{\Tunit}}$
 \end{lemma}
@@ -1040,7 +1041,14 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{proof}
 
 \section{Properties of LR}
-
+With the compatibility lemmas proved, we get that LR is a congruency relation
+\begin{lemma}[Congruency of LR]\label{lem:LR_cong}
+  $LR$ is a congruence relation
+\end{lemma}
+\begin{proof}
+  Follows immediately from the compatibility lemmas.
+\end{proof}
+Next, we shall show that LR is an adequate relation.
 \begin{lemma}[Adequacy of LR]\label{lem:LR_adeq}
   $\LogRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool} \implies \expr \Downarrow \val \iff \expr' \Downarrow \val$
 \end{lemma}
@@ -1048,21 +1056,14 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
   Assuming $\LogRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool}$, we must show 
   $\expr \Downarrow \val \iff \expr' \Downarrow \val$. By the definition of LR, we have that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tbool}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. Given our definitions of $\mathcal{D}$ and $\mathcal{G}$, we can only instantiate it with the empty relational type substitution and the empty variable substitution. Doing this, we get $\ExpInp{\Tbool}{\emptyset}(\emptyset(\expr), \emptyset(\expr')) \equiv \ExpInp{\Tbool}{\emptyset}(\expr, \expr')$, which by definition means we have $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr' \stepS \val_2 \land \ValInp{\Tbool}{\emptyset}(\val_1, \val_2)$. Instantiating these values, we may conclude that $\expr \Downarrow \val_1$, $\expr' \Downarrow \val_2$. Now, our goal is to show $\expr \Downarrow \val \iff \expr' \Downarrow \val$. Both sides are similar, so we show just the "$\implies$" direction. So we assume $\expr \Downarrow \val$, and must show $\expr' \Downarrow \val$. By corollary \ref{cor:determinacy_val}, we may conclude that $\val_1 = \val$, so that our goal now is to show $\expr' \Downarrow \val_1$. Given we know that $\expr' \Downarrow \val_2$, then it suffices to show that $\val_1 = \val_2$. Since $\ValInp{\Tbool}{\emptyset}(\val_1, \val_2)$, then either $\val_1 = \val_2 = \True$ or $\val_1 = \val_2 = \False$. In any case, $\val_1 = \val_2$, so we are done.
 \end{proof}
-
-\begin{lemma}[Congruency of LR]\label{lem:LR_cong}
-  $LR$ is a congruence relation
-\end{lemma}
-\begin{proof}
-  Follows immediately from the compatibility lemmas.
-\end{proof}
-
+We are now finally ready prove that LR is sound wrt. contextual equivalence.
 \begin{theorem}\label{thm:LR_sound}
   $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$
 \end{theorem}
 \begin{proof}
   We now know that LR is an adequate relation (lemma \ref{lem:LR_adeq}) and a congruence relation (lemma \ref{lem:LR_cong}). Further, it follows directly from the definition of LR, that all expressions in the relation are well-typed. Thus, by theorem \ref{thm:CE_eq_part2}, we may conclude $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
 \end{proof}
-
+We may also show the following theorem which is usually referred to as the fundamental theorem.
 \begin{theorem}[Fundamental Theorem]\label{thm:fund}
   $\jdg{\tenv}{\venv}{\expr}{\typ} \implies \LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$
 \end{theorem}
@@ -1071,7 +1072,7 @@ Essentially just congruency rules as stated in appendix (but with LR being the r
 \end{proof}
 The fundamental theorem may not seem it, but it is actually quite powerful. We shall see this in great detail in the next chapter, but to illustrate the point, let's now prove the normalisation theorem from chapter \ref{ch:DoL}.
 \begin{proof}[proof of theorem \ref{thm:norm}]
-  Given a closed and well-typed expression, $\jdg{\emptenv}{\empvenv}{\expr}{\typ}$, we wish to show that $\expr$ reduces to normal form. By the fundamental theorem, we know that $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\typ}$, which by definition gives us $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. We only have one choice of instantiation; using the empty relational substitutions. Thus, we get $\ExpInp{\typ}{\emptyset}(\emptyset(\expr), \emptyset(\expr)) \equiv \ExpInp{\typ}{\emptyset}(\expr, \expr)$. By the definition of our expression interpretation, this means that $\expr \stepS \val$, for some $\val$. Thus $\expr$ reduces to normal form.
+  Given a closed and well-typed expression, $\jdg{\emptenv}{\empvenv}{\expr}{\typ}$, we wish to show that $\expr$ reduces to normal form. By the fundamental theorem, we know that $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\typ}$, which by definition gives us $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. We only have one choice of instantiation; the empty relational substitutions. Thus, we get $\ExpInp{\typ}{\emptyset}(\emptyset(\expr), \emptyset(\expr)) \equiv \ExpInp{\typ}{\emptyset}(\expr, \expr)$. By the definition of our expression interpretation, this means that $\expr \stepS \val$, for some $\val$. Thus $\expr$ reduces to normal form.
 \end{proof}
 
 

@@ -81,9 +81,11 @@
     - [x] congruency
   - [x] Fundamental theorem
 - [ ] Finish writing text
-  - [ ] Section 4.1 Logical relations
+  - [x] Section 4.1 Logical relations
   - [ ] Section 4.2 Defining the LR Model
-  - [ ] Section 4.3 Compatibility lemmas
+    - [ ] rewrite using inspiration from Timany's publication
+  - [x] Section 4.3 Compatibility lemmas
+  - [x] Section 4.4 Properties of LR
 - [ ] Fix type-setting
 
 ## Using the Logical Relations
