@@ -119,9 +119,9 @@
   - [x] check correctness
   - [x] Well-typedness
     - [x] build expression from assumptions and then fund thm.
-- [ ] Finish writing text
-  - [ ] Identity
-  - [ ] Empty type
+- [x] Finish writing text
+  - [x] Identity
+  - [x] Empty type
   - [x] Idempotency
   - [x] Commutativity
   - [x] Lam hoisting
