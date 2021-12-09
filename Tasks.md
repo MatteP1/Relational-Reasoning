@@ -129,9 +129,8 @@
 
 ## Report Writing
 - [ ] Appendix
-- [ ] Comparison to other work and ideas for future work
 - [ ] Write introduction
-- [ ] Write conclusion
+- [ ] Write conclusion and ideas for future work
 - [ ] Acknowledgments?
 - [ ] Write abstract
 - [ ] Format appendix
