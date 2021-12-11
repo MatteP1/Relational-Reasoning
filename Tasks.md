@@ -80,10 +80,9 @@
     - [x] adequacy
     - [x] congruency
   - [x] Fundamental theorem
-- [ ] Finish writing text
+- [x] Finish writing text
   - [x] Section 4.1 Logical relations
-  - [ ] Section 4.2 Defining the LR Model
-    - [ ] rewrite using inspiration from Timany's publication
+  - [x] Section 4.2 Defining the LR Model
   - [x] Section 4.3 Compatibility lemmas
   - [x] Section 4.4 Properties of LR
 - [ ] Fix type-setting
