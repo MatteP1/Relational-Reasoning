@@ -718,17 +718,20 @@ Now, the proof of the two definitions of contextual equivalence being equivalent
 \section{Logical Relations}
 Before we begin defining our logical relations model (LR model for short), let's briefly discuss what they are.\\
 Logical relations may be described in several ways. Firstly, as a mathematical object, it is, as the name suggest, a \textit{relation}. As we shall see in the next section this relation is type-indexed and inductively defined. Furthermore, the relation may be unary, in which case we usually call it a logical predicate.\\
-Although this description is accurate, it doesn't tell us much about their purpose. So another way to describe logical relations is as a proof method. Some properties are hard to show directly – induction attempts may fail due to the induction hypothesis being too weak. An LR model may solve this problem by taking a different approach. Essentially, an LR model acts as an intermediate step – we design the LR model so that everything in the relation has the property of interest. Then, instead of showing that something has the desired property, we show that it is in our logical relation. Note that it may not contain \textit{everything} with the property, so it may not be able to prove everything involving the property. In fact designing an LR model that is powerful enough for what you want to show is non-trivial and depends on what you want to show about the property of interest.\\
+Although this description is accurate, it doesn't tell us much about their purpose. So another way to describe logical relations is as a proof method. Some properties are hard to show directly – induction attempts may fail due to the induction hypothesis being too weak. An LR model may solve this problem by taking a different approach. Essentially, an LR model acts as an intermediate step – we design the LR model so that everything in the relation has the property of interest. Then, instead of showing that something has the desired property, we show that it is in our relation. Note that it may not contain \textit{everything} with the property, so it may not be able to prove everything involving the property. In fact designing an LR model that is powerful enough for what you want to show is non-trivial and depends on what you want to show about the property of interest.\\
 However, a common design-principle worth noting, is that the property of interest is preserved by eliminating forms. This design-principle will be very common in the LR model we define.\\
-In our case, the property of interest is contextual equivalence of pairs of programs. So when we define our LR model in the next section, we shall do so as to ensure that if two programs are in our relation, then they are also contextually equivalent. By theorem \ref{thm:CE_eq_part2}, we may do this be ensuring that our LR model is a congruence relation, an adequate relation, and that all expressions in it are well-typed. Furthermore, the theorems we want to show about our property, contextual equivalence, can be found in chapter \ref{ch:ACE}. Interestingly, even though we define our LR model to prove theorems involving contextual equivalence, it is not limited to that property. So we shall also see that it is capable of proving theorems unrelated to contextual equivalence.\\
+In our case, the property of interest is contextual equivalence of pairs of programs. So when we define our LR model in the next section, we shall do so as to ensure that if two programs are in our relation, then they are also contextually equivalent. By theorem \ref{thm:CE_eq_part2}, we may do this by ensuring that our LR model is a congruence relation, an adequate relation, and that all expressions in it are well-typed. Furthermore, the theorems we want to show about our property, contextual equivalence, can be found in chapter \ref{ch:ACE}. Interestingly, even though we define our LR model to prove theorems involving contextual equivalence, it is not limited to that property. So we shall also see that it is capable of proving theorems unrelated to contextual equivalence.\\
 We keep these points in mind as we move on to the next section, where we shall define an LR model.
 
 \section{Defining the Logical Relations Model}
-We will define our LR model in several stages, where each stage increases the generality of the expressions we allow to be in our relation. The first stage defines which pairs of \textit{values} are in the relation. We will denote this as the "value interpretation". A property that we want to hold for all pairs in the value interpretation is that they are closed and well-typed, so we shall firstly define a well-typedness relation as follows:
+We will be splitting up the definition of the complete LR model into several smaller steps, where each step increases the generality of the terms we relate.
+Initially, we shall define the "value interpretation" that states which values are logically related. Following this, we define the "expression interpretation", which talks about relatedness for \textit{closed} expressions. Finally, we shall define the "type environment interpretation" and "variable environment interpretation", which will give us relational substitutions allowing us to close off open expressions, so that we may define our complete LR model on open expressions.
+
+A property that we want to hold for all values in the value interpretation is that they are closed and well-typed, so we shall firstly define a well-typedness relation as follows:
 \begin{equation*}
   \WtInpGen{\typ}{\rho} \triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)}\\
 \end{equation*}
-The $\rho$ part will be explained shortly. For now, think of $\rho_i(\typ)$ simply as a closed type.\\
+The $\rho$ part will be explained shortly. For now, $\rho_i(\typ)$ is simply a closed type.\\
 Now we are prepared to define the value interpretation. For the sake of brevity, we do not include $\WtInpGen{\typ}{\rho}$ explicitly when defining the value interpretation for the various types. Firstly, let's define the value interpretation for base types.
 \begin{align*}
   \ValInpGen{\Tunit}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
@@ -738,7 +741,10 @@ Now we are prepared to define the value interpretation. For the sake of brevity,
 Remember that we are trying to define an LR model for contextual equivalence. So deciding whether two values of some type should be in our logical relation, we shall keep in mind that they should then also be contextually equivalent. So for the base types, two values are in our relation only when they are the same value.\\
 Next, we consider product-, sum-, and function-type.
 \begin{align*}
-  \ValInpGen{\Tprod{\typ_1}{\typ_2}}{\rho}  &\triangleq (\val_1, \val_2) \in \{((\valB_{11}, \valB_{12}), (\valB_{21}, \valB_{22})) \mid \ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21}) \land \ValInp{\typ_2}{\rho}(\valB_{12}, \valB_{22})\}\\
+  \ValInpGen{\Tprod{\typ_1}{\typ_2}}{\rho}  &\triangleq 
+  \begin{aligned}[t]
+    (\val_1, \val_2) \in \{((\valB_{11}, \valB_{12}), (\valB_{21}, \valB_{22})) \mid \ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21}) \land\\ \ValInp{\typ_2}{\rho}(\valB_{12}, \valB_{22})\}
+  \end{aligned}\\
   \ValInpGen{\Tsum{\typ_1}{\typ_2}}{\rho}   &\triangleq 
   \begin{aligned}[t]
     (\val_1, \val_2) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor \\
@@ -750,8 +756,8 @@ Next, we consider product-, sum-, and function-type.
     \ExpInp{\typ_2}{\rho}(\subst{\expr_1}{\var}{\valB_1}, \subst{\expr_2}{\var}{\valB_2})\}
   \end{aligned}
 \end{align*}
-For product types, the first value in each pair should be logically related, and likewise with the second value in each pair. Note also how the design principle of the property being preserved by eliminating forms comes into play for these three types – eliminating a pair, for instance, corresponds to taking out one of the two values, and in our definition, we also talk about the property for the inner values.\\
-In the relation for function types, we mention another relation $\mathcal{E}$. This is the expression interpretation which we will define in a bit. Informally, two expressions are in our expression interpretation when they terminate at logically related values.\\
+Note how the design principle of the property being preserved by eliminating forms comes into play for these three types – for product type, the two pairs are related if through both eliminating forms, the resulting values are related.\\
+In the relation for function types, we mention another relation $\mathcal{E}$. This is the expression interpretation which we will define in a bit. Informally, two expressions are in our expression interpretation when they terminate at related values.\\
 Finally, let's discuss the perhaps most intricate type: type abstraction.
 \begin{align*}
   \ValInpGen{\Tall{\Tvar}{\typ}}{\rho}  &\triangleq 
@@ -776,7 +782,7 @@ Now, since we have decided which values are related, then, when encountering a t
   \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]
 \end{align*}
 
-Now we move on to the next stage. Here we shall define the "expression interpretation", which capture which pairs of \textit{closed} expressions we consider to be logically related.
+Now we are ready to define the expression interpretation.
 \begin{multline*}
   \ExpInp{\typ}{\rho}(\expr_1, \expr_2) \triangleq
     \jdg{\emptenv}{\empvenv}{\expr_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\expr_2}{\rho_2(\typ)} \land\\
@@ -796,7 +802,7 @@ Secondly, our interpretation for a variable environment is as follows.
 \end{align*}
 Like with the relational type substitution, we also have the two projections of $\gamma$, $\gamma_1 = \{\var \mapsto \val_1, \dots\}$ and $\gamma_2 = \{\var \mapsto \val_2, \dots\}$.
 With these interpretations defined, we are now finally ready to give our complete definition of our LR model.
-\begin{definition}[Logical relation]\label{def:LogRel}
+\begin{definition}[Logical Relations Model]\label{def:LogRel}
   \begin{equation*}
     \begin{gathered}
       \LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ}\\
@@ -808,7 +814,7 @@ With these interpretations defined, we are now finally ready to give our complet
   \end{equation*}
 \end{definition}
 Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ under $\tenv$ and $\venv$, when both expressions are well typed at type $\typ$ under $\tenv$ and $\venv$, and when we can choose \textit{any} relational type substitution $\rho \in \TenvInp{\tenv}$ and \textit{any} relational variable substitution $\gamma \in \VenvInp{\venv}{\rho}$, and the expressions closed off using $\gamma$ are in our expression interpretation at type $\typ$ with our relational type substitution $\rho$.\\
-We shall refer to the relation that arises from \ref{def:LogRel} as "LR".
+For the remainder, we shall refer to the relation simply as "LR".
 
 \section{Compatibility lemmas}
 As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as "compatibility lemmas". Some compatibility lemmas are very similar, so below we show only a selected few, and the ones not shown will be similar to one of the ones we show.
