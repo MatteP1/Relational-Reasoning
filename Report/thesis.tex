@@ -187,9 +187,13 @@ Department of Computer Science, Aarhus University\\[1ex]
 \chapter{Introduction}
 \label{ch:intro}
 
-\todo{motivate and explain the problem to be addressed}
-
-\todo{get your bibtex entries from \url{https://dblp.org/}}
+It is often useful to have a notion of program equivalence. For example, after a structural refactoring, the resulting program should be equivalent to the previous one. You may also have two implementations of an algorithm or data structure, one of which is slower, but simpler, so that you are confident about its correctness, while the other is more efficient, but also more complex. Knowing that the two implementations are equivalent allows you to use the more efficient one without worrying about correctness.\\
+One notion of program equivalence is \textit{Contextual Equivalence}, which will be one of the main focus points of this report. Informally, contextual equivalence states that we consider two programs equivalent, if, when used as a part of an arbitrary, bigger program, each could be used in place of the other without changing the behaviour of the whole program.\\
+We will need a language on which we can define and use contextual equivalence.
+In this report, we will be using System F, which is the simply typed lambda calculus with parametric polymorphism. In chapter \ref{ch:DoL} we shall define the language formally and discuss some properties of it, which will help us get to know it, and will also be useful in later proofs.\\
+Then, in chapter \ref{ch:CE}, we shall give two equivalent definitions of contextual equivalence for System F. The first definition reflects the informal explanation just given, and the second gives deeper insight into the nature of contextual equivalence.\\
+It turns out that working directly with contextual equivalence is quite troublesome, so to help us prove equivalences, we shall employ \textit{logical relations}. Logical relations is a general proof technique with many applications in computer science, one of which is proving contextual equivalences. In chapter \ref{ch:LR} we define a logical relations model, and show some required properties of it, which then allows us to use it for proving contextual equivalences.\\
+Finally, in chapter \ref{ch:ACE}, we shall show and prove some interesting contextual equivalences using the logical relations model. Among these are commutativity of evaluation of pairs and lambda hoisting.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1308,6 +1312,8 @@ The final theorem we shall show is one which is useful, were we to write a compi
 \label{ch:conclusion}
 
 \todo{conclude on the problem statement from the introduction}
+
+% in this report, we defined contextual equivalence on system F, and showed how it was equivalent to the coursest, relation which was adequate, congruent, and contained only well-typed expressions. 
 
 % Idea for future work:
 % * add recursive functions (a fixed-point combinator) to the language.

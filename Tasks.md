@@ -128,10 +128,12 @@
 
 ## Report Writing
 - [ ] Appendix
-- [ ] Write introduction
+- [x] Write introduction
 - [ ] Write conclusion and ideas for future work
 - [ ] Acknowledgments?
 - [ ] Write abstract
+- [ ] Proper references
+  - get your bibtex entries from \url{https://dblp.org/}
 - [ ] Format appendix
 - [ ] Proofread report
 
