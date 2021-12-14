@@ -129,7 +129,7 @@
 ## Report Writing
 - [ ] Appendix
 - [x] Write introduction
-- [ ] Write conclusion and ideas for future work
+- [x] Write conclusion and ideas for future work
 - [ ] Acknowledgments?
 - [ ] Write abstract
 - [ ] Proper references
