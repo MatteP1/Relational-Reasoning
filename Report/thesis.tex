@@ -202,10 +202,10 @@ Finally, in chapter \ref{ch:ACE}, we shall show and prove some interesting conte
 \chapter{Definition of Language}
 \label{ch:DoL}
 To talk about contextual equivalence of programs, we first need to define a language, which captures what programs can be. Consequently, the choice of language influences the definition of contextual equivalence. We will see specifically how this manifests when we reach chapter \ref{ch:CE}. In this chapter, we will focus on formally defining the language, and showing some facts about it, which will be useful in later chapters.
-\section{The language}
+\section{The Language}
 We define the language in three parts: the syntax, the typing rules, and finally the semantics. The language we will be working with is generally refereed to as \textit{System F}, and we shall do so here as well. However, the features included in this language may be different from other presentations. We note here that we will be working with a Curry-style language, as opposed to a Church-style language. This essentially just means that types are not an intrinsic part of the semantics. Instead, types become a property that programs can have.
 \subsection{Syntax}
-The syntax captures exactly all programs that can be written in our language – in other words, it governs the "forms" our programs can take. We define it using a context-free grammar whose production rules are in Backus-Naur form:
+The syntax captures exactly all programs that can be written in our language – in other words, it governs the "forms" our programs can take. We define it using a context-free grammar with the production rules in Backus-Naur form:
 \begin{align*}
   \expr \BNFdef & \TT \ALT & \text{(unit value)}\\
                 & \var \ALT & \text{(variables)}\\
@@ -249,7 +249,7 @@ All programs in our language can be derived using the rules above. We shall also
 Evaluation contexts will be used when we get to defining the semantics. In general, contexts like this are simply programs with a "hole". That hole can be plugged by some expressions $\expr$, and in that case we write $\elctx[\expr]$. We will see another example of a context in chapter \ref{ch:CE}.\\
 Note that programs in our language may not necessarily make "sense". For example, using the rules above, we can construct the program $\True + 1$. To avert this problem, we introduce the typing rules, which will allow us to only talk about well-typed programs.
 
-\subsection{Typing rules}
+\subsection{Typing Rules}
 The typing rules give us a way to derive the type of a program in our language. They are defined using inference rules as follows:
 \begin{mathpar}
   \inferrule*[lab=T-var]
@@ -342,7 +342,7 @@ Finally, we define the semantics of the language. We do this using a single "ste
     {\hstepRel{\expr}{\expr'}}
     {\elctx[\expr] \step \elctx[\expr']}
 \end{mathpar}
-The evaluation context, $\elctx$, is the part that tells us where in our program we may apply the reduction. If we have an expression $\expr$, and we have $\expr = \elctx[f]$, and $f \hstep f'$, then we may conclude that $\expr \step \elctx[f']$. Now, the head-steps are as follows:
+The evaluation context, $\elctx$, is the part that tells us where in our program we may apply the reduction. If we have an expression $\expr$, and we have $\expr = \elctx[f]$, and $f \hstep f'$, then we may conclude that $\expr \step \elctx[f']$. Now, the head-steps are as follows.
 \begin{mathpar}
   \inferrule*[lab=E-add]{}
     {\hstepRel{\Num{n_1} + \Num{n_2}} {\Num{n_1 + n_2}}}
@@ -400,7 +400,7 @@ To strike home the workings of evaluation context, we give here an example. Let'
 In the majority of the report, we will leave the evaluation contexts implicit and simply refer to the head-steps when justifying reductions.\medskip\\
 At this point, our language has been formally defined, so next we will note down some facts and results about it.
 
-\section{Properties of the language}
+\section{Properties of the Language}
 In this section we note down some useful properties of our language, which will help us reason about the concepts in later chapters. First we show some interesting lemmas about the evaluation context.
 
 \subsection{Evaluation Context}
@@ -507,7 +507,7 @@ In this section we note down some useful properties of our language, which will 
 \end{proof}
 
 \subsection{Substitution}
-We will not define formally how a substitution $\subst{\expr}{\var}{\expr'}$ works here, but refer instead to types and programming languages by benjamin c pierce (section 5.3)\todo{proper ref}, who explains how to formally define substitutions so that they are \textit{capture-avoiding}. However, we will be needing a way to close off open expressions later, so we shall define here an extended substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows:
+We will not define formally how a substitution $\subst{\expr}{\var}{\expr'}$ works here, but refer instead to types and programming languages by benjamin c pierce (section 5.3)\todo{proper ref}, who explains how to formally define substitutions so that they are \textit{capture-avoiding}. However, we will be needing a way to close off open expressions later, so we shall define here an extended substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows.
 \begin{align*}
   \emptyset(\expr) &= \expr\\
   \gamma[\map{\var}{\val}](\expr) &= \gamma(\subst{\expr}{\var}{\val})
@@ -522,7 +522,7 @@ The following lemma will be useful in later proofs.
 
 \subsection{Type Safety, Normalisation, and Determinacy}
 We note here a few interesting results about System F. They will not all be proved here, as it requires a substantial amount of work.\\
-Firstly, System F is a type-safe language. Essentially, this means that well-typed programs don't get "stuck" in the sense that either we can take a step, or we have reduced to a value. We may state this formally as follows
+Firstly, System F is a type-safe language. Essentially, this means that well-typed programs don't get "stuck" in the sense that either we can take a step, or we have reduced to a value. We may state this formally as follows.
 \begin{theorem}\label{thm:typesafety}
   $\jdg{\emptenv}{\empvenv}{\expr}{\typ} \land \expr \stepS \expr' \implies \Val{\expr'} \lor \exists \expr'' . \expr' \step \expr''$
 \end{theorem}
@@ -530,7 +530,7 @@ Secondly, every closed and well-typed expression in System F has a reduction to 
 \begin{theorem}\label{thm:norm}
   System F is a normalising language.
 \end{theorem}
-Together with type-safety, normalisation implies that all closed and well-typed expressions will terminate at some value. We will actually prove this theorem later using the logical relations model we define in chapter \ref{ch:LR}. As an aside, there is a stronger version of normalisation called "strong normalisation". This essentially just states the above theorem holds for \textit{all} reductions of every closed and well-typed expression. This is no surprise given the next property of System F we will see.
+Together with type-safety, normalisation implies that all closed and well-typed expressions will terminate at some value. We will actually prove this theorem later using the logical relations model we define in chapter \ref{ch:LR}. As an aside, there is a stronger version of normalisation called "strong normalisation". This essentially just states the above theorem holds for \textit{all} reductions of every closed and well-typed expression. System F is strongly normalising, but this is no surprise given the next property of System F we will see.
 
 Finally, System F is a deterministic language.
 \begin{theorem}\label{thm:determinacy}
@@ -549,7 +549,7 @@ A proof of this can be found in appendix \ref{appendix:om_proof} at \ref{appendi
 \label{ch:CE}
 
 Imagine you are writing a larger program, and as part of that program, you need to use a stack. So as part of your program, you implement a stack. However, your implementation is naive, and not efficient. Thus you implement a new stack, that is more complex, but also more efficient. You would of course want to use the more efficient stack implementation in your larger program, but since it is more complex, you are not sure whether you can justify the refactoring – the implementations might show differing behaviour.\\
-What you want to show, then, is that your two stack implementations \textit{behaves} the same. In other words, no matter which \textit{context} you use your two stack implementations in, they will always behave the same as part of the context. This is intuitively what we want to define with \textit{Contextual Equivalence}.\\
+What you want to show, then, is that your two stack implementations \textit{behave} the same. In other words, no matter which \textit{context} you use your two stack implementations in, they will always behave the same as part of the context. This is intuitively what we want to define with \textit{Contextual Equivalence}.\\
 Contextual Equivalence can be used to show this along with other, "smaller" properties such as idempotency and hoisting of functions. Both of which we will be proving in chapter \ref{ch:ACE}.\\
 In this chapter we give two equivalent definitions of what it means for programs to be contextually equivalent. The first definition will be more intuitive and instructive, while the second will give a deeper insight into the theoretical underpinnings of contextual equivalence.
 
@@ -599,8 +599,8 @@ With this defined, we are now ready to define contextual equivalence. We first s
     \end{gathered}
   \end{equation*}
 \end{definition}
-This says that two expressions are contextually equivalent when they are well typed and we can plug them into any context, which closes both expressions and makes the plugged programs have type $\Tbool$, and the plugged programs run down to the same value (thus, either $\True$ or $\False$). In other words, given two programs, $\expr_1$, $\expr_2$ that are contextually equivalent, if we plug them into any context, $\ctx$, which becomes closed and of type $\Tbool$, then one program, $\ctx[\expr_1]$ terminates to some Boolean $\val$ if and only if the other program $\ctx[\expr_2]$ terminates to the same Boolean, $\val$.\\
-To help demystify this definition, we will discuss a few points. Firstly, why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? The answer is that using $\Tbool$ is "strong enough". We will discuss what this means in a moment. But we could in fact have used some other type like $\Tint$ or even a composite type like $\Tprod{\Tbool}{\Tint}$. The important part is that we are able to make the plugged programs elicit differing behaviour. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:typesafety} and \ref{thm:norm} we know that both plugged programs terminate at a value, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of what $\expr_1$ and $\expr_2$ looks like. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$, or not terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
+This says that two expressions are contextually equivalent when they are well typed and we can plug them into any context, which closes both expressions and makes the plugged programs have type $\Tbool$, and one program, $\ctx[\expr_1]$, terminates at some Boolean $\val$ (thus, either $\True$ or $\False$) if and only if the other program, $\ctx[\expr_2]$, terminates at the same Boolean, $\val$.\\
+To help demystify this definition, we will discuss a few points. Firstly, why we have decided to use $\Tbool$ as the type of the plugged programs; there are plenty other types that could have been used instead such as $\Tunit$ or $\Tint$. Why not use those? The answer is that using $\Tbool$ is "strong enough". We will discuss what this means in a moment. But we could in fact have used some other type like $\Tint$ or even a composite type like $\Tprod{\Tbool}{\Tint}$. The important part is that we are able to make the plugged programs elicit differing behaviour. We cannot do this if the plugged programs have type $\Tunit$; by theorem \ref{thm:typesafety} and \ref{thm:norm} we know that both plugged programs terminate at a value, and there is only one value with type $\Tunit$, namely $\TT$, so both programs will terminate at $\TT$ regardless of what $\expr_1$ and $\expr_2$ looks like. Had we been dealing with a non-terminating language, then we could have used $\Tunit$, since it would then have two possible differing behaviours: terminate with $\TT$ and never terminate. In that case, we would define contextual equivalence as $\ctx[\expr_1] \Downarrow \iff \ctx[\expr_2] \Downarrow$.
 
 Now, let's discuss why our definition is strong enough, and what that means. Firstly, when talking about contextual equivalence, we are not interested in whether or not expressions are syntactically the same – we only care about their observable behaviour. So let's say that two contextually equivalent expressions $\expr_1$ and $\expr_2$ run down to some values, then those values should be behaviourally the same. We have not yet defined formally what we mean by "behaviourally the same". However, intuitively, if the expressions are of integer type, for example, then the two values should be the same number. And for product types, the first value in each pair should be behaviourally the same, and likewise with the second value in each pair. Our definition of contextual equivalence ensures this. To see why this is the case, consider two contextually equivalent programs $\expr_1$ and $\expr_2$, where $\jdg{\emptenv}{\empvenv}{\expr_1}{\typ}$ and $\jdg{\emptenv}{\empvenv}{\expr_2}{\typ}$.
 Now consider what happens if $\expr_1$ terminates with some value $\val_1$. Can we then guarantee that $\expr_2$ also terminates with some value $\val_2$, and $\val_1$ and $\val_2$ behave the same? Since $\expr_1$ and $\expr_2$ are contextually equivalent, then we can put them into any context, $\ctx$, and one will terminate at some value $\val$ if and only if the other one does.
@@ -821,7 +821,7 @@ With these interpretations defined, we are now finally ready to give our complet
 Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ under $\tenv$ and $\venv$, when both expressions are well typed at type $\typ$ under $\tenv$ and $\venv$, and when we can choose \textit{any} relational type substitution $\rho \in \TenvInp{\tenv}$ and \textit{any} relational variable substitution $\gamma \in \VenvInp{\venv}{\rho}$, and the expressions closed off using $\gamma$ are in our expression interpretation at type $\typ$ with our relational type substitution $\rho$.\\
 For the remainder, we shall refer to the relation simply as "LR".
 
-\section{Compatibility lemmas}
+\section{Compatibility Lemmas}
 As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as "compatibility lemmas". Some compatibility lemmas are very similar, so below we show only a selected few, and the ones not shown will be similar to one of the ones we show.
 \begin{lemma}[Cmpt-unit]
   $\inferrule{ }{\LogRel{\tenv}{\venv}{\TT}{\TT}{\Tunit}}$
@@ -1143,7 +1143,7 @@ The next theorem shows that any expression of type $\Tall{\Tvar}{\Tfunc{\Tvar}{\
 \end{proof}
 
 
-\section{Empty type}
+\section{Empty Type}
 A type is empty, if there are no values with that type. In this section we shall show that $\Tall{\Tvar}{\Tvar}$ is an empty type. We do this by showing something stronger, which is that there aren't even any expressions with that type. Given our language is normalising, then we can show it generally for expressions since, if there are no values of a type, then there can't be any expressions of that type, since expressions will normalise to a value.
 \begin{theorem}
   $\not\exists \expr . \jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tvar}}$
@@ -1438,7 +1438,7 @@ For future work, we could add more functionality to the language such as recursi
     { \jdgRel{\tenv}{\venv}{\Tapp{\expr}}{}{\Tapp{\expr'}}{\subst{\typ}{\Tvar}{\typ'}} }
 \end{mathpar}
 
-\chapter{Omitted proofs}\label{appendix:om_proof}
+\chapter{Omitted Proofs}\label{appendix:om_proof}
 \section{Proof of corollary \ref{cor:determinacy_val}}\label{appendix:om_proof:dtval}
 \begin{proof}
   We proceed by induction on the number of steps of the evaluation $\expr \Downarrow \val_1$.
