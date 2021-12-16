@@ -132,7 +132,7 @@
 - [x] Write conclusion and ideas for future work
 - [ ] Acknowledgments?
 - [ ] Write abstract
-- [ ] Proper references
+- [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
 - [ ] Format appendix
 - [ ] Proofread report

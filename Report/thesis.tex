@@ -507,7 +507,7 @@ In this section we note down some useful properties of our language, which will 
 \end{proof}
 
 \subsection{Substitution}
-We will not define formally how a substitution $\subst{\expr}{\var}{\expr'}$ works here, but refer instead to types and programming languages by benjamin c pierce (section 5.3)\todo{proper ref}, who explains how to formally define substitutions so that they are \textit{capture-avoiding}. However, we will be needing a way to close off open expressions later, so we shall define here an extended substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows.
+We will not define formally how a substitution $\subst{\expr}{\var}{\expr'}$ works here, but refer instead to section 5.3 in \cite{DBLP:books/daglib/0005958}, which explains how to formally define substitutions so that they are \textit{capture-avoiding}. However, we will be needing a way to close off open expressions later, so we shall define here an extended substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows.
 \begin{align*}
   \emptyset(\expr) &= \expr\\
   \gamma[\map{\var}{\val}](\expr) &= \gamma(\subst{\expr}{\var}{\val})
@@ -1097,7 +1097,7 @@ With our logical relations model defined and the necessary properties of it prov
 The first example we shall explore is that of identity; if an expression has a certain type, then we may prove that it behaves just as the identity function.
 We shall actually show two theorems. The first one is weaker, in the sense that there are some languages (fx ones with side-effects), where only the first theorem holds.
 \subsection{Identity: Reduction}
-Informally, the first theorem says that an expression $\expr$, which given a value of any type $\typ$ outputs an expression of the same type $\typ$, will always output the value it was given as input. The intuition for why this is, is that since the function works for any type, it cannot do anything specific to the value given. Since it must output an expression of the same type, and it doesn't know in advance the type of the input, it only has one option: to return the value it was given. A theorem like this, where we can conclude something about an expression just by inspecting it's type, is called a \textit{free theorem}\todo{ref theorems for free}, and a standard way to prove these is using logical relations.
+Informally, the first theorem says that an expression $\expr$, which given a value of any type $\typ$ outputs an expression of the same type $\typ$, will always output the value it was given as input. The intuition for why this is, is that since the function works for any type, it cannot do anything specific to the value given. Since it must output an expression of the same type, and it doesn't know in advance the type of the input, it only has one option: to return the value it was given. A theorem like this, where we can conclude something about an expression just by inspecting it's type, is called a \textit{free theorem}\cite{DBLP:conf/fpca/Wadler89}, and a standard way to prove these is using logical relations.
 \begin{theorem}\label{thm:identity_reduction}
   $\jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}} \land
   \jdg{\emptenv}{\empvenv}{\val}{\typ} \implies 
