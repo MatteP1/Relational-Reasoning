@@ -127,7 +127,7 @@
 - [ ] fix type-setting
 
 ## Report Writing
-- [ ] Appendix
+- [x] Appendix
 - [x] Write introduction
 - [x] Write conclusion and ideas for future work
 - [ ] Acknowledgments?
