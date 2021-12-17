@@ -85,7 +85,7 @@
   - [x] Section 4.2 Defining the LR Model
   - [x] Section 4.3 Compatibility lemmas
   - [x] Section 4.4 Properties of LR
-- [ ] Fix type-setting
+- [x] Fix type-setting
 
 ## Using the Logical Relations
 - [x] Identity
