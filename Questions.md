@@ -13,3 +13,4 @@
 - getting more space
   - remove corollary from EuC together with proof
   - move proof of Identity: Contextual equivalence to appendix.
+  - Cmpt-match to appendix?
