@@ -1,4 +1,4 @@
-\documentclass[a4paper, 10pt]{report}
+\documentclass[a4paper, 11pt]{report}
 
 \usepackage[a4paper,left=1in,right=1in,top=1in,bottom=1in]{geometry}
 
@@ -456,7 +456,7 @@ In this section we note down some useful properties of our language, which will 
       \left( (\Val{f''} \land F[f''] \stepS f') \lor
       (\neg \Val{f''} \land \elctx[f''] = f') \right)
     \end{multline}
-    Split the evaluation, $\elctx[\expr] \step^{m + 1} \expr'$, up, so that 
+    Split the evaluation $\elctx[\expr] \step^{m + 1} \expr'$ up, so that 
     $\elctx[\expr] \step g \land g \step^{m} \expr'$. Looking at our semantics, we must have that $\elctx[\expr] = H[h]$, and $g = H[h']$, for some evaluation context $H$, and expressions $h$, $h'$, and $h \hstep h'$.
     There are now three possible cases. Either $\expr = h$, $\expr$ is a superexpression of $h$, or $\expr$ is a subexpression of $h$. We will consider each in turn.
     \begin{itemize}
@@ -467,7 +467,7 @@ In this section we note down some useful properties of our language, which will 
           \left((\Val{f''} \land \elctx[f''] \stepS \expr') \lor
           (\neg \Val{f''} \land \elctx[f''] = \expr') \right)
         \end{multline}
-        Call this quantified expression for $f''$, and use it for $\expr''$ in \ref{eqn:EuCGoal}. We must then show
+        Now use $f''$ for $\expr''$ in \ref{eqn:EuCGoal}. We must then show
         \begin{equation*}
           (\expr \stepS f'') \land 
           \left( (\Val{f''} \land \elctx[f''] \stepS \expr') \lor
@@ -483,7 +483,7 @@ In this section we note down some useful properties of our language, which will 
           \left((\Val{f''} \land \elctx[f''] \stepS \expr') \lor
           (\neg \Val{f''} \land \elctx[f''] = \expr') \right)
         \end{multline}
-        Call this quantified expression for $f''$, and use it for $\expr''$ in \ref{eqn:EuCGoal}. We must then show
+        Using $f''$ for $\expr''$ in \ref{eqn:EuCGoal}, we must show
         \begin{equation*}
           (\expr \stepS f'') \land 
           \left( (\Val{f''} \land \elctx[f''] \stepS \expr') \lor
@@ -493,7 +493,7 @@ In this section we note down some useful properties of our language, which will 
         \ref{eqn:EuCC2IH}, we know that $E[h'] \stepS f''$, so that $\expr \stepS f''$. The second part follows directly from \ref{eqn:EuCC2IH}.
 
       \item[case] $\elctx = H[E[]]$ and $E[\expr] = h$.
-        Here we have $h = E[\expr]$, so $E[\expr] \hstep h'$. Note that $E$ is not the empty evaluation context, as otherwise, we would be in case 1. So by lemma \ref{lem:headstep_val}, we know that $\Val{\expr}$. Now, pick $\expr$ for $\expr''$ in \ref{eqn:EuCGoal}. We must show 
+        Here we have $h = E[\expr]$, so $E[\expr] \hstep h'$. Note that $E$ is not the empty evaluation context as, otherwise, we would be in the first case. So by lemma \ref{lem:headstep_val}, we know that $\Val{\expr}$. Now, pick $\expr$ for $\expr''$ in \ref{eqn:EuCGoal}. We must show 
         \begin{equation*}
           (\expr \stepS \expr) \land 
           \left( (\Val{\expr} \land \elctx[\expr] \stepS \expr') \lor
@@ -576,15 +576,15 @@ In order to define contextual equivalence, we will first need to define the noti
                 \ctx + \expr \ALT \expr + \ctx \ALT
                 \ctx - \expr \ALT \expr - \ctx \ALT
                 \ctx \le \expr \ALT \expr \le \ctx \ALT
-                \ctx < \expr \ALT \expr < \ctx \ALT
-                \ctx = \expr \ALT \expr = \ctx \ALT\\
-              & {\If \ctx then \expr else \expr} \ALT
+                \ctx < \expr \ALT \expr < \ctx \ALT\\
+              & \ctx = \expr \ALT \expr = \ctx \ALT
+                {\If \ctx then \expr else \expr} \ALT
                 {\If \expr then \ctx else \expr} \ALT
-                {\If \expr then \expr else \ctx} \ALT
-                (\ctx, \expr) \ALT (\expr, \ctx) \ALT\\
-              & \Fst \ctx \ALT \Snd \ctx \ALT
-                \Inj{1} \ctx \ALT \Inj{2} \ctx \ALT
-                \Match \ctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT\\
+                {\If \expr then \expr else \ctx} \ALT\\
+              & (\ctx, \expr) \ALT (\expr, \ctx) \ALT
+                \Fst \ctx \ALT \Snd \ctx \ALT
+                \Inj{1} \ctx \ALT \Inj{2} \ctx \ALT\\
+              & \Match \ctx with \Inj{1} \var => \expr | \Inj{2} \var => \expr end \ALT\\
               & \Match \expr with \Inj{1} \var => \ctx | \Inj{2} \var => \expr end \ALT\\
               & \Match \expr with \Inj{1} \var => \expr | \Inj{2} \var => \ctx end \ALT
               \fun \var . \ctx \ALT
@@ -689,7 +689,7 @@ To prove the next theorem, we will need to show two lemmas.
   By induction on the typing derivation of $\expr$. It follows immediately from applying the induction hypothesis and applying congruency rules. We show one case here.
   \begin{itemize}
     \item[case] T-tlam.\\
-      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis is $R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$ which is equivalent to $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule $Cng-tlam$, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
+      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis is $R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$ which is equivalent to $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule Cng-tlam, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
   \end{itemize}
 \end{proof}
 
@@ -720,7 +720,7 @@ With this lemma proved, we are ready to prove the next theorem.
 \end{theorem}
 \begin{proof}
   So assuming $R(\tenv, \venv, \expr, \expr', \typ)$, we must show 
-  $\jdg{\tenv}{\venv}{\expr}{\typ} \; \land \; \jdg{\tenv}{\venv}{\expr'}{\typ} \; \land \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. So assume some context $C$ of the right type and some value $\val$. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \empvenv, C[\expr], C[\expr'], \Tbool)$. By adequacy of $R$, we have that $\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val$, which was what we wanted.
+  $\jdg{\tenv}{\venv}{\expr}{\typ} \; \land \; \jdg{\tenv}{\venv}{\expr'}{\typ} \; \land \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. So assume some context $C$ of the right type and some value $\val$. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \empvenv, C[\expr], C[\expr'], \Tbool)$. It then follows from adequacy of $R$ that $\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val$, which was what we wanted.
 \end{proof}
 
 Now, the proof of the two definitions of contextual equivalence being equivalent follows easily:

@@ -59,7 +59,7 @@
   - [x] In case of reflexivity and Lemma 6, state only for relations having congruency (and possibly well-typedness).
 - [x] Refactor for terminating language
 - [x] Finish writing text
-- [ ] Fix type-setting
+- [x] Fix type-setting
 
 ## Logical Relations
 - [x] Define a logical relations model for CE
@@ -130,7 +130,6 @@
 - [x] Appendix
 - [x] Write introduction
 - [x] Write conclusion and ideas for future work
-- [ ] Acknowledgments?
 - [ ] Write abstract
 - [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
