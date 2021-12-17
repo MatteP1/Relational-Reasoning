@@ -124,7 +124,7 @@
   - [x] Idempotency
   - [x] Commutativity
   - [x] Lam hoisting
-- [ ] fix type-setting
+- [x] fix type-setting
 
 ## Report Writing
 - [x] Appendix

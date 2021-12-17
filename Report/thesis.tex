@@ -1122,7 +1122,7 @@ Informally, the first theorem says that an expression $\expr$, which given a val
     &\jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}\label{ident:1}\\
     &\jdg{\emptenv}{\empvenv}{\val}{\typ}
   \end{align}
-  Then we must show $(\Tapp{\expr}) \; \val \stepS \val$. From \ref*{ident:1} and by the fundamental theorem (theorem \ref{thm:fund}) we know $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ from which we get $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. By the definition of the type interpretation and value environment interpretation, we only have one choice of instantiation, so we instantiate both with the empty relational substitution, $\emptyset$. Thus we get $\ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\expr, \expr)$. And from this, we may conclude $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\val_1, \val_2)$. By determinacy (specifically, corollary \ref{cor:determinacy_val}) these values must be the same, and from the value interpretation we further know that the value must be a type abstraction. Thus $\expr \stepS \Tlam \expr'$ and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Here we use $\typ$ for $\typ_1$ and $\typ_2$, and the relation $R' = \{(\val, \val)\}$ for $R$, giving us $\ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\expr', \expr')$, meaning $\exists \val_1', \val_2' . \expr' \stepS \val_1' \land \expr' \stepS \val_2' \land \ValInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\val_1', \val_2')$. Thus $\expr' \stepS \fun \var . \expr''$ and $\forall \valB_1, \valB_2 . \ValInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\valB_{1}, \valB_{2}) \implies \ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\valB_1}, \subst{\expr''}{\var}{\valB_2})$. Using $\val$ for both $\valB_1$ and $\valB_2$, we get $\ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\val}, \subst{\expr''}{\var}{\val})$ which means 
+  Then we must show $(\Tapp{\expr}) \; \val \stepS \val$. From \ref*{ident:1} and by the fundamental theorem (theorem \ref{thm:fund}) we know $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}$ from which we get $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. We instantiate this with our only choice, the empty relational substitutions, $\emptyset$. Thus we get $\ExpInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\expr, \expr)$. And from this, we may conclude $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}}{\emptyset}(\val_1, \val_2)$. By determinacy (specifically, corollary \ref{cor:determinacy_val}) these values must be the same, and from the value interpretation we further know that the value must be a type abstraction. Thus $\expr \stepS \Tlam \expr'$ and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Here we use $\typ$ for $\typ_1$ and $\typ_2$, and the relation $R' = \{(\val, \val)\}$ for $R$, giving us $\ExpInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\expr', \expr')$, meaning $\exists \val_1', \val_2' . \expr' \stepS \val_1' \land \expr' \stepS \val_2' \land \ValInp{\Tfunc{\Tvar}{\Tvar}}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\val_1', \val_2')$. Thus $\expr' \stepS \fun \var . \expr''$ and $\forall \valB_1, \valB_2 . \ValInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\valB_{1}, \valB_{2}) \implies \ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\valB_1}, \subst{\expr''}{\var}{\valB_2})$. Using $\val$ for both $\valB_1$ and $\valB_2$, we get $\ExpInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\subst{\expr''}{\var}{\val}, \subst{\expr''}{\var}{\val})$ which means 
   $\exists \val_{1f}, \val_{2f} . \subst{\expr''}{\var}{\val} \stepS \val_{1f} \land \subst{\expr''}{\var}{\val} \stepS \val_{2f} \land \ValInp{\Tvar}{\rho[\map{\Tvar}{(\typ_1, \typ_2, R')}]}(\val_{1f}, \val_{2f})$, which again means $\subst{\expr''}{\var}{\val} \stepS \val_f$ and $(\val_f, \val_f) \in R'$, but since $R'$ is a singleton, then we must have $\val_f = \val$. From the above, we have the following evaluation
   \begin{equation}
     (\Tapp{\expr}) \; \val \stepS (\Tapp{\Tlam \expr'}) \; \val \step \expr' \; \val \stepS (\fun \var . \expr'') \; \val \step \subst{\expr''}{\var}{\val} \stepS \val_f = \val
@@ -1163,7 +1163,7 @@ A type is empty, if there are no values with that type. In this section we shall
 \end{theorem}
 \begin{proof}
   Assume for the sake of contradiction that $\exists \expr . \jdg{\emptenv}{\empvenv}{\expr}{\Tall{\Tvar}{\Tvar}}$. Then, by the fundamental theorem (theorem \ref{thm:fund}), we know that $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\Tall{\Tvar}{\Tvar}}$, which means that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . 
-  \ExpInp{\Tall{\Tvar}{\Tvar}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. Here, pick the empty relational substitutions, so that $\ExpInp{\Tall{\Tvar}{\Tvar}}{\emptyset}(\expr, \expr)$. Which by definition means $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInpGen{\Tall{\Tvar}{\Tvar}}{\emptyset}$. From this we may conclude that $\expr \stepS \Tlam \expr'$, and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tvar}{[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Instantiate this with any two types (for example $\Tint$), and the empty relation, $R = \emptyset$. Then we have $\ExpInp{\Tvar}{[\map{\Tvar}{(\Tint, \Tint, \emptyset)}]}(\expr', \expr')$, from which we know $\exists \val_1, \val_2 . \expr' \stepS \val_1 \land \expr' \stepS \val_2 \land \ValInpGen{\Tvar}{[\map{\Tvar}{(\Tint, \Tint, \emptyset)}]}$. By the definition of the value interpretation for type variables, the last part gives us $(\val_1, \val_2) \in \emptyset$, which is a contradiction.
+  \ExpInp{\Tall{\Tvar}{\Tvar}}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. Here, pick the empty relational substitutions, so that $\ExpInp{\Tall{\Tvar}{\Tvar}}{\emptyset}(\expr, \expr)$. This means that $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr \stepS \val_2 \land \ValInpGen{\Tall{\Tvar}{\Tvar}}{\emptyset}$. From this we may conclude that $\expr \stepS \Tlam \expr'$, and $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\Tvar}{[\map{\Tvar}{(\typ_1, \typ_2, R)}]}(\expr', \expr')$. Instantiate this with any two types (for example $\Tint$), and the empty relation, $R = \emptyset$. Then we have $\ExpInp{\Tvar}{[\map{\Tvar}{(\Tint, \Tint, \emptyset)}]}(\expr', \expr')$, from which we know $\exists \val_1, \val_2 . \expr' \stepS \val_1 \land \expr' \stepS \val_2 \land \ValInpGen{\Tvar}{[\map{\Tvar}{(\Tint, \Tint, \emptyset)}]}$. By the definition of the value interpretation for type variables, the last part gives us $(\val_1, \val_2) \in \emptyset$, which is a contradiction.
 \end{proof}
 
 
@@ -1175,7 +1175,7 @@ Idempotency in general is the idea that doing something multiple times is equiva
   If $\jdg{\tenv}{\venv}{\expr}{\typ}$ then $\ctxRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$
 \end{theorem}
 \begin{proof}
-  We will show the theorem by showing that the two expressions are logically related. Then, by theorem \ref{thm:LR_sound}, it follows that they are also contextually equivalent. So assume $\jdg{\tenv}{\venv}{\expr}{\typ}$, then we will show $\LogRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$. By definition of LR, we must show two things. First that both expressions are well-typed under $\tenv$ and $\venv$. This follows fairly easily from the assumption and by applying the typing rules, so we will not explain it here. Second that, when the expressions and types are closed, they are in the expression interpretation. So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. Then we must show $\ExpInp{\Tprod{\typ}{\typ}}{\rho}(\gamma_1(\Let \var = \expr in (\var, \var)), \gamma_2((\expr, \expr)))$, which by the definition of the expression interpretation means we have to show
+  By theorem \ref{thm:LR_sound}, it suffices to show logical relatedness. So assume $\jdg{\tenv}{\venv}{\expr}{\typ}$, then we will show $\LogRel{\tenv}{\venv}{\Let \var = \expr in (\var, \var)}{(\expr, \expr)}{\Tprod{\typ}{\typ}}$. By definition of LR, we must show two things. First that both expressions are well-typed under $\tenv$ and $\venv$. This follows fairly easily from the assumption and by applying the typing rules, so we will not explain it here. Second that, when the expressions and types are closed, they are in the expression interpretation. So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$. Then we must show $\ExpInp{\Tprod{\typ}{\typ}}{\rho}(\gamma_1(\Let \var = \expr in (\var, \var)), \gamma_2((\expr, \expr)))$, which by the definition of the expression interpretation means we have to show:
   \begin{align}
     &\jdg{\emptenv}{\empvenv}{\Let \var = \gamma_1(\expr) in (\var, \var)}{\rho_1(\Tprod{\typ}{\typ})}\label{idem:goal_1.1}\\
     &\jdg{\emptenv}{\empvenv}{(\gamma_2(\expr), \gamma_2(\expr))}{\rho_2(\Tprod{\typ}{\typ})}\label{idem:goal_1.2}\\
@@ -1187,22 +1187,15 @@ Idempotency in general is the idea that doing something multiple times is equiva
     &\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\rho_2(\typ)}\label{idem:1.2}\\
     &\exists \val_1', \val_2' . \gamma_1(\expr) \stepS \val_1' \land \gamma_2(\expr) \stepS \val_2' \land\ValInp{\typ}{\rho}(\val_1', \val_2')\label{idem:1.3}
   \end{align}
-  From (\ref*{idem:1.1}) and (\ref*{idem:1.2}), we may prove the first two parts of the goal (\ref*{idem:goal_1.1}) and (\ref*{idem:goal_1.2}). So let's turn our attention the last part (\ref*{idem:goal_1.3}).
+  From (\ref*{idem:1.1}) and (\ref*{idem:1.2}), we may prove the first two parts of the goal (\ref*{idem:goal_1.1}) and (\ref*{idem:goal_1.2}). So let's turn our attention the last part (\ref*{idem:goal_1.3}). We use $(\val_1', \val_1')$ for $\val_1$ and $(\val_2', \val_2')$ for $\val_2$. The first evaluation holds by:
   \begin{multline}
     \Let \var = \gamma_1(\expr) in (\var, \var) \equiv (\fun \var . (\var, \var)) \; \gamma_1(\expr) \stepS (\fun \var . (\var, \var)) \; \val_1' \step\\ \subst{(\var, \var)}{\var}{\val_1'} \equiv (\val_1', \val_1')
   \end{multline}
-  The first equivalence simply de-sugars the let expression. The next "$\stepS$" follows from (\ref{idem:1.3}). The next step is simply a lambda reduction, and the final equivalence is just performing the substitution.
-
+  The first equivalence simply de-sugars the let expression. The next "$\stepS$" follows from (\ref{idem:1.3}). The next step is a $\beta$-reduction, and the final equivalence is just performing the substitution. Now, the second evaluation holds by:
   \begin{equation}
     (\gamma_2(\expr), \gamma_2(\expr)) \stepS (\val_2', \gamma_2(\expr)) \stepS (\val_2', \val_2')
   \end{equation}
-  Both "$\stepS$" follows from (\ref{idem:1.3}).
-  We here use $(\val_1', \val_1')$ for $\val_1$ and $(\val_2', \val_2')$ for $\val_2$. Then we must show
-  \begin{equation}
-    \ValInp{\Tprod{\typ}{\typ}}{\rho}((\val_1', \val_1'), (\val_2', \val_2'))\label{idem:goal_final}
-  \end{equation}
-  By the definition of the value interpretation for product type, it suffices to show well-typedness and $\ValInp{\typ}{\rho}(\val_1', \val_2') \land \ValInp{\typ}{\rho}(\val_1', \val_2')$. Both of which follows from the last part of (\ref{idem:1.3})
-  \todo{prettify proof}
+  Both "$\stepS$" follows from (\ref{idem:1.3}). So only $\ValInp{\Tprod{\typ}{\typ}}{\rho}((\val_1', \val_1'), (\val_2', \val_2'))$ remains to be shown. By the definition of the value interpretation for product type, it suffices to show well-typedness and $\ValInp{\typ}{\rho}(\val_1', \val_2') \land \ValInp{\typ}{\rho}(\val_1', \val_2')$. Both of which follows from the last part of (\ref{idem:1.3}).
 \end{proof}
 
 
@@ -1213,31 +1206,30 @@ In short, this commutativity theorem states that the order of evaluation of expr
   $\ctxRel{\tenv}{\venv}{\Let \var = \expr_2 in (\expr_1, \var)}{(\expr_1, \expr_2)}{\Tprod{\typ_1}{\typ_2}}$
 \end{theorem}
 \begin{proof}
-  As in the previous proofs, we shall show this by showing the they are logically related. So assume $\jdg{\tenv}{\venv}{\expr_1}{\typ_1}$ and $\jdg{\tenv}{\venv}{\expr_2}{\typ_2}$. We will ignore showing well-typedness here, so assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\gamma_1(\Let \var = \expr_2 in (\expr_1, \var)), \gamma_2((\expr_1, \expr_2)))$, which by the definition of the expression interpretation means we have to show
+  As in the previous proofs, we shall show this by showing the they are logically related. So assume $\jdg{\tenv}{\venv}{\expr_1}{\typ_1}$ and $\jdg{\tenv}{\venv}{\expr_2}{\typ_2}$. We will ignore showing well-typedness here, so assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\gamma_1(\Let \var = \expr_2 in (\expr_1, \var)), \gamma_2((\expr_1, \expr_2)))$, which corresponds to showing:
   \begin{multline}\label{commutativity:goal_1}
     \exists \val_1, \val_2 . \Let \var = \gamma_1(\expr_2) in (\gamma_1(\expr_1), \var) \stepS \val_1 \land (\gamma_2(\expr_1), \gamma_2(\expr_2)) \stepS \val_2 \land\\ \ValInpGen{\Tprod{\typ_1}{\typ_2}}{\rho}
   \end{multline}
-  From the initial assumptions and the fundamental theorem (theorem \ref{thm:fund}) we have that $\LogRel{\tenv}{\venv}{\expr_1}{\expr_1}{\typ_1}$ and $\LogRel{\tenv}{\venv}{\expr_2}{\expr_2}{\typ_2}$, which, when we instantiate with $\rho$ and $\gamma$, gives us
+  From the initial assumptions and the fundamental theorem (theorem \ref{thm:fund}) we have that $\LogRel{\tenv}{\venv}{\expr_1}{\expr_1}{\typ_1}$ and $\LogRel{\tenv}{\venv}{\expr_2}{\expr_2}{\typ_2}$, which, when we instantiate with $\rho$ and $\gamma$, gives us:
   \begin{align}
     &\exists \val_{1f_1}, \val_{1f_2} . \gamma_1(\expr_1) \stepS \val_{1f_1} \land \gamma_2(\expr_1) \stepS \val_{1f_2} \land \ValInp{\typ_1}{\rho}(\val_{1f_1}, \val_{1f_2})\label{commutativity:1.1}\\
     &\exists \val_{2f_1}, \val_{2f_2} . \gamma_1(\expr_2) \stepS \val_{2f_1} \land \gamma_2(\expr_2) \stepS \val_{2f_2} \land \ValInp{\typ_2}{\rho}(\val_{2f_1}, \val_{2f_2})\label{commutativity:1.2}
   \end{align}
-  Now we will instantiate our goal (\ref*{commutativity:goal_1}). Use $(\val_{1f_1}, \val_{2f_1})$ for $\val_1$ and $(\val_{1f_2}, \val_{2f_2})$ for $\val_2$. Thus, we must show 
+  Now we will instantiate our goal (\ref*{commutativity:goal_1}). Use $(\val_{1f_1}, \val_{2f_1})$ for $\val_1$ and $(\val_{1f_2}, \val_{2f_2})$ for $\val_2$. Thus, we must show:
   \begin{align}
     &\Let \var = \gamma_1(\expr_2) in (\gamma_1(\expr_1), \var) \stepS (\val_{1f_1}, \val_{2f_1})\label{commutativity:goal_2.1}\\
     &(\gamma_2(\expr_1), \gamma_2(\expr_2)) \stepS (\val_{1f_2}, \val_{2f_2})\label{commutativity:goal_2.2}\\
     &\ValInp{\Tprod{\typ_1}{\typ_2}}{\rho}((\val_{1f_1}, \val_{2f_1}), (\val_{1f_2}, \val_{2f_2}))\label{commutativity:goal_2.3}
   \end{align}
-  The evaluations are fairly straightforward to show. For the first one (\ref*{commutativity:goal_2.1}) we have
+  The first evaluation (\ref*{commutativity:goal_2.1}) holds by:
   \begin{multline*}
     \Let \var = \gamma_1(\expr_2) in (\gamma_1(\expr_1), \var) \equiv (\fun \var . (\gamma_1(\expr_1), \var)) \; \gamma_1(\expr_2) \stepS\\ (\fun \var . (\gamma_1(\expr_1), \var)) \; \val_{2f_1} \step \subst{(\gamma_1(\expr_1), \var)}{\var}{\val_{2f_1}} \equiv (\gamma_1(\expr_1), \val_{2f_1}) \stepS (\val_{1f_1}, \val_{2f_1})
   \end{multline*}
-  For the second one (\ref*{commutativity:goal_2.2}) we have
+  The second one (\ref*{commutativity:goal_2.2}) holds by:
   \begin{equation*}
     (\gamma_2(\expr_1), \gamma_2(\expr_2)) \stepS (\val_{1f_2}, \gamma_2(\expr_2)) \stepS (\val_{1f_2}, \val_{2f_2})
   \end{equation*}
   Finally, (\ref*{commutativity:goal_2.3}) follows from the last parts of (\ref*{commutativity:1.1}) and (\ref*{commutativity:1.2}).
-  \todo{prettify proof}
 \end{proof}
 
 
@@ -1253,43 +1245,43 @@ The final theorem we shall show is one which is useful, were we to write a compi
     &\jdg{\tenv}{\venv}{\expr_1}{\typ}\label{lamhoist:1}\\
     &\jdg{\tenv}{\venv, \varB : \typ, \var : \typ_1}{\expr_2}{\typ_2}\label{lamhoist:2}
   \end{align}
-  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. Using our two assumptions (\ref*{lamhoist:1} and \ref*{lamhoist:2}), along with the typing rules T-lam and T-app, we may conclude
+  it suffices to show $\LogRel{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}$. Using our two assumptions (\ref*{lamhoist:1} and \ref*{lamhoist:2}), along with the typing rules T-lam and T-app, we may conclude:
   \begin{align}
     &\jdg{\tenv}{\venv}{\Let \varB = \expr_1 in \fun \var . \expr_2}{\Tfunc{\typ_1}{\typ_2}}\label{lamhoist:exp1_wt}\\
     &\jdg{\tenv}{\venv}{\fun \var . \Let \varB = \expr_1 in \expr_2}{\Tfunc{\typ_1}{\typ_2}}\label{lamhoist:exp2_wt}
   \end{align}
   So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2), \fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))$.
-  The closedness and well-typedness follows from applying the fundamental theorem on the above judgements (\ref*{lamhoist:exp1_wt} and \ref*{lamhoist:exp2_wt}), and instantiating with $\rho$ and $\gamma$. So what remains to be shown is
+  The closedness and well-typedness follows from applying the fundamental theorem on the above judgements (\ref*{lamhoist:exp1_wt} and \ref*{lamhoist:exp2_wt}), and instantiating with $\rho$ and $\gamma$. So what remains to be shown is:
   \begin{multline}\label{lamhoist:goal_1}
     \exists \val_1, \val_2 . (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \stepS \val_1 \land\\
     (\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)) \stepS \val_2 \land
     \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)
   \end{multline}
-  From the fundamental theorem on (\ref{lamhoist:1}) instantiated with $\rho$ and $\gamma$, we know that
+  From the fundamental theorem on (\ref{lamhoist:1}) instantiated with $\rho$ and $\gamma$, we get
   \begin{equation}\label{lamhoist:1.1}
     \gamma_1(\expr_1) \stepS \val_{y_1} \land \gamma_2(\expr_1) \stepS \val_{y_2} \land \ValInp{\typ}{\rho}(\val_{y_1}, \val_{y_2})
   \end{equation}
   for some values $\val_{y_1}, \val_{y_2}$. We also get that $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr_1)}{\rho_1(\typ)}$.
-  In our goal (\ref{lamhoist:goal_1}), we use $\fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}$ for $\val_1$ and $\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)$ for $\val_2$. One may see that the first reduction holds by desugaring the let expression into a function application, then using $\gamma_1(\expr_1) \stepS \val_{y_1}$ from (\ref{lamhoist:1.1}) and the E-lam-app rule to conclude
+  In our goal (\ref{lamhoist:goal_1}), we use $\fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}$ for $\val_1$ and $\fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2)$ for $\val_2$. One may see that the first reduction holds by desugaring the let expression into a function application, then using $\gamma_1(\expr_1) \stepS \val_{y_1}$ from (\ref{lamhoist:1.1}) and the E-lam-app rule to conclude:
   \begin{multline*}
     (\Let \varB = \gamma_1(\expr_1) in \fun \var . \gamma_1(\expr_2)) \equiv (\fun \varB . (\fun \var . \gamma_1(\expr_2))) \; \gamma_1(\expr_1) \stepS\\ (\fun \varB . (\fun \var . \gamma_1(\expr_2))) \; \val_{y_1} \step \fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}
   \end{multline*}
-  The second reduction holds trivially, so all we need to show is 
+  The second reduction holds trivially, so all we need to show is:
   \begin{equation}
     \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}}, \fun \var . \Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))
   \end{equation}
-  So we assume some $\valB_1, \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$, and show 
+  So we assume some $\valB_1, \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$, and show:
   \begin{multline}\label{lamhoist:goal_2}
     \exists \val_1, \val_2 . \subst{(\subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}})}{\var}{\valB_1} \stepS \val_1 \land\\
     \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2} \stepS \val_2 \land
     \ValInp{\typ_2}{\rho}(\val_1, \val_2)
   \end{multline}
-  We now use the fundamental theorem on (\ref{lamhoist:2}) and instantiate it with $\rho$ and $\gamma' = \gamma[\map{\varB}{(\val_{y_1}, \val_{y_2})}][\map{\var}{(\valB_1, \valB_2)}]$. Note that this is fine as both variables map to pairs of values that are in the value interpretation at their respective types. From this we get
+  We now use the fundamental theorem on (\ref{lamhoist:2}) and instantiate it with $\rho$ and $\gamma' = \gamma[\map{\varB}{(\val_{y_1}, \val_{y_2})}][\map{\var}{(\valB_1, \valB_2)}]$. Note that this is fine as both variables map to pairs of values that are in the value interpretation at their respective types. From this we get:
   \begin{equation}\label{lamhoist:2.1}
     \gamma'_1(\expr_2) \stepS \val_{f_1} \land \gamma'_2(\expr_2) \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})
   \end{equation}
   For some values $\val_{f_1}, \val_{f_2}$.
-  Finally, in our goal (\ref{lamhoist:goal_2}), we use $\val_{f_1}$ for $\val_1$, and $\val_{f_2}$ for $\val_2$. Firstly, $\ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$ follows directly from (\ref{lamhoist:2.1}), so let's show that the evaluations hold. The first one holds by
+  Finally, in our goal (\ref{lamhoist:goal_2}), we use $\val_{f_1}$ for $\val_1$, and $\val_{f_2}$ for $\val_2$. Firstly, $\ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$ follows directly from (\ref{lamhoist:2.1}), so let's show that the evaluations hold. The first one holds by:
   \begin{align*}
     \subst{(\subst{\gamma_1(\expr_2)}{\varB}{\val_{y_1}})}{\var}{\valB_1}
     &\equiv
@@ -1299,7 +1291,7 @@ The final theorem we shall show is one which is useful, were we to write a compi
     &\equiv \gamma'_1(\expr_2)\\
     &\stepS \val_{f_1} &\text{(from (\ref{lamhoist:2.1}))}
   \end{align*}
-  The second reduction holds by
+  The second evaluation holds by:
   \begin{align*}
     \subst{(\Let \varB = \gamma_2(\expr_1) in \gamma_2(\expr_2))}{\var}{\valB_2}
     &\equiv
@@ -1335,8 +1327,6 @@ We then presented a logical relations model, and showed that it had these proper
 Finally, we showed some examples of how to use the logical relations model to prove interesting theorems. We proved two free theorems; first that an expression of type $\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}$ must act as the identity function, and second that the type $\Tall{\Tvar}{\Tvar}$ is an empty type. We also showed four contextual equivalences; identity, commutativity, idempotency, and lambda hoisting.
 
 For future work, we could add more functionality to the language such as recursive functions and existential types. System F is a normalising language, and this influenced how we defined contextual equivalence and thus also the logical relations model. Adding recursive functions would mean that our definition of contextual equivalence would change, and the logical relations model we would have to define would become more complex, requiring step-indexing.
-
-\todo{maybe talk about iris?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
