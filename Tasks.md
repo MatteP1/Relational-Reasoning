@@ -23,7 +23,7 @@
 - [x] Determinacy
   - [x] For one step
   - [x] Multi-step evaluation to a value.
-- [ ] Fix type-setting
+- [x] Fix type-setting
 
 ## Contextual Equivalence
 - [x] Define Contextual Equivalence for System F
@@ -130,7 +130,7 @@
 - [x] Appendix
 - [x] Write introduction
 - [x] Write conclusion and ideas for future work
-- [ ] Write abstract
+- [x] Write abstract
 - [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
 - [ ] Format appendix
