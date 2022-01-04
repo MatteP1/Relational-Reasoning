@@ -133,6 +133,8 @@
 - [x] Write abstract
 - [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
+- [ ] Fix annotated mistakes
+- [ ] Shorten report
 - [ ] Format appendix
 - [ ] Proofread report
 
