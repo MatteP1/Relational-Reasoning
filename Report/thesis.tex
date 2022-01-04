@@ -1022,7 +1022,7 @@ The fundamental theorem may not seem it, but it is actually quite powerful. We s
 \chapter{Examples of Application of Contextual Equivalence}
 \label{ch:ACE}
 
-With our logical relations model defined and the necessary properties of it proved, we are ready to put it to use on some interesting examples. Some of the theorems will involve contextual equivalence directly, but as we will see, we can even use it in theorems where it isn't mentioned! This is thanks to the fundamental theorem.
+With our logical relations model defined and the necessary properties of it proved, we are ready to put it to use on some interesting examples. Some of the theorems will involve contextual equivalence directly, but as we will see, we can even use it in theorems where it isn't mentioned! This is due to the fundamental theorem.
 
 \section{Identity}
 The first example we shall explore is that of identity; if an expression has a certain type, then we may prove that it behaves just as the identity function.
@@ -1046,7 +1046,7 @@ Informally, the first theorem says that an expression $\expr$, which given a val
   \begin{equation}
     (\Tapp{\expr}) \; \val \stepS (\Tapp{(\Tlam \expr')}) \; \val \step \expr' \; \val \stepS (\fun \var . \expr'') \; \val \step \subst{\expr''}{\var}{\val} \stepS \val_f = \val
   \end{equation}
-  The first "$\stepS$" follows from $\expr \stepS \Tlam \expr'$. The following step holds by E-tapp-tlam. The next "$\stepS$" follows by $\expr' \stepS \fun \var . \expr''$. The next step holds by E-lam-app. and the final "$\stepS$" follows by $\subst{\expr''}{\var}{\val} \stepS \val_f$. Thus we have know shown $(\Tapp{\expr}) \; \val \stepS \val$.
+  The first "$\stepS$" follows from $\expr \stepS \Tlam \expr'$. We then take a step using E-tapp-tlam. The next "$\stepS$" holds by $\expr' \stepS \fun \var . \expr''$. The next step holds by E-lam-app, and the final "$\stepS$" follows by $\subst{\expr''}{\var}{\val} \stepS \val_f$. Thus, we have shown $(\Tapp{\expr}) \; \val \stepS \val$.
 \end{proof}
 
 \subsection{Identity: Contextual Equivalence}
