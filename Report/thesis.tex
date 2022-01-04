@@ -806,7 +806,7 @@ This solves the problem of what type our expressions should be related at, but i
   \end{aligned}
   \right\}
 \end{align*}
-This set is not very restrictive. So in proofs, if have two type abstractions that we know are logically related, then we get many options for choosing what $R$ should be, and choosing the right $R$ will be a deciding factor in whether or not the proof goes through.\\
+This set is not very restrictive. So in proofs, if have two type abstractions that are logically related, then the person proving gets to pick $R$. This gives a lot of power as we will see in chapter \ref{ch:ACE}.\\
 Now, since we have decided which values are related, then, when encountering a type variable, say $\Tvar$, we can look up the relation in the third projection of $\rho$, $\rho_R = \{\Tvar \mapsto R_1, \TvarB \mapsto R_2, \dots\}$, and then we simply state that a pair of values are in our logical relation, if they are in the relation $R_1$ we chose. Thus, the value interpretation for type variables is as follows.
 \begin{align*}
   \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]
@@ -1245,7 +1245,7 @@ We then presented a logical relations model, and showed that it had these proper
 
 Finally, we showed some examples of how to use the logical relations model to prove interesting theorems. We proved two free theorems; first that an expression of type $\Tall{\Tvar}{\Tfunc{\Tvar}{\Tvar}}$ must act as the identity function, and second that the type $\Tall{\Tvar}{\Tvar}$ is an empty type. We also showed four contextual equivalences; identity, commutativity, idempotency, and lambda hoisting.
 
-For future work, we could add more functionality to the language such as recursive functions and existential types. System F is a normalising language, and this influenced how we defined contextual equivalence and thus also the logical relations model. Adding recursive functions would mean that our definition of contextual equivalence would change, and the logical relations model we would have to define would become more complex, requiring step-indexing.
+For future work, we could add more functionality to the language such as recursive functions and existential types. System F is a normalising language, and this influenced how we defined contextual equivalence and also the logical relations model. Adding recursive functions would mean that the logical relations model we would have to define would become more complex, requiring step-indexing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
