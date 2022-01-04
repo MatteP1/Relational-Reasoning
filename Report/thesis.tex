@@ -507,15 +507,15 @@ In this section we note down some useful properties of our language, which will 
     \end{itemize}
   \end{itemize}
 \end{proof}
-
+A straightforward result from this lemma is the following corollary.
 \begin{corollary}\label{cor:EuC_val}
   $\elctx[\expr] \stepS \val \implies \exists \val'. (\expr \stepS \val') \land \elctx[\val'] \stepS \val$
 \end{corollary}
-\begin{proof}
-  Assuming $\elctx[\expr] \stepS \val$, we must show $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
-  By lemma \ref*{lem:EuC}, we know $\exists \expr'' . (\expr \stepS \expr'') \land ((\Val{\expr''} \land \elctx[\expr''] \stepS \val) \lor
-  (\neg \Val{\expr''} \land \elctx[\expr''] = \val))$. Now, if $\neg \Val{\expr''}$ then $\neg \Val{\elctx[\expr'']}$, which one may see by inspecting the possible evaluation contexts. Therefore, $\elctx[\expr''] \neq \val$, so $\neg(\neg \Val{\expr''} \land \elctx[\expr''] = \val)$. Thus, we conclude $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
-\end{proof}
+% \begin{proof}
+%   Assuming $\elctx[\expr] \stepS \val$, we must show $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
+%   By lemma \ref*{lem:EuC}, we know $\exists \expr'' . (\expr \stepS \expr'') \land ((\Val{\expr''} \land \elctx[\expr''] \stepS \val) \lor
+%   (\neg \Val{\expr''} \land \elctx[\expr''] = \val))$. Now, if $\neg \Val{\expr''}$ then $\neg \Val{\elctx[\expr'']}$, which one may see by inspecting the possible evaluation contexts. Therefore, $\elctx[\expr''] \neq \val$, so $\neg(\neg \Val{\expr''} \land \elctx[\expr''] = \val)$. Thus, we conclude $\exists \expr'' . (\expr \stepS \expr'') \land (\Val{\expr''} \land \elctx[\expr''] \stepS \val)$.
+% \end{proof}
 
 \subsection{Substitution}
 We will be needing a way to close off open expressions later, so we shall define here an extended substitution $\gamma = \{\map{\var_1}{\val_1}, \map{\var_2}{\val_2}, \dots\}$ inductively as follows.
@@ -677,9 +677,12 @@ We of course have to show that this definition of Contextual Equivalence is actu
 \begin{theorem}\label{thm:CE_eq}
   $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \iff CE(\tenv, \venv, \expr, \expr', \typ)$
 \end{theorem}
-We will show this in two steps, where each step essentially corresponds to one way of the double implication. Each step will be phrased as a theorem.
+\begin{proof}
+  Simply follows from theorems \ref{thm:CE_eq_part1} and \ref{thm:CE_eq_part2} below.
+\end{proof}
+Theorem \ref{thm:CE_eq_part1} corresponds to showing the "$\implies$" direction of theorem \ref{thm:CE_eq}.
 \begin{theorem}\label{thm:CE_eq_part1}
-  $\ctxRel{\cdot}{\cdot}{\cdot}{\cdot}{\cdot} \subseteq \TENV \times \VENV \times \EXPR \times \EXPR \times \TYPE$ is a congruence relation, an adequate relation, and all expressions in the relation are well-typed.
+  $\ctxRel{\cdot}{\cdot}{\cdot}{\cdot}{\cdot} \subseteq \TENV \times \VENV \times \EXPR \times \EXPR \times \TYPE$ is a congruence relation, an adequate relation, all expressions in the relation are well-typed, and hence by definition of $CE$, it is included in $CE$.
 \end{theorem}
 \begin{proof}
   First, the well-typedness follows directly from the definition of contextual equivalence.\\
@@ -687,7 +690,7 @@ We will show this in two steps, where each step essentially corresponds to one w
   To show that it is a congruence relation, we must go through all the congruence rules, and show that they hold. We did the one for function application above, Cng-ctx-app. The rest will not be shown here.
 \end{proof}
 
-To prove the next theorem, we will need to show two lemmas.
+To prove theorem \ref{thm:CE_eq_part2}, we will need to show two lemmas.
 \begin{lemma}[Reflexivity]\label{lem:R_Cng_is_reflexive}
   Let $R$ be a congruence relation. Then $\jdg{\tenv}{\venv}{\expr}{\typ} \implies R(\tenv, \venv, \expr, \expr, \typ)$.
 \end{lemma}
@@ -695,32 +698,33 @@ To prove the next theorem, we will need to show two lemmas.
   By induction on the typing derivation of $\expr$. It follows immediately from applying the induction hypothesis and applying congruency rules. We show one case here.
   \begin{itemize}
     \item[case] T-tlam.\\
-      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis is $R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$ which is equivalent to $\jdgRel{\tenv, \Tvar}{\venv}{\expr}{}{\expr}{\typ}$. By the congruency rule Cng-tlam, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
+      Assuming $\jdg{\tenv}{\venv}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$ and $\jdg{\tenv, \Tvar}{\venv}{\expr}{\typ}$, we must show $R(\tenv, \venv, \Tlam \expr, \Tlam \expr, \Tall{\Tvar}{\typ})$. Our induction hypothesis is $R((\tenv, \Tvar), \venv, \expr, \expr, \typ)$. By the congruency rule Cng-tlam, we then get $\jdgRel{\tenv}{\venv}{\Tlam \expr}{}{\Tlam \expr}{\Tall{\Tvar}{\typ}}$, which was what we wanted.
   \end{itemize}
 \end{proof}
 
 \begin{lemma}\label{lem:CE_eq_part2_helper}
-  Let $R$ be a congruence relation, then $R(\tenv, \venv, \expr, \expr', \typ) \; \land \; \ctx:(\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'}) \implies R(\tenv', \venv', C[\expr], C[\expr'], \typ')$
+  Let $R$ be a congruence relation, then $R(\tenv, \venv, \expr, \expr', \typ) \; \land \; \ctx:(\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'}) \implies R(\tenv', \venv', C[\expr], C[\expr'], \typ')$.
 \end{lemma}
 \begin{proof}
   By induction on $\ctx$. We show here only a few interesting cases.
   For each non-base-case we show, the induction hypothesis will be $\forall \tenv, \venv, \tenv', \venv', \expr, \expr', \typ, \typ' .\\ R(\tenv, \venv, \expr, \expr', \typ) \land \ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'}) \implies R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \typ')$, where $\ctx'$ is structurally smaller than $\ctx$.
   \begin{itemize}
-    \item[case] $\ctx = \empctx$.\\
-      So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx: (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. We may conclude that $\tenv = \tenv'$, $\venv = \venv'$, and $\typ = \typ'$, given that $\empctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\typ})$. So since $\expr = \empctx[\expr] = \ctx[\expr]$, and $\expr' = \empctx[\expr'] = \ctx[\expr']$, we get $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$, which was what we wanted.
-    \item[case] $\ctx = \ctx' + \expr''$\\
-      So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. In this case, $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tint})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\Tint})$, meaning $\typ' = \Tint$. So we have $R(\tenv, \venv, \expr, \expr', \Tint)$, and our goal then is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tint)$. From the context typing and from rule T-add, we may conclude $\jdg{\tenv'}{\venv'}{\expr''}{\Tint}$. So by lemma \ref{lem:R_Cng_is_reflexive}, we know that $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\Tint}$. And by I.H. we get $R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \Tint) \equiv \jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tint}$. Finally, from the congruence rule cng-add, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] + \expr''}{}{\ctx'[\expr'] + \expr''}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$, which was what we wanted.
+    \item[case] $\ctx = \empctx$\\
+      This case is trivial as $\empctx [\expr] = \expr$ and $\empctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\typ})$.
+      % So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx: (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. We may conclude that $\tenv = \tenv'$, $\venv = \venv'$, and $\typ = \typ'$, given that $\empctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\typ})$. So since $\expr = \empctx[\expr] = \ctx[\expr]$, and $\expr' = \empctx[\expr'] = \ctx[\expr']$, we get $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$, which was what we wanted.
+    % \item[case] $\ctx = \ctx' + \expr''$\\
+    %   So assuming $R(\tenv, \venv, \expr, \expr', \typ)$ and $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ'})$, we must show $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ')$. In this case, $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tint})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv}{\venv}{\Tint})$, meaning $\typ' = \Tint$. So we have $R(\tenv, \venv, \expr, \expr', \Tint)$, and our goal then is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tint)$. From the context typing and from rule T-add, we may conclude $\jdg{\tenv'}{\venv'}{\expr''}{\Tint}$. So by lemma \ref{lem:R_Cng_is_reflexive}, we know that $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\Tint}$. And by I.H. we get $R(\tenv', \venv', \ctx'[\expr], \ctx'[\expr'], \Tint) \equiv \jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tint}$. Finally, from the congruence rule cng-add, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] + \expr''}{}{\ctx'[\expr'] + \expr''}{\Tint} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tint}$, which was what we wanted.
     \item[case] $\ctx = \Fst \ctx'$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_1})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tprod{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_1)$. By I.H. we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tprod{\typ_1}{\typ_2}}$, and by cng-fst with this, we get $\jdgRel{\tenv'}{\venv'}{\Fst \ctx'[\expr]}{}{\Fst \ctx'[\expr']}{\typ_1} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\typ_1}$.
     \item[case] $\ctx = \fun \var . \ctx'$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv', x : \typ_1}{\typ_2})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tfunc{\typ_1}{\typ_2})$. By I.H. we get $\jdgRel{\tenv'}{\venv', x : \typ_1}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ_2}$, and by cng-lam with this, we get $\jdgRel{\tenv'}{\venv'}{\fun \var . \ctx'[\expr]}{}{\fun \var . \ctx'[\expr']}{\Tfunc{\typ_1}{\typ_2}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tfunc{\typ_1}{\typ_2}}$.
     \item[case] $\ctx = \ctx' \; \expr''$\\
       Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\typ_2})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tfunc{\typ_1}{\typ_2}})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \typ_2)$. From the context-typing and T-app, we have $\jdg{\tenv'}{\venv'}{\expr''}{\typ_1}$. By lemma \ref{lem:R_Cng_is_reflexive}, we get $\jdgRel{\tenv'}{\venv'}{\expr''}{}{\expr''}{\typ_1}$. Now, by the induction hypothesis, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\Tfunc{\typ_1}{\typ_2}}$. And by cng-app with this, we get $\jdgRel{\tenv'}{\venv'}{\ctx'[\expr] \; \expr''}{}{\ctx'[\expr'] \; \expr''}{\typ_2} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr]}{\typ_2}$.
-    \item[case] $\ctx = \Tlam \ctx'$\\
-      Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tall{\Tvar}{\typ'}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv', \Tvar}{\venv'}{\typ'})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tall{\Tvar}{\typ'})$. By I.H. we get $\jdgRel{\tenv', \Tvar}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ'}$, and by cng-tlam with this, we get $\jdgRel{\tenv'}{\venv'}{\Tlam \ctx'[\expr]}{}{\Tlam \ctx'[\expr']}{\Tall{\Tvar}{\typ'}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tall{\Tvar}{\typ'}}$.
+    % \item[case] $\ctx = \Tlam \ctx'$\\
+    %   Then $\ctx : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv'}{\venv'}{\Tall{\Tvar}{\typ'}})$ and $\ctx' : (\jdgType{\tenv}{\venv}{\typ} \Rightarrow \jdgType{\tenv', \Tvar}{\venv'}{\typ'})$, so our goal is $R(\tenv', \venv', \ctx[\expr], \ctx[\expr'], \Tall{\Tvar}{\typ'})$. By I.H. we get $\jdgRel{\tenv', \Tvar}{\venv'}{\ctx'[\expr]}{}{\ctx'[\expr']}{\typ'}$, and by cng-tlam with this, we get $\jdgRel{\tenv'}{\venv'}{\Tlam \ctx'[\expr]}{}{\Tlam \ctx'[\expr']}{\Tall{\Tvar}{\typ'}} \equiv \jdgRel{\tenv'}{\venv'}{\ctx[\expr]}{}{\ctx[\expr']}{\Tall{\Tvar}{\typ'}}$.
   \end{itemize}
 \end{proof}
-With this lemma proved, we are ready to prove the next theorem.
+With these lemmas proved, we are ready to prove theorem \ref{thm:CE_eq_part2}, which corresponds to showing the "$\impliedby$" direction of theorem \ref{thm:CE_eq}.
 \begin{theorem}\label{thm:CE_eq_part2}
   Let $R$ be a relation satisfying the three properties of definition \ref{def:CE2}, then $R(\tenv, \venv, \expr, \expr', \typ) \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
 \end{theorem}
@@ -729,11 +733,11 @@ With this lemma proved, we are ready to prove the next theorem.
   $\jdg{\tenv}{\venv}{\expr}{\typ} \; \land \; \jdg{\tenv}{\venv}{\expr'}{\typ} \; \land \forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. Again, the well-typedness follows from the fact that all expressions in $R$ are well-typed. So what remains to be shown is that $\forall \ctx : (\jdgType{\tenv}{\venv}{\typ}) \Rightarrow (\jdgType{\emptenv}{\empvenv}{\Tbool}), \val . (\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val)$. So assume some context $C$ of the right type and some value $\val$. By lemma \ref{lem:CE_eq_part2_helper}, we have $R(\emptenv, \empvenv, C[\expr], C[\expr'], \Tbool)$. It then follows from adequacy of $R$ that $\ctx[\expr] \Downarrow \val \iff \ctx[\expr'] \Downarrow \val$, which was what we wanted.
 \end{proof}
 
-Now, the proof of the two definitions of contextual equivalence being equivalent follows easily:
-\begin{proof}[Proof of theorem \ref{thm:CE_eq}]
-  By theorem \ref{thm:CE_eq_part1} and from the fact that $CE$ is the coarsest relation satisfying the three properties, it follows that $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies CE(\tenv, \venv, \expr, \expr', \typ)$.\\
-  By theorem \ref{thm:CE_eq_part2} and from the fact that $CE$ is one such relation $R$, it follows that $CE(\tenv, \venv, \expr, \expr', \typ) \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
-\end{proof}
+% Now, the proof of the two definitions of contextual equivalence being equivalent follows easily:
+% \begin{proof}[Proof of theorem \ref{thm:CE_eq}]
+%   By theorem \ref{thm:CE_eq_part1} and from the fact that $CE$ is the coarsest relation satisfying the three properties, it follows that $\ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies CE(\tenv, \venv, \expr, \expr', \typ)$.\\
+%   By theorem \ref{thm:CE_eq_part2} and from the fact that $CE$ is one such relation $R$, it follows that $CE(\tenv, \venv, \expr, \expr', \typ) \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
+% \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -844,7 +848,7 @@ For the remainder, we shall refer to the relation simply as "LR".
 
 
 \section{Compatibility Lemmas}
-As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as "compatibility lemmas". Some compatibility lemmas are very similar, so below we show only a selected few, and the ones not shown will be similar to one of the ones we show. For the sake of brevity, we only show well-typedness in the first two compatibility lemmas.
+As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as "compatibility lemmas". Some compatibility lemmas are very similar, so we show only a selected few. Two additional compatibility lemmas can be found in appendix \ref{appendix:CL_extra}. For the sake of brevity, we only show well-typedness in the first two compatibility lemmas.
 \begin{lemma}[Cmpt-unit]
   $\inferrule{ }{\LogRel{\tenv}{\venv}{\TT}{\TT}{\Tunit}}$
 \end{lemma}
@@ -928,51 +932,6 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
   Now to prove the goal (\ref*{cmpt-fst:goal}). We take $\valB_{11}$ for $\val_1$ and $\valB_{21}$ for $\val_2$, so that we must show $ \Fst \gamma_1(\expr) \stepS \valB_{11} \land \Fst \gamma_2(\expr') \stepS \valB_{21} \land \ValInp{\typ_1}{\rho}(\valB_{11}, \valB_{21})$, all of which we have just argued holds.
 \end{proof}
 
-\begin{lemma}[Cmpt-match]\ \\
-  $\inferrule
-  { {\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tsum{\typ_1}{\typ_2}} } \and
-  { \LogRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{\expr_2'}{\typ} } \and
-  { \LogRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{\expr_3'}{\typ} }
-  }
-  { \LogRel{\tenv}{\venv}{\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}{\Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end}{\typ} }$
-\end{lemma}
-\begin{proof}
-  First, we introduce the following notation: $\expr = \Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end$, and $\expr' = \Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end$.
-  So we assume
-  \begin{align}
-    &\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tsum{\typ_1}{\typ_2}}\label{cmpt-match:1}\\
-    &\LogRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{\expr_2'}{\typ}\label{cmpt-match:2}\\
-    &\LogRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{\expr_3'}{\typ}\label{cmpt-match:3}
-  \end{align}
-  and must show: $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. We again introduce the following notation $f = \Match \gamma_1(\expr_1) with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end$, and $f' = \Match \gamma_2(\expr_1') with \Inj{1} \var => \gamma_2(\expr_2') | \Inj{2} \var => \gamma_2(\expr_3') end$, and note that $\gamma_1(\expr) = f$ and $\gamma_2(\expr') = f'$. Thus, we must show: $\ExpInp{\typ}{\rho}(f, f')$, which by definition corresponds to showing
-  \begin{equation}\label{cmpt-match:goal}
-    \exists \val_1, \val_2 . f \stepS \val_1 \land f' \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)
-  \end{equation}
-  By \ref{cmpt-match:1} instantiated with $\rho, \gamma$, we get
-  \begin{align}
-    &\exists \val_1, \val_2 . \gamma_1(\expr_1) \stepS \val_1 \land \gamma_2(\expr'_1) \stepS \val_2 \land \ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)\label{cmpt-match:1.1}
-  \end{align}
-  Let's instantiate the values in (\ref*{cmpt-match:1.1}) as $\val'_{1_1}$ and $\val'_{1_2}$, so that we know $\gamma_1(\expr_1) \stepS \val'_{1_1} \land \gamma_2(\expr'_1) \stepS \val'_{1_2} \land \ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val'_{1_1}, \val'_{1_2})$. By definition of the value interpretation, this gives us
-  $(\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor\\
-  (\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the first case as they are similar. So assume 
-  $(\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\}$. This means that $\val'_{1_1} = \Inj{1} \valB_1$ and $\val'_{1_2} = \Inj{1} \valB_2$ for some $\valB_1, \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$.
-  Now, from \ref{cmpt-match:2} instantiated with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$ we get
-  \begin{align}
-    &\exists \val_1, \val_2 . \gamma'_1(\expr_2) \stepS \val_1 \land \gamma'_2(\expr'_2) \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)\label{cmpt-match:2.1}
-  \end{align}
-  If we instantiate the values in (\ref*{cmpt-match:2.1}) as $\val'_{2_1}$ and $\val'_{2_2}$, then we know that $\gamma'_1(\expr_2) \stepS \val'_{2_1} \land \gamma'_2(\expr'_2) \stepS \val'_{2_2} \land \ValInp{\typ}{\rho}(\val'_{2_1}, \val'_{2_2})$. By the substitution lemma (lemma \ref{lem:sub}), we then know:
-  \begin{align}
-    &\subst{\gamma_1(\expr_2)}{\var}{\valB_1} \stepS \val'_{2_1}\label{cmpt-match:sub.1}\\
-    &\subst{\gamma_2(\expr'_2)}{\var}{\valB_2} \stepS \val'_{2_2}\label{cmpt-match:sub.2}
-  \end{align}
-  Now let us turn to proving the goal, (\ref*{cmpt-match:goal}). We use $\val'_{2_1}$ for $\val_1$ and $\val'_{2_2}$ for $\val_2$. Thus, we must show 
-  $f \stepS \val'_{2_1} \land f' \stepS \val'_{2_2} \land \ValInp{\typ}{\rho}(\val'_{2_1}, \val'_{2_2})$. We have the following evaluations:\\
-  $f \stepS \Match \Inj{1} \valB_1 with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end \step \subst{\gamma_1(\expr_2)}{\var}{\valB_1} \stepS \val'_{2_1}$, and\\
-  $f' \stepS \Match \Inj{1} \valB_2 with \Inj{1} \var => \gamma_2(\expr'_2) | \Inj{2} \var => \gamma_2(\expr'_3) end \step \subst{\gamma_2(\expr'_2)}{\var}{\valB_2} \stepS \val'_{2_2}$.\\
-  In both evaluations, the first "$\stepS$" follows from the instantiation of (\ref*{cmpt-match:1.1}), and the fact that $\val'_{1_1} = \Inj{1} \valB_1$ and $\val'_{1_2} = \Inj{1} \valB_2$. The next "$\step$" holds by E-match-inj1. And finally, the last "$\stepS$" holds by (\ref*{cmpt-match:sub.1}) and (\ref*{cmpt-match:sub.2}).
-  Thus the first two parts of the goal are satisfied. The last part of the goal we get from the instantiation of (\ref*{cmpt-match:2.1}).
-\end{proof}
-
 \begin{lemma}[Cmpt-lam]
   $\inferrule
   { \LogRel{\tenv}{\venv, x : \typ_1}{\expr}{\expr'}{\typ_2} }
@@ -991,46 +950,6 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
   \ExpInp{\typ_2}{\rho}(\subst{\gamma_1(\expr)}{\var}{\valB_1}, \subst{\gamma_2(\expr')}{\var}{\valB_2})$. So assume some $\valB_1$, $\valB_2$ such that $\ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2})$, then we must show $\ExpInp{\typ_2}{\rho}(\subst{\gamma_1(\expr)}{\var}{\valB_1}, \subst{\gamma_2(\expr')}{\var}{\valB_2})$, which by definition means we have to show 
   $\exists \val_1, \val_2 . \subst{\gamma_1(\expr)}{\var}{\valB_1} \stepS \val_1 \land \subst{\gamma_2(\expr')}{\var}{\valB_2} \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. Now we instantiate (\ref*{cmpt-lam:1}) with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$, so that we have
   $\exists \val_1, \val_2 . \gamma'_1(\expr) \stepS \val_1 \land \gamma'_2(\expr') \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. By the substitution lemma (lemma \ref*{lem:sub}), this is equivalent to our goal, so we are done.
-\end{proof}
-
-\begin{lemma}[Cmpt-app]
-  $\inferrule
-  { {\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tfunc{\typ_1}{\typ_2}} } \and
-  { \LogRel{\tenv}{\venv}{\expr_2}{\expr_2'}{\typ_1} } }
-  { \LogRel{\tenv}{\venv}{\expr_1 \; \expr_2}{\expr_1' \; \expr_2'}{\typ_2} }$
-\end{lemma}
-\begin{proof}
-  So we assume
-  \begin{align}
-    &\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tfunc{\typ_1}{\typ_2}}\label{cmpt-app:1}\\
-    &\LogRel{\tenv}{\venv}{\expr_2}{\expr_2'}{\typ_1}\label{cmpt-app:2}
-  \end{align}
-  Then we must show $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_2}{\rho}(\gamma_1(\expr_1 \; \expr_2), \gamma_2(\expr_1' \; \expr_2'))$. So we assume some $\rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho}$, and our goal now is $\ExpInp{\typ_2}{\rho}(\gamma_1(\expr_1 \; \expr_2), \gamma_2(\expr_1' \; \expr_2')) \equiv \ExpInp{\typ_2}{\rho}(\gamma_1(\expr_1) \; \gamma_1(\expr_2), \gamma_2(\expr_1') \; \gamma_2(\expr_2'))$, which by definition means we have to show
-  \begin{equation}\label{cmpt-app:goal}
-    \exists \val_1, \val_2 . \gamma_1(\expr_1) \; \gamma_1(\expr_2) \stepS \val_1 \land \gamma_2(\expr_1') \; \gamma_2(\expr_2') \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)
-  \end{equation}
-  We instantiate both (\ref*{cmpt-app:1}) and (\ref*{cmpt-app:2}) with $\rho, \gamma$, and expand the definitions to get
-  \begin{align}
-    &\exists \val_1', \val_2' . \gamma_1(\expr_1) \stepS \val_1' \land \gamma_2(\expr'_1) \stepS \val_2' \land \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1', \val_2')\label{cmpt-app:1.1}\\
-    &\exists \val_1'', \val_2'' . \gamma_1(\expr_2) \stepS \val_1'' \land \gamma_2(\expr'_2) \stepS \val_2'' \land \ValInp{\typ_1}{\rho}(\val_1'', \val_2'')\label{cmpt-app:2.1}
-  \end{align}
-  Instantiating all quantifications with the same name they quantify over, we get from the definition of the value interpretation for function-type that
-  $\val_1' = \fun \var . \expr_1'$ and $\val_2' = \fun \var . \expr_2'$, for some $\expr_1'$ and $\expr_2'$. Further,
-  \begin{equation}
-    \forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2}) \implies\\
-    \ExpInp{\typ_2}{\rho}(\subst{\expr_1'}{\var}{\valB_1}, \subst{\expr_2'}{\var}{\valB_2})
-  \end{equation}
-  We instantiate this with $\val_1''$ and $\val_2''$. The antecedent is satisfied by the last part of (\ref*{cmpt-app:2.1}), so we know $\ExpInp{\typ_2}{\rho}(\subst{\expr_1'}{\var}{\val_1''}, \subst{\expr_2'}{\var}{\val_2''})$, which by definition means
-  \begin{equation}
-    \exists \val_{f_1}, \val_{f_2} . \subst{\expr_1'}{\var}{\val_1''} \stepS \val_{f_1} \land \subst{\expr_2'}{\var}{\val_2''} \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})\label{cmpt-app:f}
-  \end{equation}
-  Now we turn to showing the goal, (\ref*{cmpt-app:goal}). We use $\val_{f_1}$ for $\val_1$ and $\val_{f_2}$ for $\val_2$, so that we must show:
-  $\gamma_1(\expr_1) \; \gamma_1(\expr_2) \stepS \val_{f_1} \land \gamma_2(\expr_1') \; \gamma_2(\expr_2') \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$. We have the following evaluations:
-  \begin{align}
-    &\gamma_1(\expr_1) \; \gamma_1(\expr_2) \stepS \fun \var . \expr_1' \; \gamma_1(\expr_2) \stepS \fun \var . \expr_1' \; \val_1'' \step \subst{\expr_1'}{\var}{\val_1''} \stepS \val_{f_1}\label{cmpt-app:d1}\\
-    &\gamma_2(\expr_1') \; \gamma_2(\expr_2') \stepS \fun \var . \expr_2' \; \gamma_2(\expr_2') \stepS \fun \var . \expr_2' \; \val_2'' \step \subst{\expr_2'}{\var}{\val_2''} \stepS \val_{f_2}\label{cmpt-app:d2}
-  \end{align}
-  Here, in both evaluations, the first "$\stepS$" follows by (\ref*{cmpt-app:1.1}) and the fact that $\val_1' = \fun \var . \expr_1'$ and $\val_2' = \fun \var . \expr_2'$. The second "$\stepS$" follows by (\ref*{cmpt-app:2.1}). The next "$\step$" follows by rule E-lam-app, and the final "$\stepS$" follows from (\ref*{cmpt-app:f}). Thus, the first two parts of what we have to show follows from (\ref{cmpt-app:d1}) and (\ref*{cmpt-app:d2}) respectively, and the last part follows from the last part of (\ref*{cmpt-app:f}).
 \end{proof}
 
 \begin{lemma}[Cmpt-Tlam]
@@ -1457,6 +1376,92 @@ For future work, we could add more functionality to the language such as recursi
   \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. Using our $\rho$ and $\gamma$, we get $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. By definition of the expression interpretation, this means that $\jdg{\emptenv}{\empvenv}{\gamma_1(\expr)}{\rho_1(\typ)}$ and $\jdg{\emptenv}{\empvenv}{\gamma_2(\expr)}{\rho_2(\typ)}$, which was what we wanted.
 \end{proof}
 
+\chapter{Additional Compatibility Lemmas}\label{appendix:CL_extra}
+
+\begin{lemma}[Cmpt-match]\ \\
+  $\inferrule
+  { {\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tsum{\typ_1}{\typ_2}} } \and
+  { \LogRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{\expr_2'}{\typ} } \and
+  { \LogRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{\expr_3'}{\typ} }
+  }
+  { \LogRel{\tenv}{\venv}{\Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end}{\Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end}{\typ} }$
+\end{lemma}
+\begin{proof}
+  First, we introduce the following notation: $\expr = \Match \expr_1 with \Inj{1} \var => \expr_2 | \Inj{2} \var => \expr_3 end$, and $\expr' = \Match \expr_1' with \Inj{1} \var => \expr_2' | \Inj{2} \var => \expr_3' end$.
+  So we assume
+  \begin{align}
+    &\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tsum{\typ_1}{\typ_2}}\label{cmpt-match:1}\\
+    &\LogRel{\tenv}{\venv, \var : \typ_1}{\expr_2}{\expr_2'}{\typ}\label{cmpt-match:2}\\
+    &\LogRel{\tenv}{\venv, \var : \typ_2}{\expr_3}{\expr_3'}{\typ}\label{cmpt-match:3}
+  \end{align}
+  and must show: $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. We again introduce the following notation $f = \Match \gamma_1(\expr_1) with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end$, and $f' = \Match \gamma_2(\expr_1') with \Inj{1} \var => \gamma_2(\expr_2') | \Inj{2} \var => \gamma_2(\expr_3') end$, and note that $\gamma_1(\expr) = f$ and $\gamma_2(\expr') = f'$. Thus, we must show: $\ExpInp{\typ}{\rho}(f, f')$, which by definition corresponds to showing
+  \begin{equation}\label{cmpt-match:goal}
+    \exists \val_1, \val_2 . f \stepS \val_1 \land f' \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)
+  \end{equation}
+  By \ref{cmpt-match:1} instantiated with $\rho, \gamma$, we get
+  \begin{align}
+    &\exists \val_1, \val_2 . \gamma_1(\expr_1) \stepS \val_1 \land \gamma_2(\expr'_1) \stepS \val_2 \land \ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)\label{cmpt-match:1.1}
+  \end{align}
+  Let's instantiate the values in (\ref*{cmpt-match:1.1}) as $\val'_{1_1}$ and $\val'_{1_2}$, so that we know $\gamma_1(\expr_1) \stepS \val'_{1_1} \land \gamma_2(\expr'_1) \stepS \val'_{1_2} \land \ValInp{\Tsum{\typ_1}{\typ_2}}{\rho}(\val'_{1_1}, \val'_{1_2})$. By definition of the value interpretation, this gives us
+  $(\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\} \lor\\
+  (\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{2} \valB_1, \Inj{2} \valB_2) \mid \ValInp{\typ_2}{\rho}(\valB_1, \valB_2)\}$. We do case distinction on the "$\lor$", but show only the first case as they are similar. So assume 
+  $(\val'_{1_1}, \val'_{1_2}) \in \{(\Inj{1} \valB_1, \Inj{1} \valB_2) \mid \ValInp{\typ_1}{\rho}(\valB_1, \valB_2)\}$. This means that $\val'_{1_1} = \Inj{1} \valB_1$ and $\val'_{1_2} = \Inj{1} \valB_2$ for some $\valB_1, \valB_2$, and $\ValInp{\typ_1}{\rho}(\valB_1, \valB_2)$.
+  Now, from \ref{cmpt-match:2} instantiated with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$ we get
+  \begin{align}
+    &\exists \val_1, \val_2 . \gamma'_1(\expr_2) \stepS \val_1 \land \gamma'_2(\expr'_2) \stepS \val_2 \land \ValInp{\typ}{\rho}(\val_1, \val_2)\label{cmpt-match:2.1}
+  \end{align}
+  If we instantiate the values in (\ref*{cmpt-match:2.1}) as $\val'_{2_1}$ and $\val'_{2_2}$, then we know that $\gamma'_1(\expr_2) \stepS \val'_{2_1} \land \gamma'_2(\expr'_2) \stepS \val'_{2_2} \land \ValInp{\typ}{\rho}(\val'_{2_1}, \val'_{2_2})$. By the substitution lemma (lemma \ref{lem:sub}), we then know:
+  \begin{align}
+    &\subst{\gamma_1(\expr_2)}{\var}{\valB_1} \stepS \val'_{2_1}\label{cmpt-match:sub.1}\\
+    &\subst{\gamma_2(\expr'_2)}{\var}{\valB_2} \stepS \val'_{2_2}\label{cmpt-match:sub.2}
+  \end{align}
+  Now let us turn to proving the goal, (\ref*{cmpt-match:goal}). We use $\val'_{2_1}$ for $\val_1$ and $\val'_{2_2}$ for $\val_2$. Thus, we must show 
+  $f \stepS \val'_{2_1} \land f' \stepS \val'_{2_2} \land \ValInp{\typ}{\rho}(\val'_{2_1}, \val'_{2_2})$. We have the following evaluations:\\
+  $f \stepS \Match \Inj{1} \valB_1 with \Inj{1} \var => \gamma_1(\expr_2) | \Inj{2} \var => \gamma_1(\expr_3) end \step \subst{\gamma_1(\expr_2)}{\var}{\valB_1} \stepS \val'_{2_1}$, and\\
+  $f' \stepS \Match \Inj{1} \valB_2 with \Inj{1} \var => \gamma_2(\expr'_2) | \Inj{2} \var => \gamma_2(\expr'_3) end \step \subst{\gamma_2(\expr'_2)}{\var}{\valB_2} \stepS \val'_{2_2}$.\\
+  In both evaluations, the first "$\stepS$" follows from the instantiation of (\ref*{cmpt-match:1.1}), and the fact that $\val'_{1_1} = \Inj{1} \valB_1$ and $\val'_{1_2} = \Inj{1} \valB_2$. The next "$\step$" holds by E-match-inj1. And finally, the last "$\stepS$" holds by (\ref*{cmpt-match:sub.1}) and (\ref*{cmpt-match:sub.2}).
+  Thus the first two parts of the goal are satisfied. The last part of the goal we get from the instantiation of (\ref*{cmpt-match:2.1}).
+\end{proof}
+
+\begin{lemma}[Cmpt-app]
+  $\inferrule
+  { {\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tfunc{\typ_1}{\typ_2}} } \and
+  { \LogRel{\tenv}{\venv}{\expr_2}{\expr_2'}{\typ_1} } }
+  { \LogRel{\tenv}{\venv}{\expr_1 \; \expr_2}{\expr_1' \; \expr_2'}{\typ_2} }$
+\end{lemma}
+\begin{proof}
+  So we assume
+  \begin{align}
+    &\LogRel{\tenv}{\venv}{\expr_1}{\expr_1'}{\Tfunc{\typ_1}{\typ_2}}\label{cmpt-app:1}\\
+    &\LogRel{\tenv}{\venv}{\expr_2}{\expr_2'}{\typ_1}\label{cmpt-app:2}
+  \end{align}
+  Then we must show $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_2}{\rho}(\gamma_1(\expr_1 \; \expr_2), \gamma_2(\expr_1' \; \expr_2'))$. So we assume some $\rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho}$, and our goal now is $\ExpInp{\typ_2}{\rho}(\gamma_1(\expr_1 \; \expr_2), \gamma_2(\expr_1' \; \expr_2')) \equiv \ExpInp{\typ_2}{\rho}(\gamma_1(\expr_1) \; \gamma_1(\expr_2), \gamma_2(\expr_1') \; \gamma_2(\expr_2'))$, which by definition means we have to show
+  \begin{equation}\label{cmpt-app:goal}
+    \exists \val_1, \val_2 . \gamma_1(\expr_1) \; \gamma_1(\expr_2) \stepS \val_1 \land \gamma_2(\expr_1') \; \gamma_2(\expr_2') \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)
+  \end{equation}
+  We instantiate both (\ref*{cmpt-app:1}) and (\ref*{cmpt-app:2}) with $\rho, \gamma$, and expand the definitions to get
+  \begin{align}
+    &\exists \val_1', \val_2' . \gamma_1(\expr_1) \stepS \val_1' \land \gamma_2(\expr'_1) \stepS \val_2' \land \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1', \val_2')\label{cmpt-app:1.1}\\
+    &\exists \val_1'', \val_2'' . \gamma_1(\expr_2) \stepS \val_1'' \land \gamma_2(\expr'_2) \stepS \val_2'' \land \ValInp{\typ_1}{\rho}(\val_1'', \val_2'')\label{cmpt-app:2.1}
+  \end{align}
+  Instantiating all quantifications with the same name they quantify over, we get from the definition of the value interpretation for function-type that
+  $\val_1' = \fun \var . \expr_1'$ and $\val_2' = \fun \var . \expr_2'$, for some $\expr_1'$ and $\expr_2'$. Further,
+  \begin{equation}
+    \forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2}) \implies\\
+    \ExpInp{\typ_2}{\rho}(\subst{\expr_1'}{\var}{\valB_1}, \subst{\expr_2'}{\var}{\valB_2})
+  \end{equation}
+  We instantiate this with $\val_1''$ and $\val_2''$. The antecedent is satisfied by the last part of (\ref*{cmpt-app:2.1}), so we know $\ExpInp{\typ_2}{\rho}(\subst{\expr_1'}{\var}{\val_1''}, \subst{\expr_2'}{\var}{\val_2''})$, which by definition means
+  \begin{equation}
+    \exists \val_{f_1}, \val_{f_2} . \subst{\expr_1'}{\var}{\val_1''} \stepS \val_{f_1} \land \subst{\expr_2'}{\var}{\val_2''} \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})\label{cmpt-app:f}
+  \end{equation}
+  Now we turn to showing the goal, (\ref*{cmpt-app:goal}). We use $\val_{f_1}$ for $\val_1$ and $\val_{f_2}$ for $\val_2$, so that we must show:
+  $\gamma_1(\expr_1) \; \gamma_1(\expr_2) \stepS \val_{f_1} \land \gamma_2(\expr_1') \; \gamma_2(\expr_2') \stepS \val_{f_2} \land \ValInp{\typ_2}{\rho}(\val_{f_1}, \val_{f_2})$. We have the following evaluations:
+  \begin{align}
+    &\gamma_1(\expr_1) \; \gamma_1(\expr_2) \stepS \fun \var . \expr_1' \; \gamma_1(\expr_2) \stepS \fun \var . \expr_1' \; \val_1'' \step \subst{\expr_1'}{\var}{\val_1''} \stepS \val_{f_1}\label{cmpt-app:d1}\\
+    &\gamma_2(\expr_1') \; \gamma_2(\expr_2') \stepS \fun \var . \expr_2' \; \gamma_2(\expr_2') \stepS \fun \var . \expr_2' \; \val_2'' \step \subst{\expr_2'}{\var}{\val_2''} \stepS \val_{f_2}\label{cmpt-app:d2}
+  \end{align}
+  Here, in both evaluations, the first "$\stepS$" follows by (\ref*{cmpt-app:1.1}) and the fact that $\val_1' = \fun \var . \expr_1'$ and $\val_2' = \fun \var . \expr_2'$. The second "$\stepS$" follows by (\ref*{cmpt-app:2.1}). The next "$\step$" follows by rule E-lam-app, and the final "$\stepS$" follows from (\ref*{cmpt-app:f}). Thus, the first two parts of what we have to show follows from (\ref{cmpt-app:d1}) and (\ref*{cmpt-app:d2}) respectively, and the last part follows from the last part of (\ref*{cmpt-app:f}).
+\end{proof}
 
 \end{document}
 

@@ -139,4 +139,5 @@
 - [ ] Proofread report
 
 ## Exam period
-- [ ] Watch exam video on Blackboard
+- [x] Watch exam video on Blackboard
+- [ ] Make slides?
