@@ -134,10 +134,19 @@
 - [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
 - [ ] Fix annotated mistakes
+  - [ ] remove contractions
+  - [ ] add superscript R to relations
+  - [ ] write normalisation mathematically
+  - [ ] rewrite explanation of expression relation
+  - [ ] rewrite section 4.1
 - [ ] Shorten report
+  - [x] chapter 2
+  - [x] chapter 3
+  - [ ] chapter 4
+  - [x] chapter 5
 - [ ] Format appendix
 - [ ] Proofread report
 
 ## Exam period
 - [x] Watch exam video on Blackboard
-- [ ] Make slides?
+- [ ] Make slides (for 15 min)
