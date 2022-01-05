@@ -134,7 +134,7 @@
 - [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
 - [ ] Fix annotated mistakes
-  - [ ] remove contractions
+  - [x] remove contractions
   - [ ] add superscript R to relations
   - [ ] write normalisation mathematically
   - [ ] rewrite explanation of expression relation
