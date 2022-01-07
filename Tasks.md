@@ -138,7 +138,7 @@
   - [x] add superscript R to relations
   - [ ] write normalisation mathematically
   - [ ] rewrite explanation of expression relation
-  - [ ] rewrite section 4.1
+  - [x] rewrite section 4.1
 - [ ] Shorten report
   - [x] chapter 2
   - [x] chapter 3

@@ -747,23 +747,22 @@ With these lemmas proved, we are ready to prove theorem \ref{thm:CE_eq_part2}, w
 
 \section{Logical Relations}
 Before we begin defining our logical relations model (LR model for short), let us briefly discuss what they are.\\
-Logical relations may be described in several ways. Firstly, as a mathematical object, it is, as the name suggests, a \textit{relation}. As we shall see in the next section this relation is type-indexed and inductively defined. Furthermore, the relation may be unary, in which case we usually call it a logical predicate.\\
-Although this description is accurate, it does not tell us much about their purpose. So another way to describe logical relations is as a proof method. Some properties are hard to show directly – induction attempts may fail due to the induction hypothesis being too weak. An LR model may solve this problem by taking a different approach. Essentially, an LR model acts as an intermediate step – we design the LR model so that everything in the relation has the property of interest. Then, instead of showing that something has the desired property, we show that it is in our relation. Note that the model may not contain \textit{everything} with the property, so it may not be able to prove everything involving the property. In fact designing an LR model that is powerful enough for what you want to show is non-trivial and depends on what you want to show about the property of interest.\\
-However, a common design-principle worth noting is that the property of interest is preserved by eliminating forms. This design-principle will be very common in the LR model we define.\\
-In our case, the property of interest is contextual equivalence of pairs of programs. So when we define our LR model in the next section, we shall do so as to ensure that if two programs are in our relation, then they are also contextually equivalent. By theorem \ref{thm:CE_eq_part2}, we may do this by ensuring that our LR model is a congruence relation, an adequate relation, and that all expressions in it are well-typed. Furthermore, the theorems we want to show about our property, contextual equivalence, can be found in chapter \ref{ch:ACE}. Interestingly, even though we define our LR model to prove theorems involving contextual equivalence, it is not limited to that property. So we shall also see that it is capable of proving theorems unrelated to contextual equivalence.\\
-We keep these points in mind as we move on to the next section, where we shall define an LR model.
+As a mathematical object, it is, as the name suggests, a \textit{relation}. As we shall see in the next section this relation is type-indexed and inductively defined.
+Another way to describe logical relations is as a proof method. Some properties are hard to show directly – induction attempts may fail due to the induction hypothesis being too weak. An LR model works by being an "intermediate step" – we design the model so that everything in the relation has the property of interest. Then, instead of showing that something has the desired property, we show that it is in our relation.\\
+In our case, the property of interest is contextual equivalence of pairs of programs. So when we define our LR model in the next section, we shall do so as to ensure that if two programs are in our relation, then they are also contextually equivalent. By theorem \ref{thm:CE_eq_part2}, we may do this by ensuring that our LR model is a congruence relation, an adequate relation, and that all expressions in it are well-typed.\\
+Note that the model may not contain \textit{everything} with the property, so it may not be able to prove everything involving the property. Designing a model thus depends on what you want to show about the property of interest.
+The theorems we want to show about our property, contextual equivalence, can be found in chapter \ref{ch:ACE}. However, a common design-principle worth noting is that the property of interest is preserved by eliminating forms. This design-principle will be very common in the LR model we define.
 
 
 \section{Defining the Logical Relations Model}
 We will be splitting up the definition of the complete LR model into several smaller steps, where each step increases the generality of the terms we relate.
-Initially, we shall define the "value interpretation" that states which values are logically related. Following this, we define the "expression interpretation", which talks about relatedness for \textit{closed} expressions. Finally, we shall define the "type environment interpretation" and "variable environment interpretation", which will give us relational substitutions allowing us to close off open expressions, so that we may define our complete LR model on open expressions.
+Initially, we shall define the "value interpretation" that states which values are logically related. Following this, we define the "expression interpretation", which talks about relatedness for \textit{closed} expressions. Finally, we shall define the "type environment interpretation" and "variable environment interpretation", which will give us relational substitutions allowing us to close off open expressions so that we may define our complete LR model on open expressions.
 
-A property that we want to hold for all values in the value interpretation is that they are closed and well-typed, so we shall firstly define a well-typedness relation as follows:
+A property that should hold for all values in the value interpretation is that they are closed and well-typed, so we shall firstly define a well-typedness relation:
 \begin{equation*}
   \WtInpGen{\typ}{\rho} \triangleq \jdg{\emptenv}{\empvenv}{\val_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\val_2}{\rho_2(\typ)}\\
 \end{equation*}
-The $\rho$ part will be explained shortly. For now, $\rho_i(\typ)$ is simply a closed type.\\
-Now we are prepared to define the value interpretation. For the sake of brevity, we do not include $\WtInpGen{\typ}{\rho}$ explicitly when defining the value interpretation for the various types. Firstly, let us define the value interpretation for base types.
+The $\rho$ part will be explained shortly. For now, $\rho_i(\typ)$ is simply a closed type. Now we are prepared to define the value interpretation. For the sake of brevity, we do not include $\WtInpGen{\typ}{\rho}$ explicitly when defining the value interpretation for the various types. Firstly, let us define the value interpretation for base types.
 \begin{align*}
   \ValInpGen{\Tunit}{\rho}  &\triangleq (\val_1, \val_2) \in \{(\TT, \TT)\}\\
   \ValInpGen{\Tint}{\rho}   &\triangleq (\val_1, \val_2) \in \{(\Num{n}, \Num{n}) \mid \Num{n} \in \Tint\}\\
@@ -807,7 +806,7 @@ This solves the problem of what type our expressions should be related at, but i
   \end{aligned}
   \right\}
 \end{align*}
-This set is not very restrictive. So in proofs, if have two type abstractions that are logically related, then the person proving gets to pick $R$. This gives a lot of power as we will see in chapter \ref{ch:ACE}.\\
+This set is not very restrictive. In proofs, if have two type abstractions that are logically related, then the person proving gets to pick $R$. This gives a lot of power as we will see in chapter \ref{ch:ACE}.\\
 Now, since we have decided which values are related, then, when encountering a type variable, say $\Tvar$, we can look up the relation in the third projection of $\rho$, $\rho_R = \{\Tvar \mapsto R_1, \TvarB \mapsto R_2, \dots\}$, and then we simply state that a pair of values are in our logical relation, if they are in the relation $R_1$ we chose. Thus, the value interpretation for type variables is as follows.
 \begin{align*}
   \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]
@@ -844,8 +843,7 @@ With these interpretations defined, we are now finally ready to give our complet
     \end{gathered}
   \end{equation*}
 \end{definition}
-Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ under $\tenv$ and $\venv$, when both expressions are well typed at type $\typ$ under $\tenv$ and $\venv$, and when we can choose \textit{any} relational type substitution $\rho \in \TenvInp{\tenv}$ and \textit{any} relational variable substitution $\gamma \in \VenvInp{\venv}{\rho}$, and the expressions closed off using $\gamma$ are in our expression interpretation at type $\typ$ with our relational type substitution $\rho$.\\
-For the remainder, we shall refer to the relation simply as "LR".
+Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ under $\tenv$ and $\venv$, when both expressions are well typed at type $\typ$ under $\tenv$ and $\venv$, and when we can choose \textit{any} relational type substitution $\rho \in \TenvInp{\tenv}$ and \textit{any} relational variable substitution $\gamma \in \VenvInp{\venv}{\rho}$, and the expressions closed off using $\gamma$ are in our expression interpretation at type $\typ$ with our relational type substitution $\rho$. For the remainder, we shall refer to the relation simply as "LR".
 
 
 \section{Compatibility Lemmas}
@@ -915,15 +913,11 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
   { \LogRel{\tenv}{\venv}{\Fst \expr}{\Fst \expr'}{\typ_1} }$
 \end{lemma}
 \begin{proof}
-  So assuming $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\Tsum{\typ_1}{\typ_2}}$, we must show (ignoring well-typedness): $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr')) \equiv \ExpInp{\typ_1}{\rho}(\Fst \gamma_1(\expr), \Fst \gamma_2(\expr'))$. By definition of our expression interpretation, this corresponds to showing
+  So assuming $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\Tsum{\typ_1}{\typ_2}}$, we must show (ignoring well-typedness): $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr')) \equiv \ExpInp{\typ_1}{\rho}(\Fst \gamma_1(\expr), \Fst \gamma_2(\expr'))$, which by definition corresponds to showing
   \begin{equation}\label{cmpt-fst:goal}
     \exists \val_1, \val_2 . \Fst \gamma_1(\expr) \stepS \val_1 \land \Fst \gamma_2(\expr') \stepS \val_2 \land \ValInp{\typ_1}{\rho}(\val_1, \val_2)
   \end{equation}
-  Note first that if we instantiate our initial assumption with $\rho$ and $\gamma$, we get
-  \begin{align}
-    &\exists \val_1, \val_2 . \gamma_1(\expr) \stepS \val_1 \land \gamma_2(\expr') \stepS \val_2 \land \ValInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)\label{cmpt-fst:1}
-  \end{align}
-  Let us instantiate the values in (\ref*{cmpt-fst:1}) as $\val_1'$ and $\val_2'$. Then we know
+  Note first that if we instantiate our initial assumption with $\rho$ and $\gamma$, we get $\exists \val_1, \val_2 . \gamma_1(\expr) \stepS \val_1 \land \gamma_2(\expr') \stepS \val_2 \land \ValInp{\Tprod{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)$. Instantiating the values as $\val_1'$ and $\val_2'$ gives us:
   \begin{align}
     &\Fst \gamma_1(\expr) \stepS \Fst \val_1'\label{cmpt-fst:2.1}\\
     &\Fst \gamma_2(\expr') \stepS \Fst \val_2'\label{cmpt-fst:2.2}\\
@@ -943,14 +937,11 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
   \begin{equation}\label{cmpt-lam:1}
     \LogRel{\tenv}{\venv, x : \typ_1}{\expr}{\expr'}{\typ_2}
   \end{equation}
-  we must show: $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\gamma_1(\fun \var . \expr), \gamma_2(\fun \var . \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\gamma_1(\fun \var . \expr), \gamma_2(\fun \var . \expr')) \equiv \ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \gamma_1(\expr), \fun \var . \gamma_2(\expr'))$, which by definition corresponds to
-  \begin{equation}\label{cmpt-lam:goal}
-    \exists \val_1, \val_2 . \fun \var . \gamma_1(\expr) \stepS \val_1 \land \fun \var . \gamma_2(\expr') \stepS \val_2 \land \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)
-  \end{equation}
+  we must show: $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\gamma_1(\fun \var . \expr), \gamma_2(\fun \var . \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, then we must show $\ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\gamma_1(\fun \var . \expr), \gamma_2(\fun \var . \expr')) \equiv \ExpInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \gamma_1(\expr), \fun \var . \gamma_2(\expr'))$, which corresponds to $\exists \val_1, \val_2 . \fun \var . \gamma_1(\expr) \stepS \val_1 \land \fun \var . \gamma_2(\expr') \stepS \val_2 \land \ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\val_1, \val_2)$.\\
   Since $\fun \var . \gamma_1(\expr)$ and $\fun \var . \gamma_2(\expr')$ are already values, we can use these for $\val_1$ and $\val_2$. The first two parts are then trivially satisfied, so we only need to show $\ValInp{\Tfunc{\typ_1}{\typ_2}}{\rho}(\fun \var . \gamma_1(\expr), \fun \var . \gamma_2(\expr'))$, which by definition means we have to show $\forall \valB_1, \valB_2 . \ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2}) \implies
   \ExpInp{\typ_2}{\rho}(\subst{\gamma_1(\expr)}{\var}{\valB_1}, \subst{\gamma_2(\expr')}{\var}{\valB_2})$. So assume some $\valB_1$, $\valB_2$ such that $\ValInp{\typ_1}{\rho}(\valB_{1}, \valB_{2})$, then we must show $\ExpInp{\typ_2}{\rho}(\subst{\gamma_1(\expr)}{\var}{\valB_1}, \subst{\gamma_2(\expr')}{\var}{\valB_2})$, which by definition means we have to show 
   $\exists \val_1, \val_2 . \subst{\gamma_1(\expr)}{\var}{\valB_1} \stepS \val_1 \land \subst{\gamma_2(\expr')}{\var}{\valB_2} \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. Now we instantiate (\ref*{cmpt-lam:1}) with $\rho, \gamma' = \gamma[\map{\var}{(\valB_1, \valB_2)}]$, so that we have
-  $\exists \val_1, \val_2 . \gamma'_1(\expr) \stepS \val_1 \land \gamma'_2(\expr') \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. By the substitution lemma (lemma \ref*{lem:sub}), this is equivalent to our goal, so we are done.
+  $\exists \val_1, \val_2 . \gamma'_1(\expr) \stepS \val_1 \land \gamma'_2(\expr') \stepS \val_2 \land \ValInp{\typ_2}{\rho}(\val_1, \val_2)$. By the substitution lemma (lemma \ref{lem:sub}), this is equivalent to our goal, so we are done.
 \end{proof}
 
 \begin{lemma}[Cmpt-Tlam]
@@ -959,21 +950,10 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
   { \LogRel{\tenv}{\venv}{\Tlam{\expr}}{\Tlam{\expr'}}{\Tall{\Tvar}{\typ}} }$
 \end{lemma}
 \begin{proof}
-  Assuming
-  \begin{equation}\label{cmpt-tlam:1}
-    \LogRel{\tenv, \Tvar}{\venv}{\expr}{\expr'}{\typ}
-  \end{equation}
-  we must show
-  $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\Tall{\Tvar}{\typ}}{\rho}(\gamma_1(\Tlam{\expr}), \gamma_2(\Tlam{\expr'}))$. So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, by the definition of expression interpretation, our goal is now to show
-  \begin{equation}
-    \exists \val_1, \val_2 . \Tlam{\gamma_1(\expr)} \stepS \val_1 \land \Tlam{\gamma_2(\expr')} \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\typ}}{\rho}(\val_1, \val_2)
-  \end{equation}
+  Assuming $\LogRel{\tenv, \Tvar}{\venv}{\expr}{\expr'}{\typ}$ we must show $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\Tall{\Tvar}{\typ}}{\rho}(\gamma_1(\Tlam{\expr}), \gamma_2(\Tlam{\expr'}))$. So assume some $\rho \in \TenvInp{\tenv}$ and $\gamma \in \VenvInp{\venv}{\rho}$, by the definition of expression interpretation, our goal is now to show $\exists \val_1, \val_2 . \Tlam{\gamma_1(\expr)} \stepS \val_1 \land \Tlam{\gamma_2(\expr')} \stepS \val_2 \land \ValInp{\Tall{\Tvar}{\typ}}{\rho}(\val_1, \val_2)$.
   Note here that we have pushed the variable substitution inside the $\Lambda$-abstraction.
-  Here we can simply use $\Tlam{\gamma_1(\expr)}$ for $\val_1$ and $\Tlam{\gamma_2(\expr')}$ for $\val_2$, as they are already values. Thus, we must show $\ValInp{\Tall{\Tvar}{\typ}}{\rho}(\Tlam{\gamma_1(\expr)}, \Tlam{\gamma_2(\expr')})$, which by definition means we have to show $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\typ}{\rho'}(\gamma_1(\expr), \gamma_2(\expr'))$, where $\rho' = \rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]$. So assume some types $\typ_1, \typ_2$, and a relation $R \in Rel[\typ_1, \typ_2]$, then our goal is
-  \begin{equation}\label{cmpt-tlam:goal}
-    \ExpInp{\typ}{\rho'}(\gamma_1(\expr), \gamma_2(\expr'))
-  \end{equation}
-  We now instantiate (\ref*{cmpt-tlam:1}) with $\rho'$ and $\gamma$. Note that $\gamma \in \VenvInp{\venv}{\rho'}$ by corollary \ref{cor:VenvInp}. Thus, we get $\ExpInp{\typ}{\rho'}(\gamma_1(\expr), \gamma_2(\expr'))$, which is exactly what we had to show.
+  Here we can simply use $\Tlam{\gamma_1(\expr)}$ for $\val_1$ and $\Tlam{\gamma_2(\expr')}$ for $\val_2$, as they are already values. Thus, we must show $\ValInp{\Tall{\Tvar}{\typ}}{\rho}(\Tlam{\gamma_1(\expr)}, \Tlam{\gamma_2(\expr')})$, which by definition means we have to show $\forall \typ_1, \typ_2, R \in Rel[\typ_1, \typ_2] . \ExpInp{\typ}{\rho'}(\gamma_1(\expr), \gamma_2(\expr'))$, where $\rho' = \rho[\map{\Tvar}{(\typ_1, \typ_2, R)}]$. So assume some types $\typ_1, \typ_2$, and a relation $R \in Rel[\typ_1, \typ_2]$, then our goal is to show $\ExpInp{\typ}{\rho'}(\gamma_1(\expr), \gamma_2(\expr'))$.
+  We now instantiate our initial assumption with $\rho'$ and $\gamma$. Note that $\gamma \in \VenvInp{\venv}{\rho'}$ by corollary \ref{cor:VenvInp}. Thus, we get $\ExpInp{\typ}{\rho'}(\gamma_1(\expr), \gamma_2(\expr'))$, which is exactly what we had to show.
 \end{proof}
 
 \begin{lemma}[Cmpt-Tapp]
@@ -987,7 +967,7 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
 
 
 \section{Properties of LR}
-With the compatibility lemmas proved, we get that LR is a congruency relation
+With the compatibility lemmas proved, we get that LR is a congruency relation.
 \begin{lemma}[Congruency of LR]\label{lem:LR_cong}
   $LR$ is a congruence relation
 \end{lemma}
@@ -999,23 +979,23 @@ Next, we shall show that LR is an adequate relation.
   Assuming $\LogRel{\emptenv}{\empvenv}{\expr}{\expr'}{\Tbool}$, we must show 
   $\expr \Downarrow \val \iff \expr' \Downarrow \val$. By the definition of our LR model, we have that $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\Tbool}{\rho}(\gamma_1(\expr), \gamma_2(\expr'))$. Given our definitions of $\mathcal{D}$ and $\mathcal{G}$, we can only instantiate it with the empty relational type substitution and the empty relational variable substitution. Doing this, we get $\ExpInp{\Tbool}{\emptyset}(\emptyset(\expr), \emptyset(\expr')) \equiv \ExpInp{\Tbool}{\emptyset}(\expr, \expr')$, which means we have $\exists \val_1, \val_2 . \expr \stepS \val_1 \land \expr' \stepS \val_2 \land \ValInp{\Tbool}{\emptyset}(\val_1, \val_2)$. Instantiating these values, we may conclude that $\expr \Downarrow \val_1$, $\expr' \Downarrow \val_2$. Now, our goal is to show $\expr \Downarrow \val \iff \expr' \Downarrow \val$. Both sides are similar, so we show just the "$\implies$" direction. So we assume $\expr \Downarrow \val$, and must show $\expr' \Downarrow \val$. By corollary \ref{cor:determinacy_val}, we may conclude that $\val_1 = \val$, so that our goal now is to show $\expr' \Downarrow \val_1$. Given we know that $\expr' \Downarrow \val_2$, then it suffices to show that $\val_1 = \val_2$. Since $\ValInp{\Tbool}{\emptyset}(\val_1, \val_2)$, then either $\val_1 = \val_2 = \True$ or $\val_1 = \val_2 = \False$. In any case, $\val_1 = \val_2$, so we are done.
 \end{proof}
-We are now finally ready prove that our LR model is sound wrt. contextual equivalence.
+We can now finally prove that our model is sound wrt. contextual equivalence.
 \begin{theorem}\label{thm:LR_sound}
   $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$
 \end{theorem}
 \begin{proof}
   We now know that LR is an adequate relation (lemma \ref{lem:LR_adeq}) and a congruence relation (lemma \ref{lem:LR_cong}). Further, it follows directly from the definition of LR, that all expressions in the relation are well-typed. Thus, by theorem \ref{thm:CE_eq_part2}, we may conclude $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\typ} \implies \ctxRel{\tenv}{\venv}{\expr}{\expr'}{\typ}$.
 \end{proof}
-We may also show the following theorem which is usually referred to as the fundamental theorem.
+We also get the following, now rather trivial, theorem.
 \begin{theorem}[Fundamental Theorem]\label{thm:fund}
   $\jdg{\tenv}{\venv}{\expr}{\typ} \implies \LogRel{\tenv}{\venv}{\expr}{\expr}{\typ}$
 \end{theorem}
 \begin{proof}
-  Since LR is a congruence relation (lemma \ref{lem:LR_cong}), it follows directly from lemma \ref{lem:R_Cng_is_reflexive}.
+  Since LR is a congruence relation (lemma \ref{lem:LR_cong}), it follows by lemma \ref{lem:R_Cng_is_reflexive}.
 \end{proof}
 The fundamental theorem may not seem it, but it is actually quite powerful. We shall see this in great detail in the next chapter, but to illustrate the point, let us now prove the normalisation theorem from chapter \ref{ch:DoL}.
 \begin{proof}[proof of theorem \ref{thm:norm}]
-  Given a closed and well-typed expression, $\jdg{\emptenv}{\empvenv}{\expr}{\typ}$, we wish to show that $\expr$ reduces to a normal form. By the fundamental theorem, we know that $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\typ}$, which by definition gives us $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. We only have one choice of instantiation; the empty relational substitutions. Thus, we get $\ExpInp{\typ}{\emptyset}(\emptyset(\expr), \emptyset(\expr)) \equiv \ExpInp{\typ}{\emptyset}(\expr, \expr)$. By the definition of our expression interpretation, this means that $\expr \stepS \val$, for some $\val$. Thus $\expr$ reduces to normal form.
+  Given a closed and well-typed expression, $\jdg{\emptenv}{\empvenv}{\expr}{\typ}$, we wish to show that $\expr$ reduces to a normal form. By the fundamental theorem, we know that $\LogRel{\emptenv}{\empvenv}{\expr}{\expr}{\typ}$, which by definition gives us $\forall \rho \in \TenvInp{\emptenv}, \gamma \in \VenvInp{\empvenv}{\rho} . \ExpInp{\typ}{\rho}(\gamma_1(\expr), \gamma_2(\expr))$. Instantiating with the empty relational substitutions gives us $\ExpInp{\typ}{\emptyset}(\emptyset(\expr), \emptyset(\expr)) \equiv \ExpInp{\typ}{\emptyset}(\expr, \expr)$. By definition, this means that $\expr \stepS \val$, for some $\val$. Thus $\expr$ reduces to normal form.
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
