@@ -139,10 +139,10 @@
   - [ ] write normalisation mathematically
   - [ ] rewrite explanation of expression relation
   - [x] rewrite section 4.1
-- [ ] Shorten report
+- [x] Shorten report
   - [x] chapter 2
   - [x] chapter 3
-  - [ ] chapter 4
+  - [x] chapter 4
   - [x] chapter 5
 - [x] Format appendix
 - [ ] Proofread report
