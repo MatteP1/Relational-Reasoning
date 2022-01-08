@@ -137,7 +137,7 @@
   - [x] remove contractions
   - [x] add superscript R to relations
   - [ ] write normalisation mathematically
-  - [ ] rewrite explanation of expression relation
+  - [x] rewrite explanation of expression relation
   - [x] rewrite section 4.1
 - [x] Shorten report
   - [x] chapter 2

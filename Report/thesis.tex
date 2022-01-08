@@ -818,7 +818,7 @@ Now we are ready to define the expression interpretation.
     \jdg{\emptenv}{\empvenv}{\expr_1}{\rho_1(\typ)} \land \jdg{\emptenv}{\empvenv}{\expr_2}{\rho_2(\typ)} \land\\
     (\exists \val_1, \val_2 . \expr_1 \stepS \val_1 \land \expr_2 \stepS \val_2 \land\ValInpGen{\typ}{\rho})
 \end{multline*}
-This states that two closed expressions are logically related when they are well-typed and reduce to logically related values. This makes intuitive sense, as we have defined our value interpretation so that all pairs of values are contextually equivalent, and if two expressions run to contextually equivalent values, then we consider those two expressions to be contextually equivalent as well.
+This states that two closed expressions are logically related when they are well-typed and reduce to logically related values. As is evident, this definition builds on top of the value interpretation and in essence generalises the terms that our model talks about.
 
 Next, we will define the interpretations for type environments $\tenv$ and variable environments $\venv$. These will be a little different in that they will be sets of relational substitutions, which allow us to close off open types and open expressions. First, we define the interpretation for type environments inductively as follows.
 \begin{align*}
