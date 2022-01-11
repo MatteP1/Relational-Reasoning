@@ -1,8 +1,5 @@
 # Questions
 
-- how to define normalisation mathematically
-  - would * | * |- e : t => norm(e) be fine?
-
 - How will the oral exam be?
   - should I make slides as suggested in BB video?
     - 15 min?
