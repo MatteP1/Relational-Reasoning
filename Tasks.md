@@ -7,8 +7,6 @@
 - [x] Prove the two intermediate lemmas
 - [x] Read parts I and II of types and programming languages
 - [x] Watch videos on Blackboard
-- [ ] Read parts of types and programming languages again
-- [ ] Read Theorems for free!
 
 ## System F. The Language
 - [x] Write in language (System F) in report
@@ -133,10 +131,9 @@
 - [x] Write abstract
 - [x] Proper references
   - get your bibtex entries from \url{https://dblp.org/}
-- [ ] Fix annotated mistakes
+- [x] Fix annotated mistakes
   - [x] remove contractions
   - [x] add superscript R to relations
-  - [ ] write normalisation mathematically
   - [x] rewrite explanation of expression relation
   - [x] rewrite section 4.1
 - [x] Shorten report
@@ -149,4 +146,7 @@
 
 ## Exam period
 - [x] Watch exam video on Blackboard
+- [ ] Read parts of types and programming languages again
+- [ ] Read Theorems for free!
+- [ ] Skim through notes by Lau
 - [ ] Make slides (for 15 min)

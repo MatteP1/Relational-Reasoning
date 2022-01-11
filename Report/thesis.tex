@@ -538,12 +538,9 @@ Firstly, System F is a type-safe language. Essentially, this means that well-typ
 \end{theorem}
 Secondly, every closed and well-typed expression in System F has a reduction to normal form. An expression is in normal form if it cannot be reduced any further. This property is called "normalisation".
 \begin{theorem}\label{thm:norm}
-  System F is a normalising language: $\jdg{\emptenv}{\empvenv}{\expr}{\typ} \implies \exists \val . \expr \stepS \val$. \todo{how to define it mathematically?}
+  System F is a normalising language.
 \end{theorem}
 Together with type-safety, normalisation implies that all closed and well-typed expressions will terminate at some value. We will actually prove this theorem later using the logical relations model we define in chapter \ref{ch:LR}. As an aside, there is a stronger version of normalisation called "strong normalisation". This essentially just states the above theorem holds for \textit{all} reductions of every closed and well-typed expression. System F as presented here, is strongly normalising, but this is no surprise given the next property of System F we will see.
-
-% closedness is not necessary. neither weak nor strong.
-% normal form is not necessarily only values... variables, stuck term.
 
 Finally, the version of System F we present here is a deterministic language.
 \begin{theorem}\label{thm:determinacy}
