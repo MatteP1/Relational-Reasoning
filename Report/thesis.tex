@@ -755,7 +755,7 @@ The theorems we want to show about our property, contextual equivalence, can be 
 
 \section{Defining the Logical Relations Model}
 We will be splitting up the definition of the complete LR model into several smaller steps, where each step increases the generality of the terms we relate.
-Initially, we shall define the "value interpretation" that states which values are logically related. Following this, we define the "expression interpretation", which talks about relatedness for \textit{closed} expressions. Finally, we shall define the "type environment interpretation" and "variable environment interpretation", which will give us relational substitutions allowing us to close off open expressions so that we may define our complete LR model on open expressions.
+Initially, we shall define the \textit{value interpretation} that states which values are logically related. Following this, we define the \textit{expression interpretation}, which talks about relatedness for \textit{closed} expressions. Finally, we shall define the \textit{type environment interpretation} and \textit{variable environment interpretation}, which will give us relational substitutions allowing us to close off open expressions so that we may define our complete LR model on open expressions.
 
 A property that should hold for all values in the value interpretation is that they are closed and well-typed, so we shall firstly define a well-typedness relation:
 \begin{equation*}
@@ -805,7 +805,7 @@ This solves the problem of what type our expressions should be related at, but i
   \end{aligned}
   \right\}
 \end{align*}
-This set is not very restrictive. In proofs, if have two type abstractions that are logically related, then the person proving gets to pick $R$. This gives a lot of power as we will see in chapter \ref{ch:ACE}.\\
+This set is not very restrictive. In proofs, if we have two type abstractions that are logically related, then the person proving gets to pick $R$. This gives a lot of power as we will see in chapter \ref{ch:ACE}.\\
 Now, since we have decided which values are related, then, when encountering a type variable, say $\Tvar$, we can look up the relation in the third projection of $\rho$, $\rho_R = \{\Tvar \mapsto R_1, \TvarB \mapsto R_2, \dots\}$, and then we simply state that a pair of values are in our logical relation, if they are in the relation $R_1$ we chose. Thus, the value interpretation for type variables is as follows.
 \begin{align*}
   \ValInpGen{\Tvar}{\rho} &\triangleq (\val_1, \val_2) \in \rho_R[\Tvar]
@@ -846,7 +846,7 @@ Thus, two expressions $\expr$ and $\expr'$ are logically related at type $\typ$ 
 
 
 \section{Compatibility Lemmas}
-As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as "compatibility lemmas". Some compatibility lemmas are very similar, so we show only a selected few. Two additional compatibility lemmas can be found in appendix \ref{appendix:CL_extra}. For the sake of brevity, we only show well-typedness in the first two compatibility lemmas.
+As mentioned in the first section of this chapter, we want to show that LR is a congruency relation. So we must go through each congruency rule mentioned in appendix \ref{appendix:Cng} (but with the relation being LR) and show that it holds. We refer to these lemmas as \textit{compatibility lemmas}. Some compatibility lemmas are very similar, so we show only a selected few. Two additional compatibility lemmas can be found in appendix \ref{appendix:CL_extra}. For the sake of brevity, we only show well-typedness in the first two compatibility lemmas.
 \begin{lemma}[Cmpt-unit]
   $\inferrule{ }{\LogRel{\tenv}{\venv}{\TT}{\TT}{\Tunit}}$
 \end{lemma}
@@ -912,7 +912,7 @@ As mentioned in the first section of this chapter, we want to show that LR is a 
   { \LogRel{\tenv}{\venv}{\Fst \expr}{\Fst \expr'}{\typ_1} }$
 \end{lemma}
 \begin{proof}
-  So assuming $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\Tsum{\typ_1}{\typ_2}}$, we must show (ignoring well-typedness): $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr')) \equiv \ExpInp{\typ_1}{\rho}(\Fst \gamma_1(\expr), \Fst \gamma_2(\expr'))$, which by definition corresponds to showing
+  So assuming $\LogRel{\tenv}{\venv}{\expr}{\expr'}{\Tprod{\typ_1}{\typ_2}}$, we must show (ignoring well-typedness): $\forall \rho \in \TenvInp{\tenv}, \gamma \in \VenvInp{\venv}{\rho} . \ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr'))$. So assume some $\rho \in \TenvInp{\tenv}$, and $\gamma \in \VenvInp{\venv}{\rho}$, we must show $\ExpInp{\typ_1}{\rho}(\gamma_1(\Fst \expr), \gamma_2(\Fst \expr')) \equiv \ExpInp{\typ_1}{\rho}(\Fst \gamma_1(\expr), \Fst \gamma_2(\expr'))$, which by definition corresponds to showing
   \begin{equation}\label{cmpt-fst:goal}
     \exists \val_1, \val_2 . \Fst \gamma_1(\expr) \stepS \val_1 \land \Fst \gamma_2(\expr') \stepS \val_2 \land \ValInp{\typ_1}{\rho}(\val_1, \val_2)
   \end{equation}
