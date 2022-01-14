@@ -142,7 +142,7 @@
   - [x] chapter 4
   - [x] chapter 5
 - [x] Format appendix
-- [ ] Proofread report
+- [x] Proofread report
 
 ## Exam period
 - [x] Watch exam video on Blackboard
