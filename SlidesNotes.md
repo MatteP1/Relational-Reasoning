@@ -54,7 +54,8 @@ Also include parts that could be improved
   - Soundness and Fundamental theorem.
     - Both of these points are very common occurrences when working with logical relations.
 - Using Logical Relations
-  - Todo
+  - If time, go through Empty Type proof.
+  - Illustrate how choice of R influences proof; making R non-empty may not allow the proof to go through.
 
 ### Improvements
 "all expressions in the relation are well-typed" is vague
