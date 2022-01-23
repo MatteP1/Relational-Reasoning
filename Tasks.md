@@ -146,7 +146,7 @@
 
 ## Exam period
 - [x] Watch exam video on Blackboard
-- [ ] Read parts of types and programming languages again
-- [ ] Read Theorems for free!
+- [x] Read parts of types and programming languages again
+- [x] Read Theorems for free!
 - [ ] Skim through notes by Lau
 - [ ] Make slides (for 15 min)
