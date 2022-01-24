@@ -148,5 +148,5 @@
 - [x] Watch exam video on Blackboard
 - [x] Read parts of types and programming languages again
 - [x] Read Theorems for free!
-- [ ] Skim through notes by Lau
-- [ ] Make slides (for 15 min)
+- [x] Skim through notes by Lau
+- [x] Make slides (for 15 min)
